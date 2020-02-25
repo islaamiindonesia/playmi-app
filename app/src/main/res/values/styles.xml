@@ -1,0 +1,44 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/primary</item>
+    </style>
+
+    <!-- Button Rounded style -->
+    <style name="ButtonRounded">
+        <item name="android:background">@drawable/btn_rounded_primary</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="ButtonRoundedIdle" parent="Widget.MaterialComponents.Button">
+        <item name="android:background">@drawable/btn_rounded_idle</item>
+        <item name="android:textColor">@android:color/black</item>
+    </style>
+
+    <!-- Button Capsule style -->
+    <style name="ButtonCapsule">
+        <item name="android:background">@drawable/btn_capsule</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="ButtonCapsuleIdle">
+        <item name="android:background">@drawable/btn_capsule_idle</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="LabelText">
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="ToolbarColoredBackArrow" parent="AppTheme">
+<!--        <item name="colorControlNormal">@android:color/white</item>-->
+        <item name="android:textSize">18sp</item>
+<!--        <item name="android:textColor">@android:color/white</item>-->
+    </style>
+
+</resources>

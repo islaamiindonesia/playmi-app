@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Playmi</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="text_agreement">
+        Dengan daftar dan masuk ke aplikasi ini, berarti Anda menyetujui Ketentuan Pengguna serta Kebijakan Privasi kami.</string>
+    <string name="error_message_default">Ups, ada yang bermasalah nih. \\nKami sedang mencoba memperbaikinya. \\nSilakan coba lagi nanti</string>
+    <string name="default_notification_channel_id">channelID</string>
+</resources>

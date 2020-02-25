@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/popWatchLater"
+        android:title="Simpan ke Tonton Nanti"/>
+
+    <item
+        android:id="@+id/popFollow"
+        android:title="Mulai mengikuti"/>
+
+    <item
+        android:id="@+id/popHideChannel"
+        android:title="Sembunyikan kanal ini"/>
+</menu>

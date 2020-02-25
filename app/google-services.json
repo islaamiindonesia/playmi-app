@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "140070247727",
+    "firebase_url": "https://islaami.firebaseio.com",
+    "project_id": "islaami",
+    "storage_bucket": "islaami.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:140070247727:android:23fd55bc214fcdf16cd5da",
+        "android_client_info": {
+          "package_name": "com.example.playmi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "140070247727-4umcb9k5sneotj883lugath99a02ee2a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.playmi",
+            "certificate_hash": "e401248257b20c43aa09a9a29030bce0f88e0306"
+          }
+        },
+        {
+          "client_id": "140070247727-v5dhaba182fp7hnnd2q6640he2u3lga4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBLrtLQqPWy2xOqb0R_Z4Feu9xlMDDNkW4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "140070247727-v5dhaba182fp7hnnd2q6640he2u3lga4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

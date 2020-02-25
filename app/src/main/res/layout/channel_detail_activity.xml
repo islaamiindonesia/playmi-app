@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.channel.ChannelDetailActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/actionBarSize"
+            android:theme="@style/ToolbarColoredBackArrow"
+            app:title="Kanal" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ScrollView
+            android:id="@+id/successLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/channelImage"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="16dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/dummy_thumbnail" />
+
+                <TextView
+                    android:id="@+id/channelName"
+                    style="@style/LabelText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginRight="16dp"
+                    android:text="Nama Channel"
+                    app:layout_constraintBottom_toBottomOf="@+id/channelImage"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/channelImage"
+                    app:layout_constraintTop_toTopOf="@+id/channelImage"
+                    app:layout_constraintVertical_bias="0.2" />
+
+                <LinearLayout
+                    android:id="@+id/videoCountLayout"
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical"
+                    app:layout_constraintStart_toStartOf="@+id/channelName"
+                    app:layout_constraintTop_toBottomOf="@+id/channelName">
+
+                    <TextView
+                        android:id="@+id/videoCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="1500"
+                        android:textColor="@android:color/black"
+                        android:textSize="24sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Video" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/followerCountLayout"
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="@+id/videoCountLayout"
+                    app:layout_constraintEnd_toEndOf="@+id/channelName"
+                    app:layout_constraintTop_toTopOf="@+id/videoCountLayout">
+
+                    <TextView
+                        android:id="@+id/followerCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="900.000"
+                        android:textColor="@android:color/black"
+                        android:textSize="24sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Pengikut" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/channelDescription"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    app:layout_constraintEnd_toEndOf="@+id/followerCountLayout"
+                    app:layout_constraintStart_toStartOf="@+id/channelImage"
+                    app:layout_constraintTop_toBottomOf="@+id/channelImage"
+                    tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur malesuada convallis nisl, quis pharetra erat cursus sed. Ut at velit massa. Nullam nisi magna, placerat quis turpis non, rutrum mollis nunc. Fusce at mauris ac dui tempor consequat. Sed bibendum pellentesque enim. Morbi sed laoreet mauris. Pellentesque ut molestie neque, eget molestie diam. Quisque fringilla interdum lacinia. Etiam ornare sed magna a interdum." />
+
+                <LinearLayout
+                    android:id="@+id/channelBtnLayout"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal"
+                    app:layout_constraintEnd_toEndOf="@id/channelDescription"
+                    app:layout_constraintStart_toStartOf="@id/channelDescription"
+                    app:layout_constraintTop_toBottomOf="@id/channelDescription">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnFollow"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="5"
+                        android:text="Follow"
+                        android:textColor="@color/white" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnUnfollow"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="5"
+                        android:text="Unfollow"
+                        android:textColor="@color/primary"
+                        android:visibility="gone" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnHide"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="5"
+                        android:text="Sembunyikan" />
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerView"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="16dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@id/channelBtnLayout"
+                    app:layout_constraintStart_toStartOf="@id/channelBtnLayout"
+                    app:layout_constraintTop_toBottomOf="@id/channelBtnLayout" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </ScrollView>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+</LinearLayout>
