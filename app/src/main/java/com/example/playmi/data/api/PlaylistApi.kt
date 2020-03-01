@@ -21,6 +21,23 @@ interface PlaylistApi {
         @Field("playlist_id") playlistId: Int
     ): Single<ApiResponse<Any>>
 
+    @FormUrlEncoded
+    @POST("videos/{id}/remove")
+    fun removeVideoFromPlaylist(
+        @Path("id") videoId: Int,
+        @Field("playlist_id") playlistId: Int
+    ): Single<ApiResponse<Any>>
+
+    @FormUrlEncoded
+    @PATCH("playlists/{id}")
+    fun changePlaylistName(
+        @Path("id") playlistId: Int,
+        @Field("name") playlistName: String
+    ): Single<ApiResponse<Any>>
+
+    @DELETE("playlists/{id}")
+    fun deletePlaylist(@Path("id") playlistId: Int): Single<ApiResponse<Any>>
+
     @GET("playlists")
     fun getAllPlaylist(): Single<ApiResponse<List<Playlist>>>
 

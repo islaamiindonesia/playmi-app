@@ -25,13 +25,9 @@ class VideoUpdateDataSource(
                         if (result != null) {
                             if (!result.videos.isNullOrEmpty()) {
                                 callback.onResult(result.videos, null, 2)
-                                networkStatus.setSuccess()
-                            } else {
-                                networkStatus.setError(ERROR_EMPTY_LIST)
                             }
-                        } else {
-                            networkStatus.setError(ERROR_EMPTY_LIST)
                         }
+                        networkStatus.setSuccess()
                     },
                     { throwable -> networkStatus.setError(throwable.getErrorMessage()) })
         )
@@ -47,15 +43,14 @@ class VideoUpdateDataSource(
                         if (result != null) {
                             if (!result.videos.isNullOrEmpty()) {
                                 callback.onResult(result.videos, params.key + 1)
-                                networkStatus.setSuccess()
                             }
                         }
+                        networkStatus.setSuccess()
                     },
                     { throwable -> networkStatus.setError(throwable.getErrorMessage()) })
         )
     }
 
     override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, Video>) {
-
     }
 }

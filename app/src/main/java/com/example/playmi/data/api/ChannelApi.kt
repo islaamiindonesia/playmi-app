@@ -5,20 +5,18 @@ import com.example.playmi.data.model.channel.Channel
 import com.example.playmi.data.model.channel.FollowStatus
 import com.example.playmi.data.model.channel.HideStatus
 import com.example.playmi.data.model.video.Video
-import com.example.playmi.data.model.video.VideoData
-import com.example.playmi.util.DEFAULT_LIMIT
-import com.example.playmi.util.DEFAULT_VIDEO_FILTER
 import io.reactivex.Single
-import retrofit2.http.*
+import retrofit2.http.DELETE
+import retrofit2.http.GET
+import retrofit2.http.POST
+import retrofit2.http.Path
 
 interface ChannelApi {
-    @GET("channels")
-    fun getAllChannel(
-        @Query("page") page: Int,
-        @Query("limit") limit: Int = DEFAULT_LIMIT,
-        @Query("filter") filter: String? = DEFAULT_VIDEO_FILTER,
-        @Query("query") query: String? = null
-    ): Single<ApiResponse<VideoData>>
+    @GET("channels/follow")
+    fun getChannelFollow(): Single<ApiResponse<List<Channel>>>
+
+    @GET("channels/hide")
+    fun getChannelHidden(): Single<ApiResponse<List<Channel>>>
 
     @GET("channels/{id}/detail")
     fun getChannelDetail(@Path("id") id: Int): Single<ApiResponse<Channel>>
@@ -34,6 +32,9 @@ interface ChannelApi {
 
     @POST("channels/{id}/hide")
     fun hideChannel(@Path("id") id: Int): Single<ApiResponse<Any>>
+
+    @DELETE("channels/{id}/show")
+    fun showChannel(@Path("id") id: Int): Single<ApiResponse<Any>>
 
     @POST("channels/{id}/follow")
     fun followChannel(@Path("id") id: Int): Single<ApiResponse<Any>>

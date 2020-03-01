@@ -35,6 +35,8 @@ class SettingActivity : BaseActivity() {
                 }
                 SUCCESS -> {
                     LoginActivity.startActivityAfterLogout(this)
+
+                    viewModel.afterLogout()
                 }
                 ERROR -> {
                 }

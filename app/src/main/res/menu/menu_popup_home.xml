@@ -9,6 +9,6 @@
         android:title="Mulai mengikuti"/>
 
     <item
-        android:id="@+id/popHideChannel"
+        android:id="@+id/popHide"
         android:title="Sembunyikan kanal ini"/>
 </menu>

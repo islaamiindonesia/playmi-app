@@ -4,8 +4,9 @@ import com.example.playmi.data.api.ChannelApi
 
 class ChannelRepository(private val api: ChannelApi) {
 
-    fun getAllChannel(page: Int, query: String? = null) =
-        api.getAllChannel(page, query = query).map { it.data }
+    fun getChannelFollow() = api.getChannelFollow().map { it.data }
+
+    fun getChannelHidden() = api.getChannelHidden().map { it.data }
 
     fun getDetailChannel(channelID: Int) = api.getChannelDetail(channelID).map { it.data }
 
@@ -16,6 +17,8 @@ class ChannelRepository(private val api: ChannelApi) {
     fun getHideStatus(id: Int) = api.getHideStatus(id).map { it.data?.isHidden }
 
     fun hideChannel(id: Int) = api.hideChannel(id)
+
+    fun showChannel(id: Int) = api.showChannel(id)
 
     fun followChannel(id: Int) = api.followChannel(id)
 

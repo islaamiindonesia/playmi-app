@@ -32,7 +32,6 @@ class LoginActivity : BaseActivity() {
         FirebaseInstanceId.getInstance().instanceId
             .addOnCompleteListener(OnCompleteListener { task ->
                 if (!task.isSuccessful) {
-                    Log.w("HEIKAMU", "getInstanceId failed", task.exception)
                     return@OnCompleteListener
                 }
 
@@ -42,11 +41,17 @@ class LoginActivity : BaseActivity() {
             })
 
         viewModel.initLoginActivity()
-
+        checkIfSessionIsExpired()
         observeLoginResult()
 
         btnLogin.setOnClickListener {
             validateLogin()
+        }
+    }
+
+    private fun checkIfSessionIsExpired() {
+        if (intent.getBooleanExtra("EXTRA_INVALID_TOKEN", false)) {
+            viewModel.afterLogout()
         }
     }
 
@@ -133,6 +138,14 @@ class LoginActivity : BaseActivity() {
         fun startActivity(context: Context?) {
             context?.startActivity(
                 Intent(context, LoginActivity::class.java)
+            )
+        }
+
+        fun startActivityWhenErrorInvalidToken(context: Context?) {
+            context?.startActivity(
+                Intent(context, LoginActivity::class.java)
+                    .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                    .putExtra("EXTRA_INVALID_TOKEN", true)
             )
         }
 

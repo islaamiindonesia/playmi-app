@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.Observer
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -14,10 +15,10 @@ import com.example.playmi.ui.base.BaseFragment
 import com.example.playmi.util.ResourceStatus.*
 import com.example.playmi.util.value
 import id.co.badr.commerce.mykopin.util.ui.*
-import kotlinx.android.synthetic.main.custom_fragment.*
+import kotlinx.android.synthetic.main.video_category_fragment.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class CustomFragment : BaseFragment() {
+class VideoCategoryFragment : BaseFragment() {
     private val viewModel: HomeViewModel by viewModel()
 
     lateinit var videoPagedAdapter: VideoPagedAdapter
@@ -29,7 +30,7 @@ class CustomFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.custom_fragment, container, false)
+        return inflater.inflate(R.layout.video_category_fragment, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -43,36 +44,50 @@ class CustomFragment : BaseFragment() {
         }
 
         videoPagedAdapter = VideoPagedAdapter(context,
-            popMenuItemOnClickListener = { item, video ->
-                when (item.itemId) {
-                    R.id.popWatchLater -> {
-                        context?.showAlertDialogWith2Buttons(
-                            "Simpan ke daftar Tonton Nanti?",
-                            "Iya",
-                            "Batal",
-                            positiveCallback = {
-                                viewModel.watchLater(video.ID.value())
-                                it.dismiss()
-                            },
-                            negativeCallback = { it.dismiss() })
+            popMenu = { context, menuView, video->
+                PopupMenu(context, menuView).apply {
+                    inflate(R.menu.menu_popup_home)
 
-                        true
+                    if (video.followStatus != true) {
+                        menu.getItem(1).title = "Mulai Mengikuti"
+                    } else {
+                        menu.getItem(1).title = "Berhenti Mengikuti"
                     }
-                    R.id.popFollow -> {
-                        if (video.followStatus != true) {
-                            viewModel.followChannel(video.channelID.value())
-                        } else {
-                            viewModel.unfollowChannel(video.channelID.value())
+
+                    setOnMenuItemClickListener { item ->
+                        when (item.itemId) {
+                            R.id.popWatchLater -> {
+                                context.showAlertDialogWith2Buttons(
+                                    "Simpan ke daftar Tonton Nanti?",
+                                    "Iya",
+                                    "Batal",
+                                    positiveCallback = {
+                                        viewModel.watchLater(video.ID.value())
+                                        it.dismiss()
+                                    },
+                                    negativeCallback = { it.dismiss() })
+
+                                true
+                            }
+                            R.id.popFollow -> {
+                                if (video.followStatus != true) {
+                                    viewModel.followChannel(video.channelID.value())
+                                } else {
+                                    viewModel.unfollowChannel(video.channelID.value())
+                                }
+
+                                true
+                            }
+                            R.id.popHide -> {
+                                viewModel.hideChannel(video.channelID.value())
+
+                                true
+                            }
+                            else -> false
                         }
-
-                        true
                     }
-                    R.id.popHideChannel -> {
-                        viewModel.hideChannel(video.channelID.value())
 
-                        true
-                    }
-                    else -> false
+                    show()
                 }
             })
 
@@ -188,7 +203,7 @@ class CustomFragment : BaseFragment() {
         private const val EXTRA_CATEGORY_NAME = "EXTRA_CATEGORY_NAME"
 
         fun newInstance(name: String) =
-            CustomFragment().apply {
+            VideoCategoryFragment().apply {
                 arguments = Bundle().apply {
                     putString(EXTRA_CATEGORY_NAME, name)
                 }

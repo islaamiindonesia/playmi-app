@@ -6,10 +6,7 @@ import com.example.playmi.data.model.video.VideoData
 import com.example.playmi.util.DEFAULT_LIMIT
 import com.example.playmi.util.DEFAULT_VIDEO_FILTER
 import io.reactivex.Single
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Path
-import retrofit2.http.Query
+import retrofit2.http.*
 
 interface VideoApi {
     @GET("videos")
@@ -24,7 +21,7 @@ interface VideoApi {
     @GET("playlists/{id}/videos")
     fun getPlaylistVideo(@Path("id") playlistId: Int): Single<ApiResponse<List<Video>>>
 
-    @GET("videos")
+    @GET("videos/follow")
     fun getAllVideoByFollowing(
         @Query("page") page: Int,
         @Query("limit") limit: Int = DEFAULT_LIMIT
@@ -35,4 +32,7 @@ interface VideoApi {
 
     @POST("videos/{id}/later")
     fun addToLater(@Path("id") videoId: Int): Single<ApiResponse<Any>>
+
+    @DELETE("videos/{id}/later")
+    fun deleteFromlater(@Path("id") videoId: Int): Single<ApiResponse<Any>>
 }

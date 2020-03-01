@@ -1,9 +1,9 @@
 package com.example.playmi.ui.adapter
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playmi.R
 import com.example.playmi.data.model.video.Video
@@ -16,7 +16,7 @@ import java.util.*
 
 class VideoAdapter(
     var list: List<Video>? = emptyList(),
-    var popMenu: ((View) -> Unit)? = null
+    var popMenu: (Context, View, Video) -> Unit
 ) :
     RecyclerView.Adapter<VideoAdapter.ViewHolder>() {
 
@@ -60,8 +60,8 @@ class VideoAdapter(
                 VideoDetailActivity.startActivity(context, video.ID.value())
             }
 
-            menu.setOnClickListener {
-                popMenu?.invoke(it)
+            menu.setOnClickListener { view ->
+                popMenu(context, view, video)
             }
         }
 

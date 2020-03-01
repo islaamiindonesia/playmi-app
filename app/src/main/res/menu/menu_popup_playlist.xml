@@ -5,6 +5,6 @@
         android:title="Ubah nama"/>
 
     <item
-        android:id="@+id/popDeleteList"
+        android:id="@+id/popDelete"
         android:title="Hapus daftar"/>
 </menu>

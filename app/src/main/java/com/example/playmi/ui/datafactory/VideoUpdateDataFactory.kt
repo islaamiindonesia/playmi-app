@@ -10,13 +10,10 @@ import com.example.playmi.ui.datasource.VideoUpdateDataSource
 import com.example.playmi.util.Resource
 import io.reactivex.disposables.CompositeDisposable
 
-/**
- * Created by Kemal Amru Ramadhan on 05/08/2019.
- */
 class VideoUpdateDataFactory(
     private val disposable: CompositeDisposable,
     private val repository: VideoRepository,
-    val mutableLiveData: MutableLiveData<VideoUpdateDataSource> = MutableLiveData()
+    private val mutableLiveData: MutableLiveData<VideoUpdateDataSource> = MutableLiveData()
 ) : DataSource.Factory<Int, Video>() {
 
     override fun create(): DataSource<Int, Video> {

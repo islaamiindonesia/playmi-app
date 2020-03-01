@@ -20,7 +20,9 @@ class SettingViewModel(private val repository: UserRepository) : BaseViewModel()
                 { logoutResultLd.setSuccess(it) },
                 { logoutResultLd.setError(it.getErrorMessage()) }
             ))
+    }
 
+    fun afterLogout() {
         repository.clearCache()
     }
 

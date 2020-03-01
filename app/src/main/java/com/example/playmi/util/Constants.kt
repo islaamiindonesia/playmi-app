@@ -23,6 +23,7 @@ const val ERROR_UNVERIFIED_ACCOUNT = "unverified account"
 const val UNVERIFIED = "belum diverifikasi"
 
 // Unauthorized, token expire
-const val ERROR_UNAUTHORIZED = "Unauthorized"
+const val ERROR_UNAUTHORIZED = "UNAUTHORIZED"
+
 const val ERROR_UNAUTHORIZED_SUSPENDED = "Account suspended"
 const val ERROR_EMPTY_LIST = "ERROR_EMPTY_LIST"

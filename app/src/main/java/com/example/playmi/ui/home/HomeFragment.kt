@@ -2,7 +2,6 @@ package com.example.playmi.ui.home
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +12,8 @@ import com.example.playmi.R
 import com.example.playmi.data.model.category.Category
 import com.example.playmi.ui.base.BaseFragment
 import com.example.playmi.util.ResourceStatus.*
+import com.example.playmi.util.handleApiError
+import id.co.badr.commerce.mykopin.util.ui.showSnackbar
 import kotlinx.android.synthetic.main.home_fragment.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
@@ -37,7 +38,6 @@ class HomeFragment : BaseFragment() {
         observeGetAllCategory()
     }
 
-    @SuppressLint("FragmentLiveDataObserve")
     private fun observeGetAllCategory() {
         viewModel.getCategoryListResultLd.observe(this, Observer { result ->
             when (result?.status) {
@@ -49,6 +49,9 @@ class HomeFragment : BaseFragment() {
                     }
                 }
                 ERROR -> {
+                    handleApiError(errorMessage = result.message) { message ->
+                        showSnackbar(message)
+                    }
                 }
             }
         })
@@ -72,7 +75,7 @@ class HomeFragment : BaseFragment() {
         FragmentStatePagerAdapter(childFragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
 
         override fun getItem(position: Int): Fragment {
-            return CustomFragment.newInstance(list[position].name.toString())
+            return VideoCategoryFragment.newInstance(list[position].name.toString())
         }
 
         override fun getCount(): Int {

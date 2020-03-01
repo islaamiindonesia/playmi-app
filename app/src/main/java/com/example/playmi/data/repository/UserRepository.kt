@@ -17,7 +17,7 @@ class UserRepository(private val userCache: UserCache, private val userApi: User
         }
 
     fun clearCache() {
-        userCache.clear()
+        userCache.headerToken = ""
     }
 
     fun isLoggedIn(): Boolean = userCache.headerToken.isNotEmpty()

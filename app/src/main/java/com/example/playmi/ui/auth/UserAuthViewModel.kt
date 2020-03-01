@@ -9,6 +9,10 @@ import com.example.playmi.util.*
 
 class UserAuthViewModel(private val repository: UserRepository) : BaseViewModel() {
 
+    fun afterLogout() {
+        repository.clearCache()
+    }
+
     // Login
     lateinit var loginResultLd: MutableLiveData<Resource<Profile>>
 

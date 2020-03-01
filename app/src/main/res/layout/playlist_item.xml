@@ -24,7 +24,7 @@
         android:layout_marginHorizontal="16dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="@id/playlistThumbnail"
-        app:layout_constraintEnd_toStartOf="@id/btnOption"
+        app:layout_constraintEnd_toStartOf="@id/menu"
         app:layout_constraintStart_toEndOf="@id/playlistThumbnail"
         app:layout_constraintTop_toTopOf="@id/playlistThumbnail">
 
@@ -47,7 +47,7 @@
     </LinearLayout>
 
     <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/btnOption"
+        android:id="@+id/menu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"

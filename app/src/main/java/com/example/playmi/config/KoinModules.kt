@@ -6,7 +6,7 @@ import com.example.playmi.data.model.profile.Profile
 import com.example.playmi.data.repository.*
 import com.example.playmi.ui.auth.UserAuthViewModel
 import com.example.playmi.ui.channel.ChannelViewModel
-import com.example.playmi.ui.following.FollowingViewModel
+import com.example.playmi.ui.channel_following.ChannelFollowingViewModel
 import com.example.playmi.ui.home.HomeViewModel
 import com.example.playmi.ui.intro.IntroViewModel
 import com.example.playmi.ui.playlist.PlaylistViewModel
@@ -17,10 +17,6 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.loadKoinModules
 import org.koin.core.module.Module
 import org.koin.dsl.module
-
-/**
- * Created by Kemal Amru Ramadhan on 12/04/2019.
- */
 
 fun injectFeature() = loadFeature
 
@@ -41,9 +37,9 @@ val cacheModule: Module = module {
 val repositoryModule: Module = module {
     factory { UserRepository(userCache = get(), userApi = get()) }
     factory { HomeRepository(api = get()) }
-    factory { VideoRepository(userCache = get(), api = get()) }
+    factory { VideoRepository(userCache = get(), video = get(), channel = get()) }
     factory { CategoryRepository(api = get()) }
-    factory { PlaylistRepository(playlistApi = get(), videoApi = get()) }
+    factory { PlaylistRepository(playlist = get(), video = get(), channel = get()) }
     factory { ChannelRepository(api = get()) }
 }
 
@@ -54,7 +50,7 @@ val viewModelModule: Module = module {
     viewModel { HomeViewModel(home = get(), video = get(), category = get()) }
     viewModel { VideoViewModel(video = get(), channel = get(), playlist = get()) }
     viewModel { VideoUpdateViewModel(repository = get()) }
-    viewModel { FollowingViewModel(repository = get()) }
+    viewModel { ChannelFollowingViewModel(repository = get()) }
     viewModel { PlaylistViewModel(repository = get()) }
     viewModel { SettingViewModel(repository = get()) }
 }

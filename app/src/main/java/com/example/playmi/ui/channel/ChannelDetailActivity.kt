@@ -62,8 +62,8 @@ class ChannelDetailActivity : BaseActivity() {
             followerCount.text = followers.toString()
 
             videoAdapter = VideoAdapter(videos,
-                popMenu = {
-                    PopupMenu(this@ChannelDetailActivity, it).apply {
+                popMenu = { context, view, video ->
+                    PopupMenu(context, view).apply {
                         inflate(R.menu.menu_popup_channel_vid)
 
                         // if already follow channel then startFollow -> stopFollow

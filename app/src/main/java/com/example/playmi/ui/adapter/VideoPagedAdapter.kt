@@ -22,7 +22,7 @@ import java.util.*
 
 class VideoPagedAdapter(
     var context: Context? = null,
-    var popMenuItemOnClickListener: (item: MenuItem, video: Video) -> Boolean
+    var popMenu: (Context, View, Video) -> Unit
 ) :
     PagedListAdapter<Video, VideoPagedAdapter.ViewHolder>(DIFF_CALLBACK) {
 
@@ -75,23 +75,8 @@ class VideoPagedAdapter(
                     VideoDetailActivity.startActivity(context, video.ID.value())
                 }
 
-                menu.setOnClickListener {
-                    PopupMenu(context, it).apply {
-                        inflate(R.menu.menu_popup_home)
-
-                        if (video.followStatus != true) {
-                            menu.getItem(1).title = "Mulai Mengikuti"
-                        } else {
-                            menu.getItem(1).title = "Berhenti Mengikuti"
-                        }
-
-                        // if already follow channel then startFollow -> stopFollow
-                        setOnMenuItemClickListener { item ->
-                            popMenuItemOnClickListener(item, video)
-                        }
-
-                        show()
-                    }
+                menu.setOnClickListener { view ->
+                    popMenu(context, view, video)
                 }
 
                 channelLayout.setOnClickListener {

@@ -1,10 +1,15 @@
 package com.example.playmi.util
 
-import android.util.Log
+import android.app.Activity
+import android.content.Context
+import androidx.fragment.app.Fragment
+import com.example.playmi.R
 import com.example.playmi.data.model.ErrorResponse
+import com.example.playmi.ui.auth.LoginActivity
 import com.squareup.moshi.Moshi
 import retrofit2.HttpException
 import java.io.IOException
+import java.util.*
 
 fun Throwable.getErrorMessage(): String {
     if (this is HttpException) {
@@ -12,9 +17,9 @@ fun Throwable.getErrorMessage(): String {
         return when (response()?.code()) {
             in 500 until 599 -> processErrorMessage(ERROR_INTERNAL_SERVER, errorBody.toString())
             401 -> processErrorMessage(ERROR_UNAUTHORIZED, errorBody.toString())
-            403 -> processErrorMessage(ERROR_INVALID_TOKEN, errorBody.toString())
+            /*403 -> processErrorMessage(ERROR_INVALID_TOKEN, errorBody.toString())
             404 -> processErrorMessage(ERROR_PAGE_NOT_FOUND, errorBody.toString())
-            405 -> processErrorMessage(ERROR_METHOD_NOT_ALLOWED, errorBody.toString())
+            405 -> processErrorMessage(ERROR_METHOD_NOT_ALLOWED, errorBody.toString())*/
             else -> processErrorMessage(ERROR_CONNECTION, errorBody.toString())
         }
     }
@@ -31,15 +36,15 @@ fun processErrorMessage(default: String, json: String): String {
     }
 }
 
-/*
 fun String?.isNotCommonApiError(): Boolean {
-    return (this != null &&
+    /*return (this != null &&
             this != ERROR_INTERNAL_SERVER &&
             this != ERROR_INVALID_TOKEN &&
             this != ERROR_PAGE_NOT_FOUND &&
             this != ERROR_METHOD_NOT_ALLOWED &&
             this != ERROR_UNAUTHORIZED &&
-            this != ERROR_CONNECTION)
+            this != ERROR_CONNECTION)*/
+    return this != ERROR_UNAUTHORIZED
 }
 
 fun Context.checkForCommonApiError(errorMessage: String?) {
@@ -48,28 +53,24 @@ fun Context.checkForCommonApiError(errorMessage: String?) {
             ERROR_UNAUTHORIZED -> {
                 LoginActivity.startActivityWhenErrorInvalidToken(this)
             }
-            ERROR_INVALID_TOKEN, ERROR_UNAUTHORIZED_SUSPENDED -> {
+            /*ERROR_INVALID_TOKEN, ERROR_UNAUTHORIZED_SUSPENDED -> {
                 LoginActivity.startActivityWhenErrorSuspended(this)
-            }
+            }*/
         }
     }
 }
 
 fun Context.checkApiForMessage(errorMessage: String?): String =
-    when (errorMessage?.toLowerCase()) {
+    when (errorMessage.toString().toLowerCase(Locale("id", "ID"))) {
         ERROR_UNVERIFIED_ACCOUNT -> getString(R.string.error_email_not_verified)
-        ERROR_PAGE_NOT_FOUND, ERROR_INTERNAL_SERVER -> getString(R.string.error_message_system_maintenance)
-        ERROR_CONNECTION -> getString(R.string.error_no_connection)
         else -> getString(R.string.error_message_default)
     }
 
-*/
 /**
  * Handle error without showing error layout
  *
  * processErrorMessage: What to do when error happen
- *//*
-
+ */
 fun Activity.handleApiError(
     errorMessage: String?,
     processErrorMessage: ((String) -> Unit)? = null
@@ -89,7 +90,6 @@ fun Fragment.handleApiError(errorMessage: String?, errorHandler: ((String) -> Un
     activity?.handleApiError(errorMessage, errorHandler)
 }
 
-*/
 /**
  * Handle error by showing error api page (R.layout.error_api_page)
  *//*

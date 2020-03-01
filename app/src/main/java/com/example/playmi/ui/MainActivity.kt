@@ -3,10 +3,7 @@ package com.example.playmi.ui
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuItem
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -14,7 +11,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import com.example.playmi.R
 import com.example.playmi.ui.base.BaseActivity
-import com.example.playmi.ui.following.FollowingFragment
+import com.example.playmi.ui.channel_following.ChannelFollowingFragment
 import com.example.playmi.ui.home.HomeFragment
 import com.example.playmi.ui.playlist.PlaylistFragment
 import com.example.playmi.ui.setting.SettingActivity
@@ -35,7 +32,6 @@ class MainActivity : BaseActivity() {
         setupTabLayout()
 
         optionSetting.setOnClickListener {
-            Log.d("HEIKAMU", "SETTING")
             SettingActivity.startActivity(this)
         }
     }
@@ -103,7 +99,7 @@ class MainActivity : BaseActivity() {
     }
 
     inner class ViewPagerAdapter(fragmentManager: FragmentManager) :
-        FragmentPagerAdapter(fragmentManager) {
+        FragmentPagerAdapter(fragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
 
         private val numberOfTab = 4
 
@@ -111,7 +107,7 @@ class MainActivity : BaseActivity() {
             0 -> HomeFragment.newInstance()
             1 -> VideoUpdateFragment.newInstance()
             2 -> PlaylistFragment.newInstance()
-            3 -> FollowingFragment.newInstance()
+            3 -> ChannelFollowingFragment.newInstance()
             else -> Fragment()
         }
 

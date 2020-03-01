@@ -7,4 +7,7 @@
         Dengan daftar dan masuk ke aplikasi ini, berarti Anda menyetujui Ketentuan Pengguna serta Kebijakan Privasi kami.</string>
     <string name="error_message_default">Ups, ada yang bermasalah nih. \\nKami sedang mencoba memperbaikinya. \\nSilakan coba lagi nanti</string>
     <string name="default_notification_channel_id">channelID</string>
+    <string name="error_email_not_verified">Email Anda belum terverifikasi</string>
+    <string name="following">Diikuti</string>
+    <string name="hidden">Disembunyikan</string>
 </resources>
