@@ -7,6 +7,26 @@
     android:orientation="vertical"
     tools:context=".ui.playlist.PlaylistFragment">
 
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="true">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/actionBarSize"
+            android:elevation="4dp">
+
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:adjustViewBounds="true"
+                app:srcCompat="@drawable/app_logo" />
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefreshLayout"
         android:layout_width="match_parent"
@@ -23,61 +43,81 @@
                 android:orientation="vertical">
 
                 <LinearLayout
-                    android:id="@+id/watchLaterLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="16dp">
-
-                    <ImageView
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:src="@drawable/watch_later_icon" />
+                    android:background="@drawable/bg_rectangle_white_stroke_bottom">
 
                     <LinearLayout
+                        android:id="@+id/btnLater"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:orientation="vertical">
+                        android:background="?selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:orientation="horizontal"
+                        android:padding="16dp">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginEnd="8dp"
-                            android:text="Tonton Nanti"
-                            android:textColor="@color/black"
-                            android:textSize="16sp" />
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:src="@drawable/watch_later_icon"
+                            app:tint="?attr/colorControlNormal" />
 
-                        <TextView
-                            android:id="@+id/watchLaterAmount"
-                            android:layout_width="wrap_content"
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginEnd="8dp"
-                            android:textColor="@color/black_50"
-                            android:textSize="14sp"
-                            tools:text="20 Video" />
+                            android:layout_gravity="center_vertical"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginEnd="8dp"
+                                android:fontFamily="sans-serif-medium"
+                                android:text="Tonton Nanti"
+                                android:textColor="?android:attr/textColorPrimary"
+                                android:textSize="14sp" />
+
+                            <TextView
+                                android:id="@+id/watchLaterAmount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginEnd="8dp"
+                                android:textColor="?android:attr/textColorPrimary"
+                                android:textSize="12sp"
+                                tools:text="20 Video" />
+                        </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
 
-                <androidx.appcompat.widget.AppCompatTextView
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="16dp"
-                    android:text="Daftar yang dibuat"
-                    android:textColor="@color/black"
-                    android:textSize="14sp" />
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_rectangle_white_stroke_bottom"
+                    android:orientation="vertical">
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerView"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:padding="16dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_rectangle_white_stroke_bottom"
+                        android:padding="16dp"
+                        android:text="Daftar yang dibuat"
+                        android:textColor="?android:attr/textColorPrimary"
+                        android:textSize="14sp" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recyclerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="?android:attr/colorBackground"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </LinearLayout>
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

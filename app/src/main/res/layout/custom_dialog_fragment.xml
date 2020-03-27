@@ -34,7 +34,7 @@
         android:id="@+id/btnOk"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/primary"
+        android:textColor="@color/accent"
         android:textSize="16sp"
         style="@style/Widget.MaterialComponents.Button.TextButton"
         app:layout_constraintBottom_toBottomOf="@id/btnCancel"

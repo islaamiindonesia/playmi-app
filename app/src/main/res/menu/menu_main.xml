@@ -3,12 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/mainSearch"
-        android:icon="@drawable/search_icon_dark"
+        android:icon="@drawable/ic_search_dark"
         app:showAsAction="always"
         android:title="Search" />
     <item
         android:id="@+id/mainSetting"
-        android:icon="@drawable/setting_icon_dark"
+        android:icon="@drawable/ic_settings_dark"
         app:showAsAction="always"
         android:title="Setting" />
 </menu>

@@ -4,12 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="16dp">
+    android:background="@drawable/bg_rectangle_white_stroke_bottom">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/itemLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:background="?selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="8dp"
         app:layout_constraintEnd_toStartOf="@id/menu"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -27,7 +31,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
-            android:textColor="@color/black"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="@id/channelThumb"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/channelThumb"
@@ -38,7 +44,11 @@
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/menu"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:background="?selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:paddingHorizontal="12dp"
         android:src="@drawable/ic_more"
         app:layout_constraintBottom_toBottomOf="@id/itemLayout"
         app:layout_constraintEnd_toEndOf="parent"

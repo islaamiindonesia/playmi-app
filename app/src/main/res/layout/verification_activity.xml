@@ -7,7 +7,7 @@
     tools:context=".ui.auth.LoginActivity">
 
     <ImageView
-        android:id="@+id/imageView4"
+        android:id="@+id/appLogo"
         android:layout_width="200dp"
         android:layout_height="50dp"
         app:layout_constraintBottom_toTopOf="@+id/loginCard"
@@ -62,24 +62,23 @@
                 android:layout_marginTop="8dp"
                 android:background="@drawable/edit_capsule_outline"
                 android:ems="10"
-                android:hint="email"
-                android:inputType="textEmailAddress" />
+                android:inputType="numberDecimal" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnVerify"
+                style="@style/ButtonPrimaryCapsule"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:enabled="true"
+                android:text="Verifikasi" />
 
             <ProgressBar
                 android:id="@+id/progressBar"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:visibility="gone" />
-
-            <Button
-                android:id="@+id/btnVerify"
-                style="@style/ButtonCapsule"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Verifikasi"
-                android:textAllCaps="false" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/btnResend"

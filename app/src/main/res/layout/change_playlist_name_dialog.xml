@@ -8,9 +8,9 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Ganti Nama Daftar Putar"
-        android:textSize="24sp"
-        android:textStyle="bold" />
+        android:text="Ubah Nama Daftar"
+        android:textColor="@color/black"
+        android:textSize="20sp" />
 
     <EditText
         android:id="@+id/playlistName"
