@@ -1,12 +1,16 @@
 package id.islaami.playmi.ui.video
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.paging.LivePagedListBuilder
+import androidx.paging.PagedList
 import id.islaami.playmi.data.model.playlist.Playlist
 import id.islaami.playmi.data.model.video.Video
 import id.islaami.playmi.data.repository.ChannelRepository
 import id.islaami.playmi.data.repository.PlaylistRepository
 import id.islaami.playmi.data.repository.VideoRepository
 import id.islaami.playmi.ui.base.BaseViewModel
+import id.islaami.playmi.ui.datafactory.VideoDataFactory
 import id.islaami.playmi.util.*
 
 class VideoViewModel(
@@ -14,6 +18,29 @@ class VideoViewModel(
     private val channel: ChannelRepository,
     private val playlist: PlaylistRepository
 ) : BaseViewModel() {
+    lateinit var pagedListNetworkStatusLd: LiveData<Resource<Unit>>
+
+    /* VIDEO */
+    lateinit var videoPagedListResultLd: LiveData<PagedList<Video>>
+    lateinit var videoDataFactory: VideoDataFactory
+
+    fun getAllVideo(query: String? = null) {
+        videoDataFactory = VideoDataFactory(disposable, video, query)
+
+        pagedListNetworkStatusLd = videoDataFactory.getNetworkStatus()
+
+        val pageListConfig = PagedList.Config.Builder()
+            .setEnablePlaceholders(false)
+            .setInitialLoadSizeHint(DEFAULT_SIZE)
+            .setPageSize(DEFAULT_SIZE)
+            .build()
+
+        videoPagedListResultLd = LivePagedListBuilder(videoDataFactory, pageListConfig).build()
+    }
+
+    fun refreshAllVideo() {
+        videoDataFactory.refreshData()
+    }
 
     /* WATCH LATER */
     lateinit var watchLaterResultLd: MutableLiveData<Resource<Any>>
@@ -74,8 +101,18 @@ class VideoViewModel(
 
     /* CHANNEL */
     lateinit var getFollowingStatusResultLd: MutableLiveData<Resource<Boolean>>
+    lateinit var hideResultLd: MutableLiveData<Resource<Any>>
     lateinit var followResultLd: MutableLiveData<Resource<Any>>
     lateinit var unfollowResultLd: MutableLiveData<Resource<Any>>
+
+    fun hideChannel(channelID: Int) {
+        disposable.add(channel.hideChannel(channelID).execute()
+            .doOnSubscribe { hideResultLd.setLoading() }
+            .subscribe(
+                { hideResultLd.setSuccess() },
+                { throwable -> hideResultLd.setError(throwable.getErrorMessage()) }
+            ))
+    }
 
     fun followChannel(id: Int) {
         disposable.add(channel.followChannel(id).execute()
@@ -99,6 +136,7 @@ class VideoViewModel(
         watchLaterResultLd = MutableLiveData()
         getFollowingStatusResultLd = MutableLiveData()
         getVideoResultLd = MutableLiveData()
+        hideResultLd = MutableLiveData()
         followResultLd = MutableLiveData()
         unfollowResultLd = MutableLiveData()
         createPlaylistResultLd = MutableLiveData()
@@ -107,5 +145,14 @@ class VideoViewModel(
 
         getPlaylists()
         getVideoDetail(id)
+    }
+
+    fun initSearchableActivity(query: String) {
+        watchLaterResultLd = MutableLiveData()
+        hideResultLd = MutableLiveData()
+        followResultLd = MutableLiveData()
+        unfollowResultLd = MutableLiveData()
+
+        getAllVideo(query)
     }
 }

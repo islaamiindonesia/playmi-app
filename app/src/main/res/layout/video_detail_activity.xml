@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:background="?android:attr/colorBackground"
     android:orientation="vertical"
+    tools:targetApi="lollipop"
     tools:context=".ui.video.VideoDetailActivity">
 
     <com.google.android.material.appbar.AppBarLayout

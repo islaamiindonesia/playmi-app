@@ -13,7 +13,6 @@ import androidx.fragment.app.FragmentStatePagerAdapter
 import com.google.android.material.tabs.TabLayout
 import id.islaami.playmi.R
 import id.islaami.playmi.ui.base.BaseFragment
-import id.islaami.playmi.ui.setting.SettingActivity
 import id.islaami.playmi.util.value
 import kotlinx.android.synthetic.main.organize_channel_fragment.*
 
@@ -30,18 +29,7 @@ class OrganizeChannelFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         toolbar.inflateMenu(R.menu.menu_main)
-        toolbar.setOnMenuItemClickListener {
-            when (it.itemId) {
-                R.id.mainSearch -> {
-                    true
-                }
-                R.id.mainSetting -> {
-                    SettingActivity.startActivity(context)
-                    true
-                }
-                else -> false
-            }
-        }
+        toolbar.setOnMenuItemClickListener { optionMenuListener(it) }
 
         val viewPagerAdapter = ViewPagerAdapter(childFragmentManager)
         viewPager.adapter = viewPagerAdapter

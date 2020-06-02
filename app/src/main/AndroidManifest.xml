@@ -43,7 +43,11 @@
         <activity android:name=".ui.setting.recommendation.RecommendationActivity" />
         <activity android:name=".ui.setting.SettingActivity" />
         <activity android:name=".ui.video_update.VideoUpdateFragment" />
-        <activity android:name=".ui.MainActivity" />
+        <activity android:name=".ui.MainActivity">
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value=".ui.video.VideoSearchActivity" />
+        </activity>
         <activity
             android:name=".ui.auth.ForgotPasswordActivity"
             android:launchMode="singleTop" />
@@ -87,6 +91,16 @@
         <activity android:name=".ui.setting.collaborate.CollaborateActivity" />
         <activity android:name=".ui.auth.ResetPasswordActivity" />
         <activity android:name=".ui.auth.CompleteProfileActivity" />
+        <activity android:name=".ui.video.VideoSearchActivity">
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+        </activity>
 
         <!-- METAS -->
         <meta-data

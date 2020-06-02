@@ -50,7 +50,7 @@ class HomeViewModel(
         disposable.add(channel.unfollowChannel(channelID).execute()
             .doOnSubscribe { followChannelResultLd.setLoading() }
             .subscribe(
-                {followChannelResultLd.setSuccess() },
+                { followChannelResultLd.setSuccess() },
                 { throwable -> followChannelResultLd.setError(throwable.getErrorMessage()) }
             ))
     }

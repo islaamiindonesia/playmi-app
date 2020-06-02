@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -16,6 +17,7 @@ import id.islaami.playmi.ui.base.BaseActivity
 import id.islaami.playmi.ui.channel_following.OrganizeChannelFragment
 import id.islaami.playmi.ui.home.HomeFragment
 import id.islaami.playmi.ui.playlist.PlaylistFragment
+import id.islaami.playmi.ui.setting.SettingActivity
 import id.islaami.playmi.ui.video_update.VideoUpdateFragment
 import id.islaami.playmi.util.ui.loadImage
 import kotlinx.android.synthetic.main.main_activity.*
@@ -26,12 +28,29 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
 
+        toolbar.inflateMenu(R.menu.menu_main)
+        toolbar.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.mainSearch -> {
+                    onSearchRequested()
+
+                    true
+                }
+                R.id.mainSetting -> {
+                    SettingActivity.startActivity(this)
+
+                    true
+                }
+                else -> super.onOptionsItemSelected(it)
+            }
+        }
+
         FirebaseMessaging.getInstance().subscribeToTopic("playmi")
 
         setupTabLayout()
     }
 
-    fun setupTabLayout() {
+    private fun setupTabLayout() {
         // Setup View Pager
         val viewPagerAdapter = ViewPagerAdapter(supportFragmentManager)
         viewPagerMain.adapter = viewPagerAdapter
@@ -77,7 +96,12 @@ class MainActivity : BaseActivity() {
                 tab?.run {
                     val tabItem: ImageView = customView as ImageView
                     tabItem.loadImage(tabIconListDefault[position])
-                    tabItem.setColorFilter(ContextCompat.getColor(this@MainActivity, R.color.main_tab))
+                    tabItem.setColorFilter(
+                        ContextCompat.getColor(
+                            this@MainActivity,
+                            R.color.main_tab
+                        )
+                    )
                 }
             }
 
@@ -85,7 +109,12 @@ class MainActivity : BaseActivity() {
                 tab?.run {
                     val tabItem: ImageView = customView as ImageView
                     tabItem.loadImage(tabIconListSelected[position])
-                    tabItem.setColorFilter(ContextCompat.getColor(this@MainActivity, R.color.accent))
+                    tabItem.setColorFilter(
+                        ContextCompat.getColor(
+                            this@MainActivity,
+                            R.color.accent
+                        )
+                    )
                     viewPagerMain.setCurrentItem(position, false)
                 }
             }

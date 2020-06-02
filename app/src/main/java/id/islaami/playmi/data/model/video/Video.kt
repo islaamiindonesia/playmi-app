@@ -21,6 +21,9 @@ data class Video(
     @field:Json(name = "labels") var labels: List<Label>? = null,
     @field:Json(name = "views") var views: Int? = null,
     @field:Json(name = "published_at") var publishedAt: String? = null,
+    @field:Json(name = "is_published") var isPublished: Boolean? = null,
+    @field:Json(name = "is_published_now") var isPublishedNow: Boolean? = null,
+    @field:Json(name = "is_upload_shown") var isUploadShown: Boolean? = null,
     @field:Json(name = "is_saved_later") var isSavedLater: Boolean? = null
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
@@ -36,6 +39,9 @@ data class Video(
         parcel.createTypedArrayList(Label),
         parcel.readValue(Int::class.java.classLoader) as? Int,
         parcel.readString(),
+        parcel.readValue(Boolean::class.java.classLoader) as? Boolean,
+        parcel.readValue(Boolean::class.java.classLoader) as? Boolean,
+        parcel.readValue(Boolean::class.java.classLoader) as? Boolean,
         parcel.readValue(Boolean::class.java.classLoader) as? Boolean
     )
 
@@ -52,6 +58,9 @@ data class Video(
         parcel.writeTypedList(labels)
         parcel.writeValue(views)
         parcel.writeString(publishedAt)
+        parcel.writeValue(isPublished)
+        parcel.writeValue(isPublishedNow)
+        parcel.writeValue(isUploadShown)
         parcel.writeValue(isSavedLater)
     }
 

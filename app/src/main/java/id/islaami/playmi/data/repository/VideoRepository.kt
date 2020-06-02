@@ -16,8 +16,8 @@ class VideoRepository(
             userCache.notificationSetting = value
         }
 
-    fun getAllVideo(page: Int) =
-        video.getAllVideo(page).map { it.data }
+    fun getAllVideo(page: Int, query: String? = null) =
+        video.getAllVideo(page, query).map { it.data }
 
     fun getAllVideoByChannel(page: Int, id: Int) =
         video.getAllVideoByChannel(page = page, id = id).map { it.data }

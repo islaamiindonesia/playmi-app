@@ -7,7 +7,10 @@ import retrofit2.http.*
 
 interface VideoApi {
     @GET("videos")
-    fun getAllVideo(@Query("page") page: Int): Single<ApiResponse<List<Video>>>
+    fun getAllVideo(
+        @Query("page") page: Int,
+        @Query("query") query: String? = null
+    ): Single<ApiResponse<List<Video>>>
 
     @GET("channels/{id}/videos")
     fun getAllVideoByChannel(

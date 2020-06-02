@@ -89,7 +89,7 @@ class VideoPagedAdapter(
         }
 
         private fun differenceInDays(datePublished: String): Long {
-            val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale("id"))
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale("id"))
             val videoDate = dateFormat.parse(datePublished)
             val today = Date()
 

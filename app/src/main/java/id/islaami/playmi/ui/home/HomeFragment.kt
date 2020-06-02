@@ -10,12 +10,10 @@ import androidx.lifecycle.Observer
 import id.islaami.playmi.R
 import id.islaami.playmi.data.model.category.Category
 import id.islaami.playmi.ui.base.BaseFragment
-import id.islaami.playmi.ui.setting.SettingActivity
 import id.islaami.playmi.util.ResourceStatus.*
 import id.islaami.playmi.util.handleApiError
-import id.islaami.playmi.util.ui.setupToolbar
-import id.islaami.playmi.util.value
 import id.islaami.playmi.util.ui.showSnackbar
+import id.islaami.playmi.util.value
 import kotlinx.android.synthetic.main.home_fragment.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
@@ -36,25 +34,11 @@ class HomeFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        toolbar.inflateMenu(R.menu.menu_main)
-        toolbar.setOnMenuItemClickListener {
-            when (it.itemId) {
-                R.id.mainSearch -> {
-                    true
-                }
-                R.id.mainSetting -> {
-                    SettingActivity.startActivity(context)
-                    true
-                }
-                else -> false
-            }
-        }
-
         observeGetAllCategory()
     }
 
     private fun observeGetAllCategory() {
-        viewModel.getCategoryListResultLd.observe(this, Observer { result ->
+        viewModel.getCategoryListResultLd.observe(viewLifecycleOwner, Observer { result ->
             when (result?.status) {
                 LOADING -> {
                 }

@@ -13,11 +13,12 @@ import io.reactivex.disposables.CompositeDisposable
 class VideoDataFactory(
     private val disposable: CompositeDisposable,
     private val repository: VideoRepository,
+    var query: String? = null,
     val mutableLiveData: MutableLiveData<VideoDataSource> = MutableLiveData()
 ) : DataSource.Factory<Int, Video>() {
 
     override fun create(): DataSource<Int, Video> {
-        val dataSource = VideoDataSource(disposable, repository)
+        val dataSource = VideoDataSource(disposable, repository, query)
         mutableLiveData.postValue(dataSource)
         return dataSource
     }

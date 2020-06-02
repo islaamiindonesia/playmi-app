@@ -7,26 +7,6 @@
     android:orientation="vertical"
     tools:targetApi="lollipop">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:focusable="true">
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?android:attr/actionBarSize"
-            android:elevation="4dp">
-
-            <ImageView
-                android:layout_width="100dp"
-                android:layout_height="50dp"
-                android:adjustViewBounds="true"
-                app:srcCompat="@drawable/app_logo" />
-        </androidx.appcompat.widget.Toolbar>
-    </com.google.android.material.appbar.AppBarLayout>
-
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"
         android:layout_width="match_parent"

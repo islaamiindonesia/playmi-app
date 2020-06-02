@@ -68,18 +68,7 @@ class PlaylistFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         toolbar.inflateMenu(R.menu.menu_main)
-        toolbar.setOnMenuItemClickListener {
-            when (it.itemId) {
-                R.id.mainSearch -> {
-                    true
-                }
-                R.id.mainSetting -> {
-                    SettingActivity.startActivity(context)
-                    true
-                }
-                else -> false
-            }
-        }
+        toolbar.setOnMenuItemClickListener { optionMenuListener(it) }
 
         viewModel.initPlaylistFragment()
         observeWatchLaterAmount()
