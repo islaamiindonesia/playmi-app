@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -17,7 +16,6 @@ import id.islaami.playmi.ui.base.BaseActivity
 import id.islaami.playmi.ui.channel_following.OrganizeChannelFragment
 import id.islaami.playmi.ui.home.HomeFragment
 import id.islaami.playmi.ui.playlist.PlaylistFragment
-import id.islaami.playmi.ui.setting.SettingActivity
 import id.islaami.playmi.ui.video_update.VideoUpdateFragment
 import id.islaami.playmi.util.ui.loadImage
 import kotlinx.android.synthetic.main.main_activity.*
@@ -27,23 +25,6 @@ class MainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
-
-        toolbar.inflateMenu(R.menu.menu_main)
-        toolbar.setOnMenuItemClickListener {
-            when (it.itemId) {
-                R.id.mainSearch -> {
-                    onSearchRequested()
-
-                    true
-                }
-                R.id.mainSetting -> {
-                    SettingActivity.startActivity(this)
-
-                    true
-                }
-                else -> super.onOptionsItemSelected(it)
-            }
-        }
 
         FirebaseMessaging.getInstance().subscribeToTopic("playmi")
 
@@ -55,7 +36,6 @@ class MainActivity : BaseActivity() {
         val viewPagerAdapter = ViewPagerAdapter(supportFragmentManager)
         viewPagerMain.adapter = viewPagerAdapter
         viewPagerMain.offscreenPageLimit = 4
-        viewPagerMain.disableScroll(true)
 
         // Setup Tab Layout
         tabLayoutMain.setupWithViewPager(viewPagerMain)
@@ -142,6 +122,13 @@ class MainActivity : BaseActivity() {
             context?.startActivity(
                 Intent(context, MainActivity::class.java)
                     .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+            )
+        }
+
+        fun startActivityClearTop(context: Context?) {
+            context?.startActivity(
+                Intent(context, MainActivity::class.java)
+                    .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             )
         }
     }

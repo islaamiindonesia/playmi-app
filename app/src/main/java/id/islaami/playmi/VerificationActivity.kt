@@ -141,7 +141,7 @@ class VerificationActivity : BaseActivity() {
     }
 
     companion object {
-        fun startActivity(context: Context?, email: String, token: String?) {
+        fun startActivityClearTask(context: Context?, email: String, token: String?) {
             context?.startActivity(
                 Intent(context, VerificationActivity::class.java)
                     .putExtra("EMAIL", email)
@@ -149,17 +149,14 @@ class VerificationActivity : BaseActivity() {
             )
         }
 
-        fun startActivity(context: Context?, user: FirebaseUser?, token: String?) {
-            context?.startActivity(
-                Intent(
-                    context,
-                    VerificationActivity::class.java
-                )
-                    .putExtra("BUNDLE", Bundle().apply {
-                        putParcelable("USER", user)
-                    })
-                    .putExtra("TOKEN", token)
-            )
+        fun startActivityClearTask(context: Context?, user: FirebaseUser?, token: String?) {
+            context?.startActivity(Intent(context, VerificationActivity::class.java).apply {
+                putExtra("BUNDLE", Bundle().apply {
+                    putParcelable("USER", user)
+                })
+                putExtra("TOKEN", token)
+                flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+            })
         }
     }
 }

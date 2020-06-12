@@ -4,35 +4,28 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:targetApi="lollipop"
-    tools:context=".ui.MainActivity">
+    tools:context=".ui.MainActivity"
+    tools:targetApi="lollipop">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appBar"
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/viewPagerMain"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_height="0dp"
+        android:background="?android:attr/colorBackground"
+        app:layout_constraintBottom_toTopOf="@+id/tabLayoutMain"
         app:layout_constraintEnd_toEndOf="parent"
-        android:focusable="true">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?android:attr/actionBarSize"
-            android:elevation="4dp">
-
-            <ImageView
-                android:layout_width="100dp"
-                android:layout_height="50dp"
-                android:adjustViewBounds="true"
-                app:srcCompat="@drawable/app_logo" />
-        </androidx.appcompat.widget.Toolbar>
-    </com.google.android.material.appbar.AppBarLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/border_color"
+        app:layout_constraintBottom_toTopOf="@id/tabLayoutMain"/>
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayoutMain"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="45dp"
         android:elevation="16dp"
         android:paddingVertical="12dp"
@@ -42,14 +35,4 @@
         app:tabGravity="fill"
         app:tabIndicatorHeight="0dp"
         app:tabMode="fixed" />
-
-    <id.islaami.playmi.util.ui.CustomViewPager
-        android:id="@+id/viewPagerMain"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:elevation="4dp"
-        app:layout_constraintBottom_toTopOf="@+id/tabLayoutMain"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/appBar" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,4 +6,9 @@
     <color name="disabled_button">#1FFFFFFF</color>
     <color name="disabled_text">@color/white_50</color>
     <color name="status_bar">#000000</color>
+    <color name="icon_color">@color/grey_eb</color>
+    <color name="border_color">@color/grey_46</color>
+    <color name="border_7_color">@color/grey_46</color>
+    <color name="text_color">@color/grey_eb</color>
+    <color name="layout_background_color">@color/grey_28</color>
 </resources>

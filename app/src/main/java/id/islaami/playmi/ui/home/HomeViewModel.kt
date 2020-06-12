@@ -27,6 +27,7 @@ class HomeViewModel(
     /* CHANNEL */
     lateinit var hideChannelResultLd: MutableLiveData<Resource<Any>>
     lateinit var followChannelResultLd: MutableLiveData<Resource<Boolean>>
+    lateinit var unfollowChannelResultLd: MutableLiveData<Resource<Boolean>>
 
     fun hideChannel(channelID: Int) {
         disposable.add(channel.hideChannel(channelID).execute()
@@ -48,10 +49,10 @@ class HomeViewModel(
 
     fun unfollowChannel(channelID: Int) {
         disposable.add(channel.unfollowChannel(channelID).execute()
-            .doOnSubscribe { followChannelResultLd.setLoading() }
+            .doOnSubscribe { unfollowChannelResultLd.setLoading() }
             .subscribe(
-                { followChannelResultLd.setSuccess() },
-                { throwable -> followChannelResultLd.setError(throwable.getErrorMessage()) }
+                { unfollowChannelResultLd.setSuccess() },
+                { throwable -> unfollowChannelResultLd.setError(throwable.getErrorMessage()) }
             ))
     }
 
@@ -163,6 +164,7 @@ class HomeViewModel(
     fun initVideoCategoryFragment(categoryId: Int) {
         hideChannelResultLd = MutableLiveData()
         followChannelResultLd = MutableLiveData()
+        unfollowChannelResultLd = MutableLiveData()
         watchLaterResultLd = MutableLiveData()
         getPlaylistsResultLd = MutableLiveData()
 

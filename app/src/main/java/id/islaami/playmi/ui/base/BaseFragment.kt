@@ -15,16 +15,4 @@ abstract class BaseFragment : Fragment() {
 
         injectFeature()
     }
-
-    fun optionMenuListener(item: MenuItem) =
-        when (item.itemId) {
-            R.id.mainSearch -> {
-                true
-            }
-            R.id.mainSetting -> {
-                SettingActivity.startActivity(context)
-                true
-            }
-            else -> false
-        }
 }

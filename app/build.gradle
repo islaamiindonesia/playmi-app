@@ -14,6 +14,7 @@ android {
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
+        vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
         debug {
@@ -54,6 +55,12 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    // Preference Manager
+    implementation "androidx.preference:preference-ktx:1.1.1"
+
+    // Rounded ImageView
+    implementation 'com.makeramen:roundedimageview:2.3.0'
 
     // Firebase
     implementation 'com.google.firebase:firebase-messaging:20.2.0'

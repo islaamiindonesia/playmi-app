@@ -1,12 +1,19 @@
 package id.islaami.playmi.ui.playlist
 
+import android.app.SearchManager
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
+import android.view.Menu
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.PopupMenu
+import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import id.islaami.playmi.R
 import id.islaami.playmi.ui.adapter.PlaylistSelectAdapter
 import id.islaami.playmi.ui.adapter.VideoAdapter
@@ -14,9 +21,10 @@ import id.islaami.playmi.ui.base.BaseActivity
 import id.islaami.playmi.util.ResourceStatus.*
 import id.islaami.playmi.util.ui.*
 import id.islaami.playmi.util.value
-import com.google.android.material.bottomsheet.BottomSheetDialog
-import kotlinx.android.synthetic.main.add_new_playlist_dialog.view.*
+import kotlinx.android.synthetic.main.add_new_playlist_dialog.view.playlistName
+import kotlinx.android.synthetic.main.change_playlist_name_dialog.view.*
 import kotlinx.android.synthetic.main.playlist_bottom_sheet.view.*
+import kotlinx.android.synthetic.main.playlist_bottom_sheet.view.btnCancel
 import kotlinx.android.synthetic.main.playlist_detail_activity.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -93,6 +101,37 @@ class PlaylistDetailActivity : BaseActivity() {
         swipeRefreshLayout.apply {
             setColorSchemeResources(R.color.accent)
             setOnRefreshListener { refresh() }
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        // Inflate the options menu from XML
+        menuInflater.inflate(R.menu.menu_playlist_detail, menu)
+
+        // Get the SearchView and set the searchable configuration
+        val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        (menu?.findItem(R.id.mainSearch)?.actionView as SearchView).apply {
+            // Assumes current activity is the searchable activity
+            setSearchableInfo(searchManager.getSearchableInfo(componentName))
+            isIconified = true // Do not iconify the widget; expand it by default
+            isSubmitButtonEnabled = true
+        }
+
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleIntent()
+    }
+
+    private fun handleIntent() {
+        // Verify the action and get the query
+        if (Intent.ACTION_SEARCH == intent.action) {
+            intent.getStringExtra(SearchManager.QUERY)?.also { query ->
+                Log.d("HEIKAMU", "handleIntent: $query")
+            }
         }
     }
 
@@ -299,23 +338,23 @@ class PlaylistDetailActivity : BaseActivity() {
 
         dialogView.playlistName.setText(currentName)
 
-        dialogBuilder
-            .setView(dialogView)
-            .setPositiveButton("Simpan") { dialogInterface, i ->
-                if (dialogView.playlistName.text.isNotEmpty()) {
-                    viewModel.changePlaylistName(
-                        playlistId,
-                        dialogView.playlistName.text.toString()
-                    )
-                    dialogInterface.dismiss()
-                }
-            }
-            .setNegativeButton("Batal") { dialogInterface, i ->
-                dialogInterface.dismiss()
-            }
+        dialogBuilder.setView(dialogView)
 
-
-        dialogBuilder.create().show()
+        val dialog = dialogBuilder.create()
+        dialogView.btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+        dialogView.btnOk.setOnClickListener {
+            if (dialogView.playlistName.text.isNotEmpty()) {
+                viewModel.changePlaylistName(
+                    playlistId,
+                    dialogView.playlistName.text.toString()
+                )
+                dialog.dismiss()
+            }
+        }
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.show()
     }
 
     companion object {

@@ -14,6 +14,7 @@ data class Channel(
     @field:Json(name = "suspended_at") var suspendedAt: String? = null,
     @field:Json(name = "followers") var followers: Int? = null,
     @field:Json(name = "is_followed") var isFollowed: Boolean? = null,
+    @field:Json(name = "is_blacklisted") var isBlacklisted: Boolean? = null,
     @field:Json(name = "videos") var videos: Int? = null
 ) : Parcelable {
     constructor(parcel: Parcel) : this(

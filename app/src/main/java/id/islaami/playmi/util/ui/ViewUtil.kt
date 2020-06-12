@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Bitmap
 import android.os.Handler
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -94,8 +95,17 @@ fun postDelayed(delay: Long, action: () -> Unit) {
     Handler().postDelayed({ action() }, delay)
 }
 
-fun Context.showShortToast(content: String) {
-    Toast.makeText(this, content, Toast.LENGTH_SHORT).show()
+fun Context.showShortToast(content: String?) {
+    val toast = Toast.makeText(this, content.toString(), Toast.LENGTH_SHORT)
+    val view = toast.view
+    view.setBackgroundResource(R.drawable.bg_toast)
+    view.findViewById<TextView>(android.R.id.message).apply {
+        setTextColor(ContextCompat.getColor(this@showShortToast, R.color.white))
+        setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(R.dimen.text_14))
+    }
+    view.alpha = .8f
+
+    toast.show()
 }
 
 

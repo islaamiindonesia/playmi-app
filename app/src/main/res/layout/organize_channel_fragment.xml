@@ -1,40 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:targetApi="lollipop">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:focusable="true">
+        android:elevation="4dp">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?android:attr/actionBarSize"
-            android:elevation="4dp">
+            android:layout_height="44dp"
+            android:layout_gravity="center_vertical">
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:layout_width="100dp"
-                android:layout_height="50dp"
-                android:adjustViewBounds="true"
+                android:layout_height="match_parent"
                 app:srcCompat="@drawable/app_logo" />
         </androidx.appcompat.widget.Toolbar>
-    </com.google.android.material.appbar.AppBarLayout>
 
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tabLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:elevation="4dp"
-        app:tabIndicatorColor="@color/accent"
-        app:tabMode="fixed"
-        app:tabSelectedTextColor="@color/accent"
-        app:tabTextAppearance="@style/CustomTabText"
-        app:tabTextColor="?android:textColorPrimary" />
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:tabIndicatorColor="@color/accent"
+            app:tabMode="fixed"
+            app:tabSelectedTextColor="@color/accent"
+            app:tabTextAppearance="@style/CustomTabText"
+            app:tabTextColor="?android:textColorPrimary" />
+    </com.google.android.material.appbar.AppBarLayout>
 
     <id.islaami.playmi.util.ui.CustomViewPager
         android:id="@+id/viewPager"

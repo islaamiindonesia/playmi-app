@@ -36,13 +36,13 @@ fun String?.digitGrouping(): String {
 
 fun String?.fromHtmlToString() = this?.let {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) Html.fromHtml(it, Html.FROM_HTML_MODE_LEGACY).toString()
-    else Html.fromHtml(it).toString()
+    else HtmlCompat.fromHtml(it, HtmlCompat.FROM_HTML_MODE_LEGACY).toString()
 } ?: ""
 
 fun String?.fromHtmlToSpanned() : Spanned? = this?.let {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-        Html.fromHtml(it, Html.FROM_HTML_MODE_COMPACT)
-    else HtmlCompat.fromHtml(it, HtmlCompat.FROM_HTML_MODE_COMPACT)
+        Html.fromHtml(it, Html.FROM_HTML_MODE_LEGACY)
+    else HtmlCompat.fromHtml(it, HtmlCompat.FROM_HTML_MODE_LEGACY)
 }
 
 fun String?.containsAlphabetAndNumber(): Boolean =

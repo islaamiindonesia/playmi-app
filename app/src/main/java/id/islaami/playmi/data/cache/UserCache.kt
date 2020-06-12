@@ -12,6 +12,8 @@ class UserCache(
     /* SETTINGS */
     var darkMode: Int by intPref(0)
 
+    var hasSeenIntro: Boolean by booleanPref(false)
+
     var selectedLocale: String by stringPref("id")
 
     private var token: String by stringPref("")
@@ -23,9 +25,9 @@ class UserCache(
         }
 
     var profile: Profile?
-        get() = profileCache.load(PROFILE)
+        get() = profileCache.load("PROFILE")
         set(value) {
-            value?.let { profileCache.save(PROFILE, it) }
+            value?.let { profileCache.save("PROFILE", it) }
         }
 
     var notificationSetting: NotificationSetting?

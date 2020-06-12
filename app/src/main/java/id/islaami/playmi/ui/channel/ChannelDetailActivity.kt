@@ -3,15 +3,23 @@ package id.islaami.playmi.ui.channel
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
+import android.widget.TextView
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.tabs.TabLayout
 import id.islaami.playmi.R
 import id.islaami.playmi.data.model.channel.Channel
-import id.islaami.playmi.ui.adapter.VideoPagedAdapter
 import id.islaami.playmi.ui.base.BaseActivity
-import id.islaami.playmi.util.ERROR_EMPTY_LIST
 import id.islaami.playmi.util.ResourceStatus.*
+import id.islaami.playmi.util.fromHtmlToSpanned
 import id.islaami.playmi.util.handleApiError
 import id.islaami.playmi.util.ui.*
 import id.islaami.playmi.util.value
@@ -21,12 +29,11 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class ChannelDetailActivity : BaseActivity() {
     val viewModel: ChannelViewModel by viewModel()
 
-    lateinit var videoAdapter: VideoPagedAdapter
-
     var name: String? = null
     var channelID = 0
 
     var channel: Channel? = null
+    var notif: MenuItem? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,61 +46,156 @@ class ChannelDetailActivity : BaseActivity() {
 
         viewModel.initChannelDetail(channelID)
         observeChannelDetail()
-        observeWatchLaterResult()
         observeFollowResult()
+        observeUnfollowResult()
+        observeShowResult()
         observeHideResult()
 
-        videoAdapter = VideoPagedAdapter(this,
-            popMenu = { context, menuView, video ->
-                PopupMenu(context, menuView).apply {
-                    inflate(R.menu.menu_popup_channel_detail)
+        setupViewPager()
 
-                    if (video.isSavedLater != true) {
-                        menuView.setVisibilityToVisible()
-                        menu.getItem(0).title = "Simpan ke Tonton Nanti"
-                    } else {
-                        menuView.setVisibilityToGone()
-                    }
-
-                    setOnMenuItemClickListener { item ->
-                        when (item.itemId) {
-                            R.id.popSaveLater -> {
-                                context.showAlertDialogWith2Buttons(
-                                    "Simpan ke daftar Tonton Nanti?",
-                                    "Iya",
-                                    "Batal",
-                                    positiveCallback = {
-                                        viewModel.watchLater(video.ID.value())
-                                        it.dismiss()
-                                    },
-                                    negativeCallback = { it.dismiss() })
-
-                                true
-                            }
-                            else -> false
-                        }
-                    }
-
-                    show()
-                }
-            })
+        setupButton()
 
         swipeRefreshLayout.apply {
             setColorSchemeResources(R.color.accent)
             setOnRefreshListener { refresh() }
         }
-
-        btnFollow.setOnClickListener { viewModel.followChannel(channelID) }
-
-        btnUnfollow.setOnClickListener { viewModel.unfollowChannel(channelID) }
-
-        btnHide.setOnClickListener { viewModel.hideChannel(channelID) }
     }
 
-    private fun Channel.setupData() {
+    private fun setupButton() {
+        btnFollow.setOnClickListener {
+            PlaymiDialogFragment.show(
+                supportFragmentManager,
+                text = getString(R.string.channel_follow, name),
+                okCallback = { viewModel.followChannel(channelID) }
+            )
+        }
+
+        btnUnfollow.setOnClickListener {
+            PlaymiDialogFragment.show(
+                supportFragmentManager,
+                text = getString(R.string.channel_unfollow, name),
+                okCallback = { viewModel.unfollowChannel(channelID) }
+            )
+        }
+
+        btnHide.setOnClickListener {
+            PlaymiDialogFragment.show(
+                supportFragmentManager,
+                text = getString(R.string.channel_hide, name),
+                okCallback = { viewModel.hideChannel(channelID) }
+            )
+        }
+
+        btnShow.setOnClickListener {
+            viewModel.showChannel(channelID)
+        }
+    }
+
+    private fun setupViewPager() {
+        val viewPagerAdapter = ViewPagerAdapter(supportFragmentManager)
+        viewPager.adapter = viewPagerAdapter
+        viewPager.offscreenPageLimit = 2
+        tabLayout.setupWithViewPager(viewPager)
+
+        val tabLabelList = arrayOf(
+            getString(R.string.video),
+            getString(R.string.about)
+        )
+
+        val tabColorDefault = ContextCompat.getColor(this, R.color.text_color)
+        val tabColorSelected = ContextCompat.getColor(this, R.color.accent)
+
+        for (tabPosition in 0 until viewPagerAdapter.count) {
+            val tabItem: TextView =
+                LayoutInflater.from(this)
+                    .inflate(R.layout.organize_channel_tab_item, null) as TextView
+
+            tabItem.text = tabLabelList[tabPosition]
+            tabItem.gravity = Gravity.CENTER
+            if (tabPosition == 0) {
+                tabItem.setTextColor(tabColorSelected.value())
+            }
+            tabLayout.getTabAt(tabPosition)?.customView = tabItem
+        }
+
+        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+                tab?.run {
+                    val tabItem: TextView = customView as TextView
+                    tabItem.setTextColor(tabColorDefault.value())
+                }
+            }
+
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                tab?.run {
+                    val tabItem: TextView = customView as TextView
+                    tabItem.setTextColor(tabColorSelected.value())
+                    viewPager.setCurrentItem(position, false)
+                }
+            }
+        })
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_channel, menu)
+
+        notif = menu.findItem(R.id.channelNotif)
+
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle item selection
+        return when (item.itemId) {
+            R.id.channelNotif -> {
+                PopupMenu(this, findViewById(R.id.channelNotif), Gravity.END).apply {
+                    inflate(R.menu.menu_popup_channel_notif)
+
+                    setOnMenuItemClickListener { item ->
+                        when (item.itemId) {
+                            R.id.notifEnabled -> {
+                                showShortToast("Enable Notif")
+                                notif?.icon =
+                                    ContextCompat.getDrawable(
+                                        this@ChannelDetailActivity,
+                                        R.drawable.ic_notification
+                                    )
+
+                                true
+                            }
+                            else -> {
+                                showShortToast("Disable Notif")
+                                notif?.icon =
+                                    ContextCompat.getDrawable(
+                                        this@ChannelDetailActivity,
+                                        R.drawable.ic_notification_disable
+                                    )
+
+                                true
+                            }
+                        }
+                    }
+
+                    show()
+                }
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun Channel.showData() {
+        notif?.isVisible = isFollowed == true
+
+        (supportFragmentManager.fragments[1] as ChannelAboutFragment).apply {
+            setDescription(bio.fromHtmlToSpanned())
+        }
+
         channelImage.loadImage(thumbnail)
         channelName.text = name
-        channelDescription.text = bio
         videoCount.text = videos.toString()
         followerCount.text = followers.toString()
 
@@ -104,11 +206,21 @@ class ChannelDetailActivity : BaseActivity() {
             btnFollow.setVisibilityToVisible()
             btnUnfollow.setVisibilityToGone()
         }
+
+        if (isBlacklisted == true) {
+            hiddenLayout.setVisibilityToVisible()
+            showLayout.setVisibilityToGone()
+        } else {
+            showLayout.setVisibilityToVisible()
+            hiddenLayout.setVisibilityToGone()
+        }
     }
 
     private fun refresh() {
         viewModel.getChannelDetail(channelID)
-        viewModel.refreshAllVideo()
+        (supportFragmentManager.fragments[0] as ChannelVideoFragment).apply {
+            refresh()
+        }
     }
 
     companion object {
@@ -136,83 +248,35 @@ class ChannelDetailActivity : BaseActivity() {
                     successLayout.setVisibilityToVisible()
 
                     channel = result.data ?: Channel()
-                    channel?.setupData()
-                    observeGetAllVideoResult()
+                    channel?.showData()
                 }
                 ERROR -> {
                     swipeRefreshLayout.stopRefreshing()
-                    when (result.message) {
-                        "CHANNEL_BLACKLISTED" -> {
-                            showAlertDialog(
-                                message = getString(R.string.message_channel_hide_with_guide),
-                                btnText = "OK",
-                                btnCallback = {
-                                    it.dismiss()
-                                    onBackPressed()
-                                })
-                        }
-                        else -> {
-                            handleApiError(result.message)
-                            { message ->
-                                showAlertDialog(
-                                    message = message,
-                                    btnText = "OK",
-                                    btnCallback = {
-                                        it.dismiss()
-                                        onBackPressed()
-                                    })
-                            }
-                        }
+                    handleApiError(result.message) { message ->
+                        showAlertDialog(
+                            message = message,
+                            btnText = "OK",
+                            btnCallback = {
+                                it.dismiss()
+                                onBackPressed()
+                            })
                     }
                 }
             }
         })
     }
 
-    private fun observeGetAllVideoResult() {
-        viewModel.videoPagedListResultLd.observe(this, Observer { result ->
-            recyclerView.adapter = videoAdapter.apply { addVideoList(result) }
-            recyclerView.layoutManager =
-                LinearLayoutManager(this@ChannelDetailActivity, LinearLayoutManager.VERTICAL, false)
-        })
-
-        viewModel.pagedListNetworkStatusLd.observe(
-            this,
-            Observer { result ->
-                when (result?.status) {
-                    LOADING -> {
-                        swipeRefreshLayout.startRefreshing()
-                        recyclerView.setVisibilityToInvisible()
-                    }
-                    SUCCESS -> {
-                        swipeRefreshLayout.stopRefreshing()
-                        recyclerView.setVisibilityToVisible()
-                    }
-                    ERROR -> {
-                        swipeRefreshLayout.stopRefreshing()
-                        when (result.message) {
-                            ERROR_EMPTY_LIST -> recyclerView.setVisibilityToInvisible()
-                            else -> {
-                                handleApiError(errorMessage = result.message)
-                                { message -> showSnackbar(message) }
-                            }
-                        }
-                    }
-                }
-            })
-    }
-
-    private fun observeWatchLaterResult() {
-        viewModel.watchLaterResultLd.observe(this, Observer { result ->
+    private fun observeShowResult() {
+        viewModel.showChannelResultLd.observe(this, Observer { result ->
             when (result?.status) {
                 LOADING -> {
                 }
                 SUCCESS -> {
-                    showSnackbar("Berhasil simpan ke Tonton Nanti")
+                    showShortToast("Kanal ditampilkan")
+                    refresh()
                 }
                 ERROR -> {
-                    handleApiError(result.message)
-                    { showSnackbar(it) }
+                    handleApiError(result.message) { showShortToast(it) }
                 }
             }
         })
@@ -224,12 +288,11 @@ class ChannelDetailActivity : BaseActivity() {
                 LOADING -> {
                 }
                 SUCCESS -> {
-                    showSnackbar("Kanal telah disembunyikan")
+                    showShortToast("Kanal telah disembunyikan")
                     refresh()
                 }
                 ERROR -> {
-                    handleApiError(result.message)
-                    { showSnackbar(it) }
+                    handleApiError(result.message) { showShortToast(it) }
                 }
             }
         })
@@ -241,15 +304,47 @@ class ChannelDetailActivity : BaseActivity() {
                 LOADING -> {
                 }
                 SUCCESS -> {
-                    if (result.data == true) showShortToast("Berhasil mengikuti")
-                    else showShortToast("Berhenti mengikuti")
+                    showShortToast("Berhasil mengikuti")
                     refresh()
                 }
                 ERROR -> {
-                    handleApiError(result.message)
-                    { showSnackbar(it) }
+                    handleApiError(result.message) { showShortToast(it) }
                 }
             }
         })
+    }
+
+    private fun observeUnfollowResult() {
+        viewModel.unfollowChannelResultLd.observe(this, Observer { result ->
+            when (result?.status) {
+                LOADING -> {
+                }
+                SUCCESS -> {
+                    showShortToast("Berhenti mengikuti")
+                    refresh()
+                }
+                ERROR -> {
+                    handleApiError(result.message) { showShortToast(it) }
+                }
+            }
+        })
+    }
+
+    inner class ViewPagerAdapter(fragmentManager: FragmentManager) : FragmentStatePagerAdapter(
+        fragmentManager,
+        BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT
+    ) {
+        override fun getItem(position: Int): Fragment {
+            return if (position == 0) ChannelVideoFragment.newInstance(channelID)
+            else ChannelAboutFragment.newInstance()
+        }
+
+        override fun getCount(): Int {
+            return 2
+        }
+
+        override fun getPageTitle(position: Int): CharSequence? {
+            return if (position == 0) getString(R.string.video) else getString(R.string.about)
+        }
     }
 }

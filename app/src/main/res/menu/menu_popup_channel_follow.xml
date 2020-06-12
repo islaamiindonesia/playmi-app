@@ -5,6 +5,6 @@
         android:title="Berhenti Mengikuti" />
 
     <item
-        android:id="@+id/popHide"
-        android:title="Sembunyikan Kanal" />
+        android:id="@+id/popNotif"
+        android:title="Aktifkan notifikasi / Matikan notifikasi" />
 </menu>

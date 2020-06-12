@@ -1,13 +1,14 @@
 <resources>
     <string name="app_name">Playmi</string>
     <string name="app_version">Versi %1$s</string>
+    <string name="ad_unit_id">ca-app-pub-1757420955153670/7391746268</string>
+    <string name="sample_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="text_agreement">
         Dengan daftar dan masuk ke aplikasi ini, berarti Anda menyetujui <annotation type="tnc">Ketentuan Pengguna</annotation> serta <annotation type="privacy">Kebijakan Privasi</annotation> kami.</string>
     <string name="error_message_default">Terjadi Kesalahan.\nSilakan coba sesaat lagi</string>
-    <string name="error_email_not_found">Email %1$s belum terdaftar. Silahkan buat akun terlebih dahulu.</string>
+    <string name="error_email_not_found">%1$s belum terdaftar sebagai akun.</string>
     <string name="error_email_not_verified">Email Anda belum terverifikasi</string>
     <string name="default_notification_channel_id">channelID</string>
     <string name="following">Diikuti</string>
@@ -24,4 +25,9 @@
     <string name="message_channel_show">Kanal berhasil ditampilkan</string>
     <string name="invalid_credentials">Email/Password salah</string>
     <string name="email_sent">Berhasil terkirim</string>
+    <string name="channel_follow">Apakah ingin mulai mengikuti <![CDATA[<b>%1$s</b>]]>?</string>
+    <string name="channel_unfollow">Apakah ingin berhenti mengikuti <![CDATA[<b>%1$s</b>]]>?</string>
+    <string name="channel_hide">Anda tidak akan melihat seluruh video dari kanal ini <![CDATA[<br><br>]]>Apakah ingin berhenti mengikuti <![CDATA[<b>%1$s</b>]]>?</string>
+    <string name="video">Video</string>
+    <string name="about">Tentang</string>
 </resources>

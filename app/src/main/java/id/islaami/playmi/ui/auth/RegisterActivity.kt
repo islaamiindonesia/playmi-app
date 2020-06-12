@@ -3,34 +3,31 @@ package id.islaami.playmi.ui.auth
 import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
-import android.graphics.Typeface
+import android.os.Build
 import android.os.Bundle
-import android.text.Annotation
-import android.text.SpannableString
-import android.text.Spanned
-import android.text.SpannedString
-import android.text.method.LinkMovementMethod
-import android.text.style.BackgroundColorSpan
-import android.text.style.ForegroundColorSpan
-import android.text.style.StyleSpan
+import android.view.WindowManager
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.jakewharton.rxbinding3.widget.textChanges
 import id.islaami.playmi.R
 import id.islaami.playmi.VerificationActivity
 import id.islaami.playmi.ui.base.BaseActivity
-import id.islaami.playmi.util.Clickable
 import id.islaami.playmi.util.ERROR_EMAIL_IN_USE
 import id.islaami.playmi.util.ResourceStatus.*
 import id.islaami.playmi.util.fromAppsFormatDateToDbFormatDate
 import id.islaami.playmi.util.fromDbFormatDateToAppsFormatDate
+import id.islaami.playmi.util.isValidEmail
 import id.islaami.playmi.util.ui.*
+import io.reactivex.Observable
+import io.reactivex.functions.Function6
 import kotlinx.android.synthetic.main.register_activity.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 
-class RegisterActivity : BaseActivity() {
+
+class RegisterActivity(var isShowed: Boolean = false) : BaseActivity() {
     private val viewModel: UserAuthViewModel by viewModel()
 
     lateinit var firebaseAuth: FirebaseAuth
@@ -41,6 +38,16 @@ class RegisterActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.register_activity)
         setupToolbar(toolbar)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+            window.statusBarColor = ContextCompat.getColor(this, R.color.accent_dark)
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            window.decorView.systemUiVisibility = 0
+        }
 
         firebaseAuth = FirebaseAuth.getInstance()
 
@@ -57,128 +64,29 @@ class RegisterActivity : BaseActivity() {
             }
         }
 
-        textAgreement.apply {
-            text = createTextAgreement()
-            movementMethod = LinkMovementMethod.getInstance()
-        }
-    }
-
-    private fun createTextAgreement(): SpannableString {
-        val fulltext = getText(R.string.text_agreement) as SpannedString
-        val spannableString = SpannableString(fulltext)
-        val annotations = fulltext.getSpans(0, fulltext.length, Annotation::class.java)
-        annotations.find {
-            it.value == "tnc"
-        }.let {
-            spannableString.apply {
-                setSpan(
-                    Clickable(1) { showShortToast("tnc") },
-                    fulltext.getSpanStart(it),
-                    fulltext.getSpanEnd(it),
-                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-                )
-                setSpan(
-                    StyleSpan(Typeface.NORMAL),
-                    fulltext.getSpanStart(it),
-                    fulltext.getSpanEnd(it),
-                    0
-                )
-                setSpan(
-                    ForegroundColorSpan(
-                        ContextCompat.getColor(
-                            this@RegisterActivity,
-                            R.color.accent
-                        )
-                    ),
-                    fulltext.getSpanStart(it),
-                    fulltext.getSpanEnd(it),
-                    0
-                )
-                setSpan(
-                    BackgroundColorSpan(
-                        ContextCompat.getColor(
-                            this@RegisterActivity,
-                            R.color.white
-                        )
-                    ),
-                    fulltext.getSpanStart(it),
-                    fulltext.getSpanEnd(it),
-                    0
-                )
+        val emptyFieldStream: Observable<Boolean> = Observable.combineLatest(
+            etName.textChanges().map { it.isNotEmpty() },
+            etEmail.textChanges().map { it.isNotEmpty() && it.toString().isValidEmail() },
+            etConfirmEmail.textChanges().map { it.isNotEmpty() && it.toString().isValidEmail() },
+            etBirtdate.textChanges().map { it.isNotEmpty() },
+            etPassword.textChanges().map { it.isNotEmpty() },
+            etConfirm.textChanges().map { it.isNotEmpty() },
+            Function6 { t1, t2, t3, t4, t5, t6 ->
+                return@Function6 t1 && t2 && t3 && t4 && t5 && t6
             }
-        }
-        annotations.find {
-            it.value == "privacy"
-        }.let {
-            spannableString.apply {
-                setSpan(
-                    Clickable(2) { showShortToast("privacy") },
-                    fulltext.getSpanStart(it),
-                    fulltext.getSpanEnd(it),
-                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-                )
-                setSpan(
-                    StyleSpan(Typeface.NORMAL),
-                    fulltext.getSpanStart(it),
-                    fulltext.getSpanEnd(it),
-                    0
-                )
-                setSpan(
-                    ForegroundColorSpan(
-                        ContextCompat.getColor(
-                            this@RegisterActivity,
-                            R.color.accent
-                        )
-                    ),
-                    fulltext.getSpanStart(it),
-                    fulltext.getSpanEnd(it),
-                    0
-                )
-                setSpan(
-                    BackgroundColorSpan(
-                        ContextCompat.getColor(
-                            this@RegisterActivity,
-                            R.color.white
-                        )
-                    ),
-                    fulltext.getSpanStart(it),
-                    fulltext.getSpanEnd(it),
-                    0
-                )
-            }
-        }
+        )
 
-        return spannableString
-    }
-
-    private fun observeRegister() {
-        viewModel.registerResultLd.observe(this, Observer { result ->
-            when (result.status) {
-                LOADING -> {
-                    progressBar.setVisibilityToVisible()
-                    btnRegister.setVisibilityToGone()
-                }
-                SUCCESS -> {
-                    progressBar.setVisibilityToGone()
-                    btnRegister.setVisibilityToVisible()
-                    updateUI(firebaseAuth.currentUser)
-                }
-                ERROR -> {
-                    progressBar.setVisibilityToGone()
-                    btnRegister.setVisibilityToVisible()
-                    showSnackbar(result.message)
-                }
-            }
+        disposable.add(emptyFieldStream.subscribe { isAllFieldValid ->
+            btnRegister.isEnabled = isAllFieldValid
         })
     }
 
     private fun setupForm(notifToken: String?) {
+        etEmail.setText(intent.getStringExtra(EMAIL) ?: "")
+        etPassword.setText(intent.getStringExtra(PASSWORD) ?: "")
+
         btnRegister.setOnClickListener {
-            if (isFormValid()) {
-                firebaseAuthWithPassword(notifToken.toString())
-            } else {
-                showSnackbar("Mohon Lengkapi Data Akun Anda")
-            }
+            firebaseAuthWithPassword(notifToken.toString())
         }
     }
 
@@ -209,7 +117,7 @@ class RegisterActivity : BaseActivity() {
 
     private fun updateUI(currentUser: FirebaseUser?) {
         val token = intent.getStringExtra("NOTIF_TOKEN")
-        VerificationActivity.startActivity(this, currentUser, token)
+        VerificationActivity.startActivityClearTask(this, currentUser, token)
     }
 
     private fun setupBirthDateDatePickerListener() {
@@ -221,7 +129,7 @@ class RegisterActivity : BaseActivity() {
 
         val datePickerDialog = DatePickerDialog(
             this,
-            DatePickerDialog.OnDateSetListener { datePicker, selectedYear, monthOfYear, dayOfMonth ->
+            DatePickerDialog.OnDateSetListener { _, selectedYear, monthOfYear, dayOfMonth ->
                 day = dayOfMonth
                 month = monthOfYear + 1
                 year = selectedYear
@@ -239,19 +147,47 @@ class RegisterActivity : BaseActivity() {
         etBirtdate.setOnClickListener { datePickerDialog.show() }
     }
 
-    private fun isFormValid() =
-        etName.validate(layoutEtName, "Nama tidak boleh kosong") &&
-                etEmail.validate(layoutEtEmail, "Email tidak boleh kosong") &&
-                etPassword.validate(layoutEtPassword, "Kata Sandi tidak boleh kosong") &&
-                etBirtdate.validate(layoutEtBirthdate, "Tanggal Lahir tidak boleh kosong")
-
     companion object {
-        fun startActivity(context: Context?, audID: String, notifToken: String) {
+        const val AUD_ID = "AUD_ID"
+        const val NOTIF_TOKEN = "NOTIF_TOKEN"
+        const val EMAIL = "EMAIL"
+        const val PASSWORD = "PASSSWORD"
+
+        fun startActivity(
+            context: Context?,
+            audID: String,
+            notifToken: String,
+            email: String,
+            password: String
+        ) {
             context?.startActivity(
                 Intent(context, RegisterActivity::class.java)
-                    .putExtra("AUD_ID", audID)
-                    .putExtra("NOTIF_TOKEN", notifToken)
+                    .putExtra(AUD_ID, audID)
+                    .putExtra(NOTIF_TOKEN, notifToken)
+                    .putExtra(EMAIL, email)
+                    .putExtra(PASSWORD, password)
             )
         }
+    }
+
+    private fun observeRegister() {
+        viewModel.registerResultLd.observe(this, Observer { result ->
+            when (result.status) {
+                LOADING -> {
+                    progressBar.setVisibilityToVisible()
+                    btnRegister.setVisibilityToGone()
+                }
+                SUCCESS -> {
+                    progressBar.setVisibilityToGone()
+                    btnRegister.setVisibilityToVisible()
+                    updateUI(firebaseAuth.currentUser)
+                }
+                ERROR -> {
+                    progressBar.setVisibilityToGone()
+                    btnRegister.setVisibilityToVisible()
+                    showSnackbar(result.message)
+                }
+            }
+        })
     }
 }

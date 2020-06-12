@@ -8,44 +8,44 @@
 
     <ImageView
         android:id="@+id/appLogo"
-        android:layout_width="200dp"
-        android:layout_height="50dp"
+        android:layout_width="220dp"
+        android:layout_height="52dp"
+        android:layout_marginBottom="40dp"
         app:layout_constraintBottom_toTopOf="@+id/loginCard"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.8"
         app:srcCompat="@drawable/app_logo" />
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/loginCard"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        app:cardCornerRadius="8dp"
+        android:layout_margin="16dp"
+        app:cardCornerRadius="5dp"
+        app:cardElevation="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias=".7">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@color/layout_background_color"
             android:orientation="vertical"
-            android:padding="24dp">
+            android:paddingVertical="30dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
                 android:background="@drawable/btn_capsule_outline">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/btnGoogle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
                     android:background="?selectableItemBackground"
                     android:clickable="true"
                     android:focusable="true"
@@ -60,8 +60,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:layout_marginBottom="8dp"
-                        android:text="Masuk dengan Google"
-                        android:textColor="?android:attr/textColorPrimary"
+                        android:text="Masuk dengan akun Google"
+                        android:textColor="@color/text_color"
                         android:textSize="14sp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -81,31 +81,60 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="16dp"
-                android:text="Atau"
-                android:textColor="?android:attr/textColorPrimary" />
+                android:layout_marginVertical="25dp">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/grey_e1"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center_horizontal"
+                    app:cardBackgroundColor="@color/grey_e1"
+                    app:cardCornerRadius="25dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="atau"
+                        android:textColor="@color/grey_85"
+                        android:textSize="14sp" />
+                </com.google.android.material.card.MaterialCardView>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginHorizontal="20dp"
                 android:gravity="center"
                 android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="20dp"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:fontFamily="sans-serif-medium"
                     android:text="Gunakan Akun"
-                    android:textColor="?android:attr/textColorPrimary" />
+                    android:textColor="@color/text_color"
+                    android:textSize="14sp" />
 
                 <ImageView
-                    android:layout_width="50dp"
-                    android:layout_height="20dp"
+                    android:layout_width="69dp"
+                    android:layout_height="19dp"
                     android:layout_marginLeft="8dp"
                     app:srcCompat="@drawable/islaami_logo" />
             </LinearLayout>
@@ -113,47 +142,65 @@
             <EditText
                 android:id="@+id/email"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_height="45dp"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="20dp"
                 android:background="@drawable/edit_capsule_outline"
                 android:ems="10"
                 android:hint="email"
                 android:inputType="textEmailAddress"
-                android:textColorHint="?android:attr/textColorPrimary" />
+                android:textColorHint="@color/grey_85" />
 
             <EditText
                 android:id="@+id/password"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_height="45dp"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="15dp"
                 android:background="@drawable/edit_capsule_outline"
                 android:ems="10"
                 android:hint="kata sandi"
                 android:inputType="textPassword"
-                android:textColorHint="?android:attr/textColorPrimary" />
+                android:textColorHint="@color/grey_85" />
 
-            <com.google.android.material.button.MaterialButton
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/btnForgot"
-                style="@style/TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
-                android:layout_marginTop="8dp"
-                android:text="Lupa kata sandi" />
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="20dp"
+                android:fontFamily="sans-serif-medium"
+                android:text="Lupa kata sandi"
+                android:textColor="@color/accent"
+                android:textSize="14sp" />
 
-            <com.google.android.material.button.MaterialButton
+            <LinearLayout
                 android:id="@+id/btnLogin"
-                style="@style/ButtonPrimaryCapsule"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Masuk/Daftar" />
+                android:layout_height="45dp"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="25dp"
+                android:background="?selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/btn_capsule"
+                    android:fontFamily="sans-serif-medium"
+                    android:gravity="center"
+                    android:text="MASUK / DAFTAR"
+                    android:textColor="@color/white"
+                    android:textSize="14sp" />
+            </LinearLayout>
 
             <ProgressBar
                 android:id="@+id/progressBar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="25dp"
                 android:visibility="gone" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>

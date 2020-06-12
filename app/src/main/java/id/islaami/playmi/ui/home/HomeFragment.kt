@@ -1,15 +1,17 @@
 package id.islaami.playmi.ui.home
 
+import android.app.SearchManager
+import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.lifecycle.Observer
 import id.islaami.playmi.R
 import id.islaami.playmi.data.model.category.Category
 import id.islaami.playmi.ui.base.BaseFragment
+import id.islaami.playmi.ui.setting.SettingActivity
 import id.islaami.playmi.util.ResourceStatus.*
 import id.islaami.playmi.util.handleApiError
 import id.islaami.playmi.util.ui.showSnackbar
@@ -31,8 +33,36 @@ class HomeFragment : BaseFragment() {
         return inflater.inflate(R.layout.home_fragment, container, false)
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        toolbar.inflateMenu(R.menu.menu_main)
+
+        // Get the SearchView and set the searchable configuration
+        val searchManager = activity?.getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        (toolbar.menu.findItem(R.id.mainSearch).actionView as SearchView).apply {
+            // Assumes current activity is the searchable activity
+            setSearchableInfo(searchManager.getSearchableInfo(activity?.componentName))
+            queryHint = "Cari Video"
+            isIconified = true // Do not iconify the widget; expand it by default
+            isSubmitButtonEnabled = true
+        }
+
+        toolbar.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.mainSetting -> {
+                    SettingActivity.startActivity(context)
+
+                    true
+                }
+                else -> super.onOptionsItemSelected(it)
+            }
+        }
 
         observeGetAllCategory()
     }

@@ -56,8 +56,10 @@ class ChannelViewModel(
 
     /* CHANNEL */
     lateinit var channelDetailResultLd: MutableLiveData<Resource<Channel>>
+    lateinit var showChannelResultLd: MutableLiveData<Resource<Any>>
     lateinit var hideChannelResultLd: MutableLiveData<Resource<Any>>
     lateinit var followChannelResultLd: MutableLiveData<Resource<Boolean>>
+    lateinit var unfollowChannelResultLd: MutableLiveData<Resource<Boolean>>
 
     fun getChannelDetail(channelID: Int) {
         disposable.add(repository.getDetailChannel(channelID).execute()
@@ -65,6 +67,15 @@ class ChannelViewModel(
             .subscribe(
                 { result -> channelDetailResultLd.setSuccess(result) },
                 { throwable -> channelDetailResultLd.setError(throwable.getErrorMessage()) }
+            ))
+    }
+
+    fun showChannel(channelID: Int) {
+        disposable.add(repository.showChannel(channelID).execute()
+            .doOnSubscribe { showChannelResultLd.setLoading() }
+            .subscribe(
+                { showChannelResultLd.setSuccess() },
+                { throwable -> showChannelResultLd.setError(throwable.getErrorMessage()) }
             ))
     }
 
@@ -88,20 +99,26 @@ class ChannelViewModel(
 
     fun unfollowChannel(channelID: Int) {
         disposable.add(repository.unfollowChannel(channelID).execute()
-            .doOnSubscribe { followChannelResultLd.setLoading() }
+            .doOnSubscribe { unfollowChannelResultLd.setLoading() }
             .subscribe(
-                { followChannelResultLd.setSuccess() },
-                { throwable -> followChannelResultLd.setError(throwable.getErrorMessage()) }
+                { unfollowChannelResultLd.setSuccess() },
+                { throwable -> unfollowChannelResultLd.setError(throwable.getErrorMessage()) }
             ))
     }
 
     fun initChannelDetail(channelID: Int) {
         channelDetailResultLd = MutableLiveData()
+        showChannelResultLd = MutableLiveData()
         hideChannelResultLd = MutableLiveData()
-        watchLaterResultLd = MutableLiveData()
         followChannelResultLd = MutableLiveData()
+        unfollowChannelResultLd = MutableLiveData()
 
         getChannelDetail(channelID)
+    }
+
+    fun initChannelVideo(channelID: Int) {
+        watchLaterResultLd = MutableLiveData()
+
         getAllVideo(channelID)
     }
 }

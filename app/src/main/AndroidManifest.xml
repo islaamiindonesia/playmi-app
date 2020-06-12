@@ -24,6 +24,7 @@
             android:name=".ui.video.VideoDetailActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
             android:parentActivityName=".ui.MainActivity">
+
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -33,16 +34,26 @@
                 <data
                     android:host="islaami.id"
                     android:pathPrefix="/videos"
-                    android:scheme="http" />
+                    android:scheme="https" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.auth.RegisterActivity" />
+        <activity
+            android:name=".ui.auth.RegisterActivity"
+            android:theme="@style/RegisterTheme">
+
+            <!--<intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>-->
+        </activity>
         <activity
             android:name=".ui.channel.ChannelDetailActivity"
             android:launchMode="singleTop" />
         <activity android:name=".ui.setting.recommendation.RecommendationActivity" />
-        <activity android:name=".ui.setting.SettingActivity" />
-        <activity android:name=".ui.video_update.VideoUpdateFragment" />
+        <activity
+            android:name=".ui.setting.SettingActivity"
+            android:theme="@style/RegisterTheme" />
         <activity android:name=".ui.MainActivity">
             <meta-data
                 android:name="android.app.default_searchable"
@@ -51,16 +62,6 @@
         <activity
             android:name=".ui.auth.ForgotPasswordActivity"
             android:launchMode="singleTop" />
-        <activity
-            android:name=".ui.intro.SubIntroActivity"
-            android:parentActivityName=".ui.intro.IntroActivity"
-            tools:targetApi="jelly_bean">
-
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.intro.IntroActivity" />
-        </activity>
         <activity android:name=".ui.auth.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -78,20 +79,16 @@
         <activity
             android:name=".ui.intro.LauncherActivity"
             android:theme="@style/AppTheme.Launcher">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.playlist.PlaylistDetailActivity" />
-        <activity android:name=".ui.playlist.WatchLaterActivity" />
-        <activity android:name=".ui.setting.report.ReportActivity" />
-        <activity android:name=".ui.setting.insight.InsightActivity" />
-        <activity android:name=".ui.setting.collaborate.CollaborateActivity" />
-        <activity android:name=".ui.auth.ResetPasswordActivity" />
-        <activity android:name=".ui.auth.CompleteProfileActivity" />
-        <activity android:name=".ui.video.VideoSearchActivity">
+        <activity
+            android:name=".ui.playlist.PlaylistDetailActivity"
+            android:launchMode="singleTop">
 
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -101,6 +98,25 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
+        <activity android:name=".ui.playlist.WatchLaterActivity" />
+        <activity android:name=".ui.setting.report.ReportActivity" />
+        <activity android:name=".ui.setting.insight.InsightActivity" />
+        <activity android:name=".ui.setting.collaborate.CollaborateActivity" />
+        <activity android:name=".ui.auth.ResetPasswordActivity" />
+        <activity android:name=".ui.auth.CompleteProfileActivity" />
+        <activity
+            android:name=".ui.video.VideoSearchActivity"
+            android:launchMode="singleTop">
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+        </activity>
+        <activity android:name=".ui.channel.ChannelVideoActivity" />
 
         <!-- METAS -->
         <meta-data
@@ -119,14 +135,15 @@
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/accent" />
 
+        <!-- Sample AdMob App ID: ca-app-pub-3940256099942544~3347511713 -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-2056704120167122~6376437988" /> <!-- PROVIDER -->
+            android:value="ca-app-pub-1757420955153670~4087157585" />
 
         <!-- PROVIDERS -->
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="com.example.playmi.provider"
+            android:authorities="id.islaami.playmi.provider"
             android:exported="false"
             android:grantUriPermissions="true">
 

@@ -1,165 +1,179 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/itemLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="8dp">
+    android:background="@color/layout_background_color"
+    android:paddingBottom="8dp">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
+    <LinearLayout
+        android:id="@+id/channelLayout"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:paddingBottom="8dp">
+        android:background="?selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        app:layout_constraintEnd_toStartOf="@id/menu"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
-            android:id="@+id/channelLayout"
-            android:layout_width="0dp"
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="?selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="8dp"
-            app:layout_constraintEnd_toStartOf="@id/menu"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:cardCornerRadius="25dp"
+            app:cardPreventCornerOverlap="false">
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/channelIcon"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:scaleType="fitCenter"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:src="@drawable/google_icon" />
+                android:scaleType="centerCrop"
+                tools:srcCompat="@tools:sample/backgrounds/scenic[7]" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:id="@+id/channelName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:textColor="@color/text_color"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@+id/channelIcon"
+            app:layout_constraintStart_toEndOf="@+id/channelIcon"
+            app:layout_constraintTop_toTopOf="@+id/channelIcon"
+            tools:text="Google Developer" />
+    </LinearLayout>
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/menu"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:background="?selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:paddingHorizontal="12dp"
+        app:layout_constraintBottom_toBottomOf="@id/channelLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/channelLayout"
+        app:srcCompat="@drawable/ic_more" />
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/videoThumbnail"
+        android:layout_width="match_parent"
+        android:layout_height="203dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/channelLayout"
+        tools:srcCompat="@tools:sample/backgrounds/scenic[7]" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:paddingHorizontal="12dp"
+        app:layout_constraintEnd_toEndOf="@id/videoThumbnail"
+        app:layout_constraintStart_toStartOf="@+id/videoThumbnail"
+        app:layout_constraintTop_toBottomOf="@+id/videoThumbnail">
+
+        <TextView
+            android:id="@+id/videoTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:fontFamily="sans-serif-medium"
+            android:maxLines="2"
+            android:textColor="@color/text_color"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Google's Video Title" />
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toStartOf="@id/subcategoryName"
+            app:layout_constraintStart_toStartOf="@id/videoTitle"
+            app:layout_constraintTop_toBottomOf="@id/videoTitle">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_watch"
+                app:tint="@color/icon_color" />
 
             <TextView
-                android:id="@+id/channelName"
+                android:id="@+id/views"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:textColor="?colorOnSurface"
-                android:textSize="14sp"
-                app:layout_constraintBottom_toBottomOf="@+id/channelIcon"
-                app:layout_constraintStart_toEndOf="@+id/channelIcon"
-                app:layout_constraintTop_toTopOf="@+id/channelIcon"
-                tools:text="Google Developer" />
-        </LinearLayout>
+                android:textColor="@color/icon_color"
+                android:textSize="10sp"
+                tools:text="500,000 kali" />
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/menu"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:background="?selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true"
-            android:paddingHorizontal="12dp"
-            android:src="@drawable/ic_more"
-            app:layout_constraintBottom_toBottomOf="@id/channelLayout"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/channelLayout" />
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/videoThumbnail"
-            android:layout_width="0dp"
-            android:layout_height="200dp"
-            android:scaleType="centerCrop"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/channelLayout"
-            tools:srcCompat="@tools:sample/backgrounds/scenic[7]" />
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:paddingHorizontal="12dp"
-            app:layout_constraintEnd_toEndOf="@id/videoThumbnail"
-            app:layout_constraintStart_toStartOf="@+id/videoThumbnail"
-            app:layout_constraintTop_toBottomOf="@+id/videoThumbnail">
-
-            <TextView
-                android:id="@+id/videoTitle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:fontFamily="sans-serif-medium"
-                android:maxLines="2"
-                android:textColor="?colorOnSurface"
-                android:textSize="14sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="Google's Video Title" />
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/dot"
+                android:layout_width="3dp"
+                android:layout_height="3dp"
+                android:layout_marginHorizontal="10dp"
+                app:srcCompat="@drawable/ic_dot"
+                app:tint="@color/icon_color" />
 
             <LinearLayout
-                android:layout_width="0dp"
+                android:id="@+id/layoutUploadTime"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:orientation="horizontal"
-                app:layout_constraintBottom_toBottomOf="@+id/subcategoryName"
-                app:layout_constraintEnd_toStartOf="@id/subcategoryName"
-                app:layout_constraintStart_toStartOf="@id/videoTitle"
-                app:layout_constraintTop_toTopOf="@id/subcategoryName">
+                android:orientation="horizontal">
 
                 <androidx.appcompat.widget.AppCompatImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="20dp"
-                    app:layout_constraintStart_toStartOf="@+id/videoTitle"
-                    app:layout_constraintTop_toBottomOf="@+id/videoTitle"
-                    app:srcCompat="@drawable/ic_watch"
-                    app:tint="?colorControlNormal" />
-
-                <TextView
-                    android:id="@+id/views"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:textColor="?colorOnSurface"
-                    android:textSize="10sp"
-                    tools:text="500,000 kali" />
-
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:layout_width="10dp"
-                    android:layout_height="20dp"
-                    android:layout_marginStart="16dp"
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"
                     app:srcCompat="@drawable/ic_time"
-                    app:tint="?colorControlNormal" />
+                    app:tint="@color/icon_color" />
 
                 <TextView
                     android:id="@+id/publishedDate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:textColor="?colorOnSurface"
+                    android:textColor="@color/icon_color"
                     android:textSize="10sp"
                     tools:text="6 bulan yang lalu" />
             </LinearLayout>
+        </LinearLayout>
 
-            <TextView
-                android:id="@+id/subcategoryName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:fontFamily="sans-serif-medium"
-                android:padding="4dp"
-                android:textAllCaps="true"
-                android:textColor="@color/accent"
-                android:textSize="10sp"
-                app:layout_constraintEnd_toEndOf="@+id/videoTitle"
-                app:layout_constraintTop_toBottomOf="@id/videoTitle"
-                tools:text="Hijrah" />
+        <TextView
+            android:id="@+id/subcategoryName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
+            android:textAllCaps="true"
+            android:textColor="@color/accent"
+            android:textSize="10sp"
+            app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
+            app:layout_constraintEnd_toEndOf="@+id/videoTitle"
+            app:layout_constraintTop_toTopOf="@+id/linearLayout"
+            tools:text="Hijrah" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/subcategoryName" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/subcategoryName"
+            tools:itemCount="3" />
     </androidx.constraintlayout.widget.ConstraintLayout>
-</com.google.android.material.card.MaterialCardView>
+</androidx.constraintlayout.widget.ConstraintLayout>

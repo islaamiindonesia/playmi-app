@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:targetApi="lollipop">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBar"
@@ -16,7 +17,7 @@
             android:id="@+id/toolbar"
             style="@style/ToolbarWhiteBackArrow"
             android:layout_width="match_parent"
-            android:layout_height="?android:attr/actionBarSize"
+            android:layout_height="wrap_content"
             android:elevation="4dp"
             app:title="Kanal" />
     </com.google.android.material.appbar.AppBarLayout>
@@ -29,12 +30,12 @@
         <androidx.core.widget.NestedScrollView
             android:id="@+id/successLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:fillViewport="true">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:orientation="vertical">
 
                 <com.google.android.material.card.MaterialCardView
@@ -46,115 +47,119 @@
                         android:layout_height="wrap_content"
                         android:paddingBottom="8dp">
 
-                        <ImageView
-                            android:id="@+id/channelImage"
-                            android:layout_width="100dp"
-                            android:layout_height="100dp"
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/card"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             android:layout_marginStart="16dp"
                             android:layout_marginTop="16dp"
+                            app:cardCornerRadius="50dp"
+                            app:cardPreventCornerOverlap="false"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:srcCompat="@drawable/dummy_thumbnail" />
+                            app:layout_constraintTop_toTopOf="parent">
 
-                        <TextView
-                            android:id="@+id/channelName"
-                            style="@style/LabelText"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginHorizontal="16dp"
-                            android:fontFamily="sans-serif-medium"
-                            android:text="Nama Channel"
-                            android:textAlignment="center"
-                            android:textColor="?android:attr/textColorPrimary"
-                            android:textSize="16sp"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toEndOf="@+id/channelImage"
-                            app:layout_constraintTop_toTopOf="@+id/channelImage" />
+                            <androidx.appcompat.widget.AppCompatImageView
+                                android:id="@+id/channelImage"
+                                android:layout_width="90dp"
+                                android:layout_height="90dp"
+                                tools:src="@tools:sample/avatars" />
+                        </com.google.android.material.card.MaterialCardView>
 
-                        <RelativeLayout
+                        <LinearLayout
                             android:id="@+id/infoLayout"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:gravity="center_horizontal"
-                            app:layout_constraintEnd_toEndOf="@+id/channelName"
-                            app:layout_constraintStart_toStartOf="@+id/channelName"
-                            app:layout_constraintTop_toBottomOf="@+id/channelName">
+                            android:layout_marginHorizontal="16dp"
+                            android:orientation="vertical"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/card"
+                            app:layout_constraintTop_toTopOf="@+id/card">
 
-                            <LinearLayout
-                                android:id="@+id/videoCountLayout"
-                                android:layout_width="wrap_content"
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/channelName"
+                                style="@style/LabelText"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_alignParentStart="true"
-                                android:layout_marginStart="24dp"
-                                android:gravity="center_horizontal"
-                                android:orientation="vertical">
+                                android:fontFamily="sans-serif-medium"
+                                android:text="Nama Channel"
+                                android:textAlignment="center"
+                                android:textColor="@color/text_color"
+                                android:textSize="16sp" />
 
-                                <TextView
-                                    android:id="@+id/videoCount"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:fontFamily="sans-serif-medium"
-                                    android:text="1500"
-                                    android:textColor="?android:attr/textColorPrimary"
-                                    android:textSize="18sp" />
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginVertical="10dp"
+                                android:background="@color/border_color" />
 
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Video"
-                                    android:textColor="?android:attr/textColorPrimary"
-                                    android:textSize="14sp" />
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:id="@+id/followerCountLayout"
-                                android:layout_width="wrap_content"
+                            <RelativeLayout
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_alignParentEnd="true"
-                                android:layout_marginEnd="24dp"
-                                android:gravity="center_horizontal"
-                                android:orientation="vertical">
+                                android:gravity="center_horizontal">
 
-                                <TextView
-                                    android:id="@+id/followerCount"
+                                <LinearLayout
+                                    android:id="@+id/videoCountLayout"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:fontFamily="sans-serif-medium"
-                                    android:text="1500"
-                                    android:textColor="?android:attr/textColorPrimary"
-                                    android:textSize="18sp" />
+                                    android:layout_alignParentStart="true"
+                                    android:layout_marginStart="16dp"
+                                    android:gravity="center_horizontal"
+                                    android:orientation="vertical">
 
-                                <TextView
+                                    <TextView
+                                        android:id="@+id/videoCount"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:fontFamily="sans-serif-medium"
+                                        android:text="112.500"
+                                        android:textColor="@color/text_color"
+                                        android:textSize="18sp" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Video"
+                                        android:textColor="@color/grey_85"
+                                        android:textSize="14sp" />
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:id="@+id/followerCountLayout"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Pengikut"
-                                    android:textColor="?android:attr/textColorPrimary"
-                                    android:textSize="14sp" />
-                            </LinearLayout>
-                        </RelativeLayout>
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_marginEnd="16dp"
+                                    android:gravity="center_horizontal"
+                                    android:orientation="vertical">
 
-                        <TextView
-                            android:id="@+id/channelDescription"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:textColor="?android:attr/textColorPrimary"
-                            android:textSize="14sp"
-                            app:layout_constraintEnd_toEndOf="@id/channelName"
-                            app:layout_constraintStart_toStartOf="@id/channelImage"
-                            app:layout_constraintTop_toBottomOf="@id/channelImage"
-                            tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur malesuada convallis nisl, quis pharetra erat cursus sed. Ut at velit massa. Nullam nisi magna, placerat quis turpis non, rutrum mollis nunc. Fusce at mauris ac dui tempor consequat. Sed bibendum pellentesque enim. Morbi sed laoreet mauris. Pellentesque ut molestie neque, eget molestie diam. Quisque fringilla interdum lacinia. Etiam ornare sed magna a interdum." />
+                                    <TextView
+                                        android:id="@+id/followerCount"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:fontFamily="sans-serif-medium"
+                                        android:text="120.000.000"
+                                        android:textColor="@color/text_color"
+                                        android:textSize="18sp" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Pengikut"
+                                        android:textColor="@color/grey_85"
+                                        android:textSize="14sp" />
+                                </LinearLayout>
+                            </RelativeLayout>
+                        </LinearLayout>
 
                         <LinearLayout
-                            android:id="@+id/channelBtnLayout"
+                            android:id="@+id/showLayout"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
                             android:orientation="horizontal"
-                            app:layout_constraintEnd_toEndOf="@id/channelDescription"
-                            app:layout_constraintStart_toStartOf="@id/channelDescription"
-                            app:layout_constraintTop_toBottomOf="@id/channelDescription">
+                            app:layout_constraintEnd_toEndOf="@id/infoLayout"
+                            app:layout_constraintStart_toStartOf="@id/card"
+                            app:layout_constraintTop_toBottomOf="@id/card">
 
                             <com.google.android.material.button.MaterialButton
                                 android:id="@+id/btnFollow"
@@ -183,19 +188,47 @@
                                 android:layout_weight="5"
                                 android:text="Sembunyikan" />
                         </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/hiddenLayout"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:visibility="gone"
+                            app:layout_constraintEnd_toEndOf="@id/infoLayout"
+                            app:layout_constraintStart_toStartOf="@id/card"
+                            app:layout_constraintTop_toBottomOf="@id/card">
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnShow"
+                                style="@style/ButtonPrimaryRoundedRectangle"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Tampilkan"
+                                android:textSize="14sp" />
+                        </LinearLayout>
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerView"
+                <com.google.android.material.tabs.TabLayout
+                    android:id="@+id/tabLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:background="?android:attr/colorBackground"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="@id/channelBtnLayout"
-                    app:layout_constraintStart_toStartOf="@id/channelBtnLayout"
-                    app:layout_constraintTop_toBottomOf="@id/channelBtnLayout" />
+                    app:tabIndicatorColor="@color/accent"
+                    app:tabMode="fixed"
+                    app:tabSelectedTextColor="@color/accent"
+                    app:tabTextAppearance="@style/CustomTabText"
+                    app:tabTextColor="@color/text_color" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/border_color" />
+
+                <id.islaami.playmi.util.ui.CustomViewPager
+                    android:id="@+id/viewPager"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

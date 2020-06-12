@@ -18,13 +18,22 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/channelThumb"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="25dp"
+            app:cardPreventCornerOverlap="false"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:src="@mipmap/ic_launcher_round" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/channelThumb"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:scaleType="centerCrop"
+                tools:src="@mipmap/ic_launcher_round" />
+        </com.google.android.material.card.MaterialCardView>
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/channelName"
@@ -34,24 +43,37 @@
             android:fontFamily="sans-serif-medium"
             android:textColor="?android:attr/textColorPrimary"
             android:textSize="14sp"
-            app:layout_constraintBottom_toBottomOf="@id/channelThumb"
+            app:layout_constraintBottom_toBottomOf="@id/card"
             app:layout_constraintEnd_toStartOf="@id/btnShow"
-            app:layout_constraintStart_toEndOf="@id/channelThumb"
-            app:layout_constraintTop_toTopOf="@id/channelThumb"
+            app:layout_constraintStart_toEndOf="@id/card"
+            app:layout_constraintTop_toTopOf="@id/card"
             tools:text="Nama Channel" />
 
-        <com.google.android.material.button.MaterialButton
+        <LinearLayout
             android:id="@+id/btnShow"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Tampilkan"
-            android:textAllCaps="false"
-            android:textAppearance="?android:textAppearanceMedium"
-            android:textColor="@color/accent"
-            android:textSize="14sp"
+            android:layout_width="100dp"
+            android:layout_height="25dp"
+            android:background="?selectableItemBackground"
+            android:clickable="true"
+            android:focusable="true"
             app:layout_constraintBottom_toBottomOf="@id/itemLayout"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/itemLayout" />
+            app:layout_constraintTop_toTopOf="@id/itemLayout">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/btn_rectangle_radius_5"
+                android:gravity="center"
+                android:text="Tampilkan"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+        </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/border_color"
+        app:layout_constraintBottom_toBottomOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

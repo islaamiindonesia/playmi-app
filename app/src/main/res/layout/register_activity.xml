@@ -4,8 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/layout_background_color"
     android:orientation="vertical"
-    tools:context=".ui.auth.RegisterActivity">
+    tools:context=".ui.auth.RegisterActivity"
+    tools:targetApi="lollipop">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBar"
@@ -15,10 +17,11 @@
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
+            style="@style/ToolbarRegister"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
             android:elevation="4dp"
-            app:title="Daftar Akun" />
+            app:title="Buat Akun Islaami" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
@@ -32,27 +35,32 @@
             android:orientation="vertical"
             android:paddingHorizontal="16dp">
 
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="144dp"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="30dp"
+                android:src="@drawable/islaami_logo" />
+
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/layoutEtName"
-                style="@style/TextInputLayout.Outline"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="30dp"
                 android:hint="Nama">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etName"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:inputType="textPersonName" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/layoutEtEmail"
-                style="@style/TextInputLayout.Outline"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="16dp"
                 android:hint="Email">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -64,10 +72,9 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/layoutEtConfirmEmail"
-                style="@style/TextInputLayout.Outline"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="16dp"
                 android:hint="Ulangi Email">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -79,10 +86,9 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/layoutEtBirthdate"
-                style="@style/TextInputLayout.Outline"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="16dp"
                 android:hint="Tanggal Lahir">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -96,7 +102,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="25dp"
                 android:text="Jenis Kelamin" />
 
             <RadioGroup
@@ -122,10 +128,9 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/layoutEtPassword"
-                style="@style/TextInputLayout.Outline"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="16dp"
                 android:hint="Kata Sandi"
                 app:passwordToggleEnabled="true">
 
@@ -136,28 +141,49 @@
                     android:inputType="textPassword" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/textAgreement"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:textAlignment="center"
-                android:textSize="12sp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnRegister"
-                style="@style/ButtonPrimaryCapsule"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/layoutEtConfirm"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:enabled="false"
-                android:text="Daftar" />
+                android:hint="Konfirmasi Kata Sandi"
+                app:passwordToggleEnabled="true">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etConfirm"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:inputType="textPassword" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <LinearLayout
+                android:id="@+id/btnRegister"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="40dp"
+                android:layout_marginBottom="30dp"
+                android:background="?selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/btn_capsule"
+                    android:enabled="false"
+                    android:fontFamily="sans-serif-medium"
+                    android:gravity="center"
+                    android:text="DAFTAR"
+                    android:textColor="@color/white"
+                    android:textSize="16sp" />
+            </LinearLayout>
 
             <ProgressBar
                 android:id="@+id/progressBar"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="40dp"
+                android:layout_marginBottom="30dp"
                 android:visibility="gone" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

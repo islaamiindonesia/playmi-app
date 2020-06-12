@@ -6,15 +6,22 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.LocationManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
+import android.util.Log
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatDelegate.*
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
+import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.location.*
 import com.google.firebase.iid.FirebaseInstanceId
 import id.islaami.playmi.R
+import id.islaami.playmi.data.model.Mode
 import id.islaami.playmi.ui.auth.LoginActivity
 import id.islaami.playmi.ui.base.BaseActivity
 import id.islaami.playmi.ui.setting.help.WebHelpActivity
@@ -29,7 +36,6 @@ import kotlinx.android.synthetic.main.setting_activity.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 
-
 class SettingActivity : BaseActivity() {
     private val viewModel: SettingViewModel by viewModel()
 
@@ -39,10 +45,24 @@ class SettingActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.setting_activity)
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+            window.statusBarColor = ContextCompat.getColor(this, R.color.accent_dark)
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            window.decorView.systemUiVisibility = 0
+        }
+
         setupToolbar(toolbar)
 
         viewModel.initSettingActivity()
-        observeProfileName()
+        if (viewModel.getProfile() != null) {
+            accountName.text = viewModel.getProfile()?.fullname
+        } else {
+            observeProfileName()
+        }
         observeLogoutResult()
 
         val packageInfo = this.packageManager?.getPackageInfo(packageName, 0)
@@ -58,6 +78,36 @@ class SettingActivity : BaseActivity() {
         swipeRefreshLayout.apply {
             setColorSchemeResources(R.color.accent)
             setOnRefreshListener { viewModel.getProfileName() }
+        }
+
+        val adRequest = AdRequest.Builder().build()
+        adView.loadAd(adRequest)
+        adView.adListener = object : AdListener() {
+            override fun onAdLoaded() {
+                // Code to be executed when an ad finishes loading.
+            }
+
+            override fun onAdFailedToLoad(errorCode: Int) {
+                // Code to be executed when an ad request fails.
+            }
+
+            override fun onAdOpened() {
+                // Code to be executed when an ad opens an overlay that
+                // covers the screen.
+            }
+
+            override fun onAdClicked() {
+                // Code to be executed when the user clicks on an ad.
+            }
+
+            override fun onAdLeftApplication() {
+                // Code to be executed when the user has left the app.
+            }
+
+            override fun onAdClosed() {
+                // Code to be executed when the user is about to return
+                // to the app after tapping on an ad.
+            }
         }
     }
 
@@ -83,14 +133,15 @@ class SettingActivity : BaseActivity() {
 
     private fun setupButton() {
         toggleTheme.apply {
-            this.isChecked = viewModel.darkMode != MODE_NIGHT_NO
+            this.isChecked = Mode.appMode == MODE_NIGHT_YES
             setOnCheckedChangeListener { _, isChecked ->
                 if (isChecked) {
+                    Mode.appMode = MODE_NIGHT_YES
                     setDefaultNightMode(MODE_NIGHT_YES)
                 } else {
+                    Mode.appMode = MODE_NIGHT_NO
                     setDefaultNightMode(MODE_NIGHT_NO)
                 }
-                viewModel.darkMode = getDefaultNightMode()
             }
         }
 
@@ -201,6 +252,23 @@ class SettingActivity : BaseActivity() {
         }
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return
+        }
         fusedLocationProviderClient.requestLocationUpdates(
             locationRequest, locationCallback, Looper.myLooper()
         )

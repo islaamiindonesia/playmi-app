@@ -11,6 +11,8 @@ import id.islaami.playmi.ui.video.VideoDetailActivity
 import id.islaami.playmi.util.value
 import id.islaami.playmi.util.ui.loadExternalImage
 import id.islaami.playmi.util.ui.loadImage
+import id.islaami.playmi.util.ui.setVisibilityToGone
+import kotlinx.android.synthetic.main.video_detail_activity.*
 import kotlinx.android.synthetic.main.video_item.view.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -42,14 +44,12 @@ class VideoAdapter(
             videoThumbnail.loadExternalImage(video.thumbnail)
             channelName.text = video.channel?.name
             channelIcon.loadImage(video.channel?.thumbnail)
-            views.apply {
-                val views = video.views.toString()
-                text = if (views.isEmpty() || views == "0") {
-                    "Belum ditonton"
-                } else {
-                    views
-                }
+            views.text = "${video.views ?: 0}x"
+
+            if (video.isUploadShown == false) {
+                layoutUploadTime.setVisibilityToGone()
             }
+
             subcategoryName.text = video.subcategory?.name
             publishedDate.apply {
                 val time = differenceInDays(video.publishedAt.toString())
@@ -70,7 +70,7 @@ class VideoAdapter(
         }
 
         private fun differenceInDays(datePublished: String): Long {
-            val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale("id"))
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale("id"))
             val videoDate = dateFormat.parse(datePublished)
             val today = Date()
 

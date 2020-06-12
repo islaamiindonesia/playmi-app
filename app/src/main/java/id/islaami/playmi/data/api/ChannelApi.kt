@@ -6,10 +6,14 @@ import io.reactivex.Single
 import retrofit2.http.GET
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface ChannelApi {
     @GET("channels/follow")
     fun getChannelFollow(): Single<ApiResponse<List<Channel>>>
+
+    @GET("channels/follow")
+    fun getChannelFollow(@Query("query") name: String): Single<ApiResponse<List<Channel>>>
 
     @GET("channels/blacklist")
     fun getChannelHidden(): Single<ApiResponse<List<Channel>>>

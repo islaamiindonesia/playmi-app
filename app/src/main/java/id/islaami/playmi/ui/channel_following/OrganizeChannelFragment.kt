@@ -1,11 +1,14 @@
 package id.islaami.playmi.ui.channel_following
 
+import android.app.SearchManager
+import android.content.Context
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -13,8 +16,11 @@ import androidx.fragment.app.FragmentStatePagerAdapter
 import com.google.android.material.tabs.TabLayout
 import id.islaami.playmi.R
 import id.islaami.playmi.ui.base.BaseFragment
+import id.islaami.playmi.ui.setting.SettingActivity
 import id.islaami.playmi.util.value
 import kotlinx.android.synthetic.main.organize_channel_fragment.*
+import kotlinx.android.synthetic.main.organize_channel_fragment.toolbar
+import kotlinx.android.synthetic.main.playlist_fragment.*
 
 class OrganizeChannelFragment : BaseFragment() {
     override fun onCreateView(
@@ -25,11 +31,36 @@ class OrganizeChannelFragment : BaseFragment() {
         return inflater.inflate(R.layout.organize_channel_fragment, container, false)
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         toolbar.inflateMenu(R.menu.menu_main)
-        toolbar.setOnMenuItemClickListener { optionMenuListener(it) }
+
+        // Get the SearchView and set the searchable configuration
+        val searchManager = activity?.getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        (toolbar.menu.findItem(R.id.mainSearch).actionView as SearchView).apply {
+            // Assumes current activity is the searchable activity
+            setSearchableInfo(searchManager.getSearchableInfo(activity?.componentName))
+            queryHint = "Cari Video"
+            isIconified = true // Do not iconify the widget; expand it by default
+            isSubmitButtonEnabled = true
+        }
+
+        toolbar.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.mainSetting -> {
+                    SettingActivity.startActivity(context)
+
+                    true
+                }
+                else -> super.onOptionsItemSelected(it)
+            }
+        }
 
         val viewPagerAdapter = ViewPagerAdapter(childFragmentManager)
         viewPager.adapter = viewPagerAdapter

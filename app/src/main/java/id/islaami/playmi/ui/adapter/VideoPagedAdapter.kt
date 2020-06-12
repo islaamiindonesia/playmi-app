@@ -15,6 +15,8 @@ import id.islaami.playmi.ui.channel.ChannelDetailActivity
 import id.islaami.playmi.ui.video.VideoDetailActivity
 import id.islaami.playmi.util.ui.loadExternalImage
 import id.islaami.playmi.util.ui.loadImage
+import id.islaami.playmi.util.ui.setVisibilityToGone
+import id.islaami.playmi.util.ui.setVisibilityToVisible
 import id.islaami.playmi.util.value
 import kotlinx.android.synthetic.main.video_item.view.*
 import java.text.SimpleDateFormat
@@ -48,12 +50,14 @@ class VideoPagedAdapter(
                 channelIcon.loadImage(video.channel?.thumbnail)
                 views.text = "${video.views ?: 0}x"
 
-                subcategoryName.apply {
-                    text = video.subcategory?.name
+                subcategoryName.text = video.subcategory?.name
 
-                    setOnClickListener {
-
-                    }
+                if (video.isUploadShown == false) {
+                    layoutUploadTime.setVisibilityToGone()
+                    dot.setVisibilityToGone()
+                } else {
+                    layoutUploadTime.setVisibilityToVisible()
+                    dot.setVisibilityToVisible()
                 }
 
                 recyclerView.adapter =
