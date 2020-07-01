@@ -13,11 +13,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdLoader
 import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.formats.NativeAdOptions
 import com.google.android.gms.ads.formats.UnifiedNativeAd
 import id.islaami.playmi.R
 import id.islaami.playmi.data.model.video.Video
-import id.islaami.playmi.ui.adapter.AdsAdapter
 import id.islaami.playmi.ui.adapter.VideoPagedAdapter
 import id.islaami.playmi.ui.base.BaseFragment
 import id.islaami.playmi.util.ERROR_EMPTY_LIST
@@ -38,8 +36,6 @@ class VideoCategoryFragment(
     private val viewModel: HomeViewModel by viewModel()
 
     lateinit var adLoader: AdLoader
-
-    lateinit var adapter: AdsAdapter
 
     private var videoPagedAdapter = VideoPagedAdapter(context,
         popMenu = { context, menuView, video ->
@@ -120,8 +116,6 @@ class VideoCategoryFragment(
         }
 
         swipeRefreshLayout.startRefreshing()
-
-        adapter = AdsAdapter()
     }
 
     override fun onResume() {
@@ -206,15 +200,7 @@ class VideoCategoryFragment(
     /* OBSERVERS */
     private fun observeGetAllVideoResult() {
         viewModel.videoPagedListResultLd.observe(viewLifecycleOwner, Observer { result ->
-//            setupRecyclerView(result)
-
-            listItems.addAll(result)
-
-            loadNativeAds()
-
-//            recyclerView.adapter = adapter.apply { addList(listItems) }
-            recyclerView.layoutManager =
-                LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+            setupRecyclerView(result)
         })
 
         viewModel.pagedListNetworkStatusLd.observe(
