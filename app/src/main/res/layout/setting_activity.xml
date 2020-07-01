@@ -341,7 +341,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         ads:adSize="BANNER"
-        ads:adUnitId="@string/sample_ad_unit_id"
+        ads:adUnitId="@string/sample_ad_unit_id_banner"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

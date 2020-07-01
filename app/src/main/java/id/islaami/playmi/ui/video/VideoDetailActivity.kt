@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.util.Log
 import android.view.View
+import android.view.WindowManager.LayoutParams.FLAG_SECURE
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.PopupMenu
@@ -28,6 +29,7 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.You
 import id.islaami.playmi.R
 import id.islaami.playmi.data.model.Mode
 import id.islaami.playmi.data.model.video.Video
+import id.islaami.playmi.ui.MainActivity
 import id.islaami.playmi.ui.adapter.PlaylistSelectAdapter
 import id.islaami.playmi.ui.base.BaseActivity
 import id.islaami.playmi.ui.channel.ChannelDetailActivity
@@ -57,16 +59,21 @@ class VideoDetailActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.video_detail_activity)
 
-        setupToolbar(toolbar)
+        window.setFlags(
+            FLAG_SECURE,
+            FLAG_SECURE
+        )
 
         videoId = intent.getIntExtra(EXTRA_ID, 0)
 
         FirebaseApp.initializeApp(this)
 
         if (videoId == 0) {
+            setupToolbar(toolbar, backClickHandler = { handleBackPressed() })
             val uri = Uri.parse(intent.data.toString())
             viewModel.initVideoDetailActivity(uri.lastPathSegment.toString().toInt())
         } else {
+            setupToolbar(toolbar)
             viewModel.initVideoDetailActivity(videoId)
         }
 
@@ -93,6 +100,15 @@ class VideoDetailActivity : BaseActivity() {
                 exitFullScreen()
             }
         })
+    }
+
+    override fun onBackPressed() {
+        if (videoId == 0) handleBackPressed()
+        else super.onBackPressed()
+    }
+
+    private fun handleBackPressed() {
+        MainActivity.startActivityClearTask(this)
     }
 
     private fun refresh() {

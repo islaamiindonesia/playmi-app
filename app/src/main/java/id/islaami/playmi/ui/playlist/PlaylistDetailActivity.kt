@@ -13,6 +13,8 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.gms.ads.AdLoader
+import com.google.android.gms.ads.formats.UnifiedNativeAd
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import id.islaami.playmi.R
 import id.islaami.playmi.ui.adapter.PlaylistSelectAdapter
@@ -27,6 +29,7 @@ import kotlinx.android.synthetic.main.playlist_bottom_sheet.view.*
 import kotlinx.android.synthetic.main.playlist_bottom_sheet.view.btnCancel
 import kotlinx.android.synthetic.main.playlist_detail_activity.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.util.ArrayList
 
 class PlaylistDetailActivity : BaseActivity() {
     private val viewModel: PlaylistViewModel by viewModel()

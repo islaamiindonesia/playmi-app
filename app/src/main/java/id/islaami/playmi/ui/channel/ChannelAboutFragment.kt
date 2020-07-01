@@ -2,6 +2,7 @@ package id.islaami.playmi.ui.channel
 
 import android.os.Bundle
 import android.text.Spanned
+import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +23,7 @@ class ChannelAboutFragment : BaseFragment() {
 
     fun setDescription(description: Spanned?) {
         about.text = description
+        about.movementMethod = LinkMovementMethod()
     }
 
     companion object {

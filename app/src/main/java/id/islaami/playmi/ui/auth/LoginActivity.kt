@@ -3,6 +3,7 @@ package id.islaami.playmi.ui.auth
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.lifecycle.Observer
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -54,6 +55,8 @@ class LoginActivity : BaseActivity() {
                 // Get new Instance ID token
                 audId = task.result?.id.toString()
                 token = task.result?.token.toString()
+
+                Log.d("HEIKAMU", "onCreate: $token")
             })
 
         viewModel.initLoginActivity()

@@ -30,8 +30,7 @@ class LauncherActivity : BaseActivity() {
                     LoginActivity.startActivityClearTask(this)
                 }
             } else {
-                IntroActivity.startActivity(this)
-                viewModel.hasSeenIntro = true
+                IntroActivity.startActivityClearTask(this)
             }
 
             finish()

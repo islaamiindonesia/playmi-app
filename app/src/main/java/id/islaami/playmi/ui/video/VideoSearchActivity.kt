@@ -17,7 +17,11 @@ import id.islaami.playmi.util.ResourceStatus.*
 import id.islaami.playmi.util.handleApiError
 import id.islaami.playmi.util.ui.*
 import id.islaami.playmi.util.value
+import kotlinx.android.synthetic.main.video_detail_activity.*
 import kotlinx.android.synthetic.main.video_search_activity.*
+import kotlinx.android.synthetic.main.video_search_activity.recyclerView
+import kotlinx.android.synthetic.main.video_search_activity.swipeRefreshLayout
+import kotlinx.android.synthetic.main.video_search_activity.toolbar
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class VideoSearchActivity(var searchQuery: String = "") : BaseActivity() {
@@ -116,8 +120,16 @@ class VideoSearchActivity(var searchQuery: String = "") : BaseActivity() {
             setSearchableInfo(searchManager.getSearchableInfo(componentName))
             setIconifiedByDefault(false) // Do not iconify the widget; expand it by default
             isSubmitButtonEnabled = true
+            queryHint = "Cari Video"
             setQuery(this@VideoSearchActivity.searchQuery, false)
         }
+
+        swipeRefreshLayout.apply {
+            setColorSchemeResources(R.color.accent)
+            setOnRefreshListener { refresh() }
+        }
+
+        swipeRefreshLayout.startRefreshing()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -141,9 +153,6 @@ class VideoSearchActivity(var searchQuery: String = "") : BaseActivity() {
                 viewModel.getAllVideo(query)
             }
         }
-
-
-        observeGetAllVideoResult()
     }
 
     private fun refresh() {
@@ -169,7 +178,6 @@ class VideoSearchActivity(var searchQuery: String = "") : BaseActivity() {
             Observer { result ->
                 when (result?.status) {
                     LOADING -> {
-                        swipeRefreshLayout.startRefreshing()
                     }
                     SUCCESS -> {
                         swipeRefreshLayout.stopRefreshing()

@@ -5,20 +5,23 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.WindowManager
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.google.firebase.auth.FirebaseUser
 import com.jakewharton.rxbinding3.widget.textChanges
 import id.islaami.playmi.R
 import id.islaami.playmi.VerificationActivity
 import id.islaami.playmi.ui.base.BaseActivity
-import id.islaami.playmi.util.ERROR_EMAIL_IN_USE
 import id.islaami.playmi.util.ResourceStatus.*
 import id.islaami.playmi.util.fromAppsFormatDateToDbFormatDate
 import id.islaami.playmi.util.fromDbFormatDateToAppsFormatDate
 import id.islaami.playmi.util.isValidEmail
+import id.islaami.playmi.util.isValidPassword
 import id.islaami.playmi.util.ui.*
 import io.reactivex.Observable
 import io.reactivex.functions.Function6
@@ -27,12 +30,10 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 
 
-class RegisterActivity(var isShowed: Boolean = false) : BaseActivity() {
+class RegisterActivity(var gender: String = "L") : BaseActivity() {
     private val viewModel: UserAuthViewModel by viewModel()
 
     lateinit var firebaseAuth: FirebaseAuth
-
-    lateinit var gender: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,11 +67,11 @@ class RegisterActivity(var isShowed: Boolean = false) : BaseActivity() {
 
         val emptyFieldStream: Observable<Boolean> = Observable.combineLatest(
             etName.textChanges().map { it.isNotEmpty() },
-            etEmail.textChanges().map { it.isNotEmpty() && it.toString().isValidEmail() },
-            etConfirmEmail.textChanges().map { it.isNotEmpty() && it.toString().isValidEmail() },
+            etEmail.textChanges().map { it.toString().isValidEmail() },
+            etConfirmEmail.textChanges().map { it.toString().isValidEmail() },
             etBirtdate.textChanges().map { it.isNotEmpty() },
-            etPassword.textChanges().map { it.isNotEmpty() },
-            etConfirm.textChanges().map { it.isNotEmpty() },
+            etPassword.textChanges().map { it.toString().isValidPassword() },
+            etConfirm.textChanges().map { it.toString().isValidPassword() },
             Function6 { t1, t2, t3, t4, t5, t6 ->
                 return@Function6 t1 && t2 && t3 && t4 && t5 && t6
             }
@@ -86,8 +87,42 @@ class RegisterActivity(var isShowed: Boolean = false) : BaseActivity() {
         etPassword.setText(intent.getStringExtra(PASSWORD) ?: "")
 
         btnRegister.setOnClickListener {
-            firebaseAuthWithPassword(notifToken.toString())
+            if (validateAll()) {
+                firebaseAuthWithPassword(notifToken.toString())
+            }
         }
+    }
+
+    private fun validateAll() =
+        validateConfirmEmail() && validateConfirmPassword() &&
+                validatePasswordLength() && validateConfirmPasswordLength()
+
+    private fun validateConfirmPassword(): Boolean {
+        return etConfirm.validate(
+            layoutEtConfirm,
+            "Konfirmasi kata sandi harus sama"
+        ) { it.isNotEmpty() && it == etPassword.text.toString() }
+    }
+
+    private fun validatePasswordLength(): Boolean {
+        return etPassword.validate(
+            layoutEtPassword,
+            "Kata Sandi harus lebih dari 6 karakter"
+        ) { it.isValidPassword() }
+    }
+
+    private fun validateConfirmPasswordLength(): Boolean {
+        return etConfirm.validate(
+            layoutEtConfirm,
+            "Kata Sandi harus lebih dari 6 karakter"
+        ) { it.isValidPassword() }
+    }
+
+    private fun validateConfirmEmail(): Boolean {
+        return etConfirmEmail.validate(
+            layoutEtConfirmEmail,
+            "Konfirmasi email harus sama"
+        ) { it.isNotEmpty() && it == etEmail.text.toString() }
     }
 
     private fun firebaseAuthWithPassword(notifToken: String) {
@@ -102,14 +137,21 @@ class RegisterActivity(var isShowed: Boolean = false) : BaseActivity() {
                 viewModel.register(
                     fullname = etName.text.toString(),
                     email = etEmail.text.toString(),
-                    birthdate = etBirtdate.text.toString().fromAppsFormatDateToDbFormatDate()
-                        .toString(),
+                    birthdate = etBirtdate.text.toString().fromAppsFormatDateToDbFormatDate() ?: "",
                     gender = gender,
                     notifToken = notifToken
                 )
             } else {
-                when (task.exception?.message) {
-                    ERROR_EMAIL_IN_USE -> showSnackbar("Email ${etEmail.text.toString()} sudah digunakan.")
+                progressBar.setVisibilityToGone()
+                btnRegister.setVisibilityToVisible()
+
+                when (task.exception) {
+                    is FirebaseAuthWeakPasswordException -> showShortToast("Kata Sandi kurang dari 6 karakter")
+                    is FirebaseAuthUserCollisionException -> showShortToast("Email ${etEmail.text.toString()} sudah digunakan.")
+                    else -> {
+                        Log.d("HEIKAMU", "firebaseAuthWithPassword: ${task.exception}")
+                        showShortToast(getString(R.string.error_message_default))
+                    }
                 }
             }
         }
@@ -144,6 +186,13 @@ class RegisterActivity(var isShowed: Boolean = false) : BaseActivity() {
         datePickerDialog.setButton(DatePickerDialog.BUTTON_POSITIVE, "Pilih", datePickerDialog)
         datePickerDialog.setButton(DatePickerDialog.BUTTON_NEGATIVE, "Batal", datePickerDialog)
 
+        etBirtdate.setOnFocusChangeListener { view, b ->
+            if (view.isFocused) {
+                datePickerDialog.show()
+            } else {
+                datePickerDialog.dismiss()
+            }
+        }
         etBirtdate.setOnClickListener { datePickerDialog.show() }
     }
 

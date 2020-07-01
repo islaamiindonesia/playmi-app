@@ -3,11 +3,16 @@ package id.islaami.playmi.ui.home
 import android.app.SearchManager
 import android.content.Context
 import android.os.Bundle
-import android.view.*
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.lifecycle.Observer
+import com.google.android.gms.ads.AdLoader
+import com.google.android.gms.ads.formats.UnifiedNativeAd
 import id.islaami.playmi.R
 import id.islaami.playmi.data.model.category.Category
 import id.islaami.playmi.ui.base.BaseFragment
@@ -20,8 +25,10 @@ import kotlinx.android.synthetic.main.home_fragment.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 
-class HomeFragment : BaseFragment() {
+class HomeFragment(var list: List<Category> = emptyList()) : BaseFragment() {
     private val viewModel: HomeViewModel by viewModel()
+
+    var viewPagerAdapter: ViewPagerAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,6 +42,7 @@ class HomeFragment : BaseFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        viewPagerAdapter = ViewPagerAdapter()
         setHasOptionsMenu(true)
     }
 
@@ -64,7 +72,15 @@ class HomeFragment : BaseFragment() {
             }
         }
 
+        viewPager.adapter = viewPagerAdapter
+        viewPager.offscreenPageLimit = 4
+        tabLayout.setupWithViewPager(viewPager)
+
         observeGetAllCategory()
+    }
+
+    fun refresh() {
+        viewModel.getAllCategory()
     }
 
     private fun observeGetAllCategory() {
@@ -85,29 +101,19 @@ class HomeFragment : BaseFragment() {
         })
     }
 
-    private fun setupTab(list: List<Category>) {
-        val categories = ArrayList<Category>()
-        categories.add(0, Category(0, "Semua", 0, ""))
-        categories.addAll(list)
-
-        categories.forEach { category ->
-            tabLayout.addTab(tabLayout.newTab().setText(category.name))
-        }
-
-        viewPager.adapter = ViewPagerAdapter(categories, tabLayout.tabCount)
-        viewPager.offscreenPageLimit = categories.size
-        tabLayout.setupWithViewPager(viewPager)
+    private fun setupTab(categories: List<Category>) {
+        list = categories
+        viewPagerAdapter?.notifyDataSetChanged()
     }
 
-    inner class ViewPagerAdapter(var list: List<Category>, var numberOfTabs: Int = 0) :
-        FragmentStatePagerAdapter(childFragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+    inner class ViewPagerAdapter : FragmentStatePagerAdapter(childFragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
 
         override fun getItem(position: Int): Fragment {
             return VideoCategoryFragment.newInstance(list[position].ID.value())
         }
 
         override fun getCount(): Int {
-            return numberOfTabs
+            return list.size
         }
 
         override fun getPageTitle(position: Int): CharSequence? {

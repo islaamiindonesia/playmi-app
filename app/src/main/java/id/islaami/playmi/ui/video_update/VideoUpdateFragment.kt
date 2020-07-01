@@ -3,7 +3,6 @@ package id.islaami.playmi.ui.video_update
 import android.app.SearchManager
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -26,7 +25,6 @@ import id.islaami.playmi.util.ui.*
 import id.islaami.playmi.util.value
 import kotlinx.android.synthetic.main.video_update_fragment.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import kotlin.math.log
 
 class VideoUpdateFragment : BaseFragment() {
     private val viewModel: VideoUpdateViewModel by viewModel()
