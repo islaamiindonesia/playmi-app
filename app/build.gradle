@@ -57,9 +57,6 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    // native ads template
-    implementation project(':nativetemplates')
-
     // Preference Manager
     implementation "androidx.preference:preference-ktx:1.1.1"
 
