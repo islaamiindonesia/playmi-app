@@ -1,10 +1,7 @@
 package id.islaami.playmi
 
-import android.content.Context
-import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.multidex.MultiDexApplication
-import androidx.preference.PreferenceManager
 import com.chibatching.kotpref.Kotpref
 import id.islaami.playmi.config.CacheLibrary
 import id.islaami.playmi.data.model.Mode
@@ -21,9 +18,11 @@ class PlaymiApp : MultiDexApplication() {
         // initialization of Cache library to allow saving into device
         CacheLibrary.init(this)
 
+        // set default app theme
         AppCompatDelegate.setDefaultNightMode(Mode.appMode)
 
         // initialization of Dependency Injection library to allow the use of application context
         startKoin { androidContext(this@PlaymiApp) }
+
     }
 }
