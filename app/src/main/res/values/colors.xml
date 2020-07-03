@@ -20,4 +20,8 @@
     <color name="disabled_button">@color/pale_grey</color>
     <color name="disabled_text">@color/black_10</color>
     <color name="status_bar">@color/accent</color>
+
+    <color name="colorCardBackground">#FFFFFF</color>
+    <color name="colorAdLabelText">#FFFFFF</color>
+    <color name="colorAdLabelBackground">#FFCC66</color>
 </resources>

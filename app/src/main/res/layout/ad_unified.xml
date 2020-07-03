@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardBackgroundColor="@color/colorCardBackground"
+    app:cardElevation="@dimen/margin_4_dp"
+    app:cardCornerRadius="@dimen/margin_4_dp"
+    android:layout_margin="@dimen/margin_4_dp">
+
+    <com.google.android.gms.ads.formats.UnifiedNativeAdView
+        android:id="@+id/unav"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:text="@string/ad_label"
+                android:textColor="@color/colorAdLabelText"
+                android:background="@color/colorAdLabelBackground" />
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginStart="@dimen/margin_20_dp"
+                android:layout_marginEnd="@dimen/margin_20_dp"
+                android:layout_marginTop="@dimen/margin_3_dp">
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/ad_app_icon"
+                        android:layout_width="@dimen/ad_icon_width"
+                        android:layout_height="@dimen/ad_icon_height"
+                        android:adjustViewBounds="true"
+                        android:layout_marginEnd="@dimen/margin_5_dp"
+                        android:layout_marginBottom="@dimen/margin_5_dp"
+                        tools:src="@drawable/app_icon" />
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/ad_headline"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/accent"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            tools:text="Ad headline" />
+
+                        <androidx.appcompat.widget.LinearLayoutCompat
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/ad_advertiser"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:gravity="bottom"
+                                android:textSize="14sp"
+                                android:textStyle="bold"
+                                tools:text="Ad advertiser" />
+
+                            <androidx.appcompat.widget.AppCompatRatingBar
+                                android:id="@+id/ad_stars"
+                                style="?android:attr/ratingBarStyleSmall"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:isIndicator="true"
+                                android:numStars="5"
+                                android:stepSize="0.5" />
+
+                        </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/ad_body"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/margin_20_dp"
+                        tools:text="Ad body"
+                        android:textSize="12sp" />
+
+                    <com.google.android.gms.ads.formats.MediaView
+                        android:id="@+id/ad_media"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_width="@dimen/ad_media_width"
+                        android:layout_height="@dimen/ad_media_height"
+                        android:layout_marginTop="@dimen/margin_5_dp" />
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="@dimen/margin_10_dp"
+                        android:layout_marginTop="@dimen/margin_10_dp">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/ad_price"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="@dimen/margin_5_dp"
+                            android:layout_marginStart="@dimen/margin_5_dp"
+                            tools:text="10.99"
+                            android:textSize="12sp" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/ad_store"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/margin_5_dp"
+                            android:layout_marginEnd="@dimen/margin_5_dp"
+                            tools:text="Ad store"
+                            android:textSize="12sp" />
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/ad_call_to_action"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            tools:text="Call to action"
+                            app:backgroundTint="@color/accent"
+                            android:textColor="@color/white"
+                            android:gravity="center"
+                            android:textSize="12sp" />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </com.google.android.gms.ads.formats.UnifiedNativeAdView>
+
+</androidx.cardview.widget.CardView>

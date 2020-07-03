@@ -121,7 +121,7 @@
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-2056704120167122~6376437988" /> <!-- PROVIDER -->
+            android:value="@string/ad_mod_app_id" /> <!-- PROVIDER -->
 
         <!-- PROVIDERS -->
         <provider

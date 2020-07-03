@@ -2,6 +2,11 @@
     <string name="app_name">Playmi</string>
     <string name="app_version">Versi %1$s</string>
 
+    <!-- TODO: Admobs app id -->
+    <string name="ad_label">Ad</string>
+    <string name="ad_mod_app_id" translatable="false">ca-app-pub-2056704120167122~6376437988</string>
+    <string name="ad_mod_first_ad_unit" translatable="false">ca-app-pub-xxxx</string> <!-- TEST -->
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="text_agreement">
