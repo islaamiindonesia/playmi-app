@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdLoader
 import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdRequest.*
 import com.google.android.gms.ads.formats.NativeAdOptions
 import com.google.android.gms.ads.formats.UnifiedNativeAd
 import com.google.android.gms.ads.formats.UnifiedNativeAdView
@@ -28,6 +29,8 @@ import id.islaami.playmi.ui.channel.ChannelDetailActivity
 import id.islaami.playmi.ui.video.VideoDetailActivity
 import id.islaami.playmi.util.ui.loadExternalImage
 import id.islaami.playmi.util.ui.loadImage
+import id.islaami.playmi.util.ui.setVisibilityToGone
+import id.islaami.playmi.util.ui.setVisibilityToVisible
 import id.islaami.playmi.util.value
 import kotlinx.android.synthetic.main.video_item.view.*
 import java.text.SimpleDateFormat
@@ -60,16 +63,16 @@ class VideoPagedAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        if (holder is AdViewHolder)
-            Log.i("Cek ", "Ad at position: $position")
+        /*if (holder is AdViewHolder)
+            Log.i("Cek ", "Ad at position: $position")*/
         holder.bindView(getItem(position))
     }
 
     override fun getItemViewType(position: Int): Int {
-       return if(position % 10 == 0) {
-            VIDEO_ITEM_VIEW_TYPE
+       return if(position % 10 == 0 && position != 0) {
+           UNIFIED_NATIVE_AD_VIEW_TYPE
        }else{
-            UNIFIED_NATIVE_AD_VIEW_TYPE
+           VIDEO_ITEM_VIEW_TYPE
        }
     }
 
@@ -93,12 +96,14 @@ class VideoPagedAdapter(
                 channelIcon.loadImage(video.channel?.thumbnail)
                 views.text = "${video.views ?: 0}x"
 
-                subcategoryName.apply {
-                    text = video.subcategory?.name
+                subcategoryName.text = video.subcategory?.name
 
-                    setOnClickListener {
-
-                    }
+                if (video.isUploadShown == false) {
+                    layoutUploadTime.setVisibilityToGone()
+                    dot.setVisibilityToGone()
+                } else {
+                    layoutUploadTime.setVisibilityToVisible()
+                    dot.setVisibilityToVisible()
                 }
 
                 recyclerView.adapter =
@@ -177,7 +182,7 @@ class VideoPagedAdapter(
             hideAdViews()
             currentNativeAd?.destroy()
 
-            val adLoader = AdLoader.Builder(itemView.context, itemView.context.getString(R.string.ad_mod_app_id))
+            val adLoader = AdLoader.Builder(itemView.context, itemView.context.getString(R.string.ad_native_unit_id))
                 .forUnifiedNativeAd { ad ->
                     currentNativeAd = ad
 

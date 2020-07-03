@@ -3,6 +3,7 @@ package id.islaami.playmi.ui.auth
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.lifecycle.Observer
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -54,6 +55,8 @@ class LoginActivity : BaseActivity() {
                 // Get new Instance ID token
                 audId = task.result?.id.toString()
                 token = task.result?.token.toString()
+
+                Log.d("HEIKAMU", "onCreate: $token")
             })
 
         viewModel.initLoginActivity()
@@ -90,7 +93,7 @@ class LoginActivity : BaseActivity() {
                 firebaseAuthWithGoogle(account)
             } catch (e: ApiException) {
                 // Google Sign In failed, update UI appropriately
-                showSnackbar(getString(R.string.error_message_default))
+                showShortToast(getString(R.string.error_message_default))
             }
         }
     }
@@ -114,22 +117,11 @@ class LoginActivity : BaseActivity() {
                 try {
                     throw task.exception!!
                 } catch (e: FirebaseAuthInvalidCredentialsException) {
-                    showSnackbar(getString(R.string.invalid_credentials))
+                    showShortToast(getString(R.string.invalid_credentials))
                 } catch (e: FirebaseAuthInvalidUserException) {
-                    showAlertDialogWith2Buttons(
-                        message = getString(
-                            R.string.error_email_not_found,
-                            email.text.toString()
-                        ),
-                        positiveText = "Daftar",
-                        negativeText = "Tutup",
-                        positiveCallback = {
-                            RegisterActivity.startActivity(this, audId, token)
-                        },
-                        negativeCallback = { it.dismiss() }
-                    )
+                    showDialogRegisterUser()
                 } catch (e: Exception) {
-                    showSnackbar(getString(R.string.error_message_default))
+                    showShortToast(getString(R.string.error_message_default))
                 }
             }
         }
@@ -148,7 +140,7 @@ class LoginActivity : BaseActivity() {
                     progressBar.setVisibilityToGone()
 
                     // If sign in fails, display a message to the user.
-                    showSnackbar(getString(R.string.error_message_default))
+                    showShortToast(getString(R.string.error_message_default))
                 }
             }
     }
@@ -175,6 +167,24 @@ class LoginActivity : BaseActivity() {
     }
 
     private fun isFormValid() = validateEmail() && validatePassword()
+
+    private fun showDialogRegisterUser() {
+        AccountNotFoundDialogFragment.show(
+            supportFragmentManager,
+            email = email.text.toString(),
+            btnCancel = "Batal",
+            btnOk = "Buat Akun",
+            okCallback = {
+                RegisterActivity.startActivity(
+                    this,
+                    audId,
+                    token,
+                    email.text.toString(),
+                    password.text.toString()
+                )
+            }
+        )
+    }
 
     companion object {
         const val GOOGLE_CODE = 700
@@ -220,9 +230,9 @@ class LoginActivity : BaseActivity() {
                     progressBar.setVisibilityToGone()
                     when (result.message) {
                         "UNVERIFIED" -> {
-                            CustomDialogFragment.show(
+                            LoginErrorDialogFragment.show(
                                 supportFragmentManager,
-                                text = getString(R.string.error_email_not_verified),
+                                message = getString(R.string.error_email_not_verified),
                                 btnCancel = "Batal",
                                 btnOk = "Verifikasi Ulang",
                                 okCallback = {
@@ -231,23 +241,8 @@ class LoginActivity : BaseActivity() {
                             )
                         }
                         "EMAIL_NOT_FOUND" -> {
-                            if (isGoogle) {
-                                CompleteProfileActivity.startActivity(this, user, token)
-                            } else {
-                                CustomDialogFragment.show(
-                                    supportFragmentManager,
-                                    text = getString(R.string.error_email_not_found),
-                                    btnCancel = "Batal",
-                                    btnOk = "Buat Akun",
-                                    okCallback = {
-                                        RegisterActivity.startActivity(
-                                            this,
-                                            audId,
-                                            token
-                                        )
-                                    }
-                                )
-                            }
+                            if (isGoogle) CompleteProfileActivity.startActivity(this, user, token)
+                            else showDialogRegisterUser()
                         }
                         else -> {
                             showAlertDialog(
@@ -273,7 +268,7 @@ class LoginActivity : BaseActivity() {
                     progressBar.setVisibilityToGone()
                     btnLogin.setVisibilityToVisible()
 
-                    VerificationActivity.startActivity(this, email.text.toString(), token)
+                    VerificationActivity.startActivityClearTask(this, email.text.toString(), token)
                 }
                 ERROR -> {
                     progressBar.setVisibilityToGone()

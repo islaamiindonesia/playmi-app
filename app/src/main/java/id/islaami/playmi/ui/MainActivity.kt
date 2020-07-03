@@ -3,14 +3,17 @@ package id.islaami.playmi.ui
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
+import com.google.android.gms.ads.AdLoader
+import com.google.android.gms.ads.formats.UnifiedNativeAd
 import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.RequestConfiguration
 import com.google.android.material.tabs.TabLayout
 import com.google.firebase.messaging.FirebaseMessaging
 import id.islaami.playmi.R
@@ -18,10 +21,10 @@ import id.islaami.playmi.ui.base.BaseActivity
 import id.islaami.playmi.ui.channel_following.OrganizeChannelFragment
 import id.islaami.playmi.ui.home.HomeFragment
 import id.islaami.playmi.ui.playlist.PlaylistFragment
-import id.islaami.playmi.ui.setting.SettingActivity
 import id.islaami.playmi.ui.video_update.VideoUpdateFragment
 import id.islaami.playmi.util.ui.loadImage
 import kotlinx.android.synthetic.main.main_activity.*
+import java.util.*
 
 class MainActivity : BaseActivity() {
 
@@ -29,25 +32,12 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
 
-        toolbar.inflateMenu(R.menu.menu_main)
-        toolbar.setOnMenuItemClickListener {
-            when (it.itemId) {
-                R.id.mainSearch -> {
-                    onSearchRequested()
+        FirebaseMessaging.getInstance().subscribeToTopic("playmi")
 
-                    true
-                }
-                R.id.mainSetting -> {
-                    SettingActivity.startActivity(this)
-
-                    true
-                }
-                else -> super.onOptionsItemSelected(it)
-            }
+        MobileAds.initialize(this) {
+            Log.d("HEIKAMU", it.adapterStatusMap.toString())
         }
 
-        FirebaseMessaging.getInstance().subscribeToTopic("playmi")
-        MobileAds.initialize(this, getString(R.string.ad_mod_app_id))
         setupTabLayout()
     }
 
@@ -56,7 +46,6 @@ class MainActivity : BaseActivity() {
         val viewPagerAdapter = ViewPagerAdapter(supportFragmentManager)
         viewPagerMain.adapter = viewPagerAdapter
         viewPagerMain.offscreenPageLimit = 4
-        viewPagerMain.disableScroll(true)
 
         // Setup Tab Layout
         tabLayoutMain.setupWithViewPager(viewPagerMain)
@@ -143,6 +132,13 @@ class MainActivity : BaseActivity() {
             context?.startActivity(
                 Intent(context, MainActivity::class.java)
                     .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+            )
+        }
+
+        fun startActivityClearTop(context: Context?) {
+            context?.startActivity(
+                Intent(context, MainActivity::class.java)
+                    .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             )
         }
     }

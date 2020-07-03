@@ -4,25 +4,26 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg_rectangle_white_stroke_top"
     android:orientation="vertical"
-    tools:context=".ui.video_update.VideoUpdateFragment">
+    tools:context=".ui.video_update.VideoUpdateFragment"
+    tools:targetApi="lollipop">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:focusable="true">
+        android:elevation="4dp">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?android:attr/actionBarSize"
-            android:elevation="4dp">
+            android:layout_height="44dp"
+            android:layout_gravity="center_vertical">
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:layout_width="100dp"
-                android:layout_height="50dp"
-                android:adjustViewBounds="true"
+                android:layout_height="match_parent"
                 app:srcCompat="@drawable/app_logo" />
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
@@ -35,7 +36,6 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="?android:attr/colorBackground" />
+            android:layout_height="match_parent" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </LinearLayout>

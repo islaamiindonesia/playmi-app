@@ -1,6 +1,8 @@
 package id.islaami.playmi.ui.home
 
 import android.os.Bundle
+import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,6 +10,10 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.Observer
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.AdLoader
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.formats.UnifiedNativeAd
 import id.islaami.playmi.R
 import id.islaami.playmi.data.model.video.Video
 import id.islaami.playmi.ui.adapter.VideoPagedAdapter
@@ -15,20 +21,21 @@ import id.islaami.playmi.ui.base.BaseFragment
 import id.islaami.playmi.util.ERROR_EMPTY_LIST
 import id.islaami.playmi.util.ResourceStatus.*
 import id.islaami.playmi.util.handleApiError
+import id.islaami.playmi.util.ui.*
 import id.islaami.playmi.util.value
-import id.islaami.playmi.util.ui.showAlertDialogWith2Buttons
-import id.islaami.playmi.util.ui.showSnackbar
-import id.islaami.playmi.util.ui.startRefreshing
-import id.islaami.playmi.util.ui.stopRefreshing
 import kotlinx.android.synthetic.main.video_category_fragment.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.util.*
 
-class VideoCategoryFragment : BaseFragment() {
+
+class VideoCategoryFragment(
+    var categoryID: Int = 0
+) : BaseFragment() {
     private val viewModel: HomeViewModel by viewModel()
 
     private var videoPagedAdapter = VideoPagedAdapter(context,
         popMenu = { context, menuView, video ->
-            PopupMenu(context, menuView).apply {
+            PopupMenu(context, menuView, Gravity.END).apply {
                 inflate(R.menu.menu_popup_home)
 
                 if (video.channel?.isFollowed != true) menu.getItem(1).title = "Mulai Mengikuti"
@@ -39,54 +46,40 @@ class VideoCategoryFragment : BaseFragment() {
                 setOnMenuItemClickListener { item ->
                     when (item.itemId) {
                         R.id.popWatchLater -> {
-                            context.showAlertDialogWith2Buttons(
-                                "Simpan ke daftar Tonton Nanti?",
-                                "Iya",
-                                "Batal",
-                                positiveCallback = {
-                                    viewModel.watchLater(video.ID.value())
-                                    it.dismiss()
-                                },
-                                negativeCallback = { it.dismiss() })
+                            PlaymiDialogFragment.show(
+                                fragmentManager = childFragmentManager,
+                                text = "Simpan ke daftar Tonton Nanti?",
+                                okCallback = { viewModel.watchLater(video.ID.value()) }
+                            )
 
                             true
                         }
                         R.id.popFollow -> {
                             if (video.channel?.isFollowed != true) {
-                                context.showAlertDialogWith2Buttons(
-                                    "Apakah ingin mulai mengikuti ${video.channel?.name}?",
-                                    "Iya",
-                                    "Batal",
-                                    positiveCallback = {
-                                        viewModel.followChannel(video.channel?.ID.value())
-                                        it.dismiss()
-                                    },
-                                    negativeCallback = { it.dismiss() })
+                                PlaymiDialogFragment.show(
+                                    fragmentManager = childFragmentManager,
+                                    text = getString(R.string.channel_follow, video.channel?.name),
+                                    okCallback = { viewModel.followChannel(video.channel?.ID.value()) }
+                                )
                             } else {
-                                context.showAlertDialogWith2Buttons(
-                                    "Apakah ingin berhenti mengikuti ${video.channel?.name}?",
-                                    "Iya",
-                                    "Batal",
-                                    positiveCallback = {
-                                        viewModel.unfollowChannel(video.channel?.ID.value())
-                                        it.dismiss()
-                                    },
-                                    negativeCallback = { it.dismiss() })
+                                PlaymiDialogFragment.show(
+                                    fragmentManager = childFragmentManager,
+                                    text = getString(
+                                        R.string.channel_unfollow,
+                                        video.channel?.name
+                                    ),
+                                    okCallback = { viewModel.unfollowChannel(video.channel?.ID.value()) }
+                                )
                             }
 
                             true
                         }
                         R.id.popHide -> {
-                            context.showAlertDialogWith2Buttons(
-                                "Anda tidak akan melihat seluruh video dari kanal ini" +
-                                        "\nApakah ingin berhenti mengikuti ${video.channel?.name}?",
-                                "Iya",
-                                "Batal",
-                                positiveCallback = {
-                                    viewModel.hideChannel(video.channel?.ID.value())
-                                    it.dismiss()
-                                },
-                                negativeCallback = { it.dismiss() })
+                            PlaymiDialogFragment.show(
+                                fragmentManager = childFragmentManager,
+                                text = getString(R.string.channel_hide, video.channel?.name),
+                                okCallback = { viewModel.hideChannel(video.channel?.ID.value()) }
+                            )
 
                             true
                         }
@@ -97,8 +90,6 @@ class VideoCategoryFragment : BaseFragment() {
                 show()
             }
         })
-
-    var categoryID = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -120,15 +111,17 @@ class VideoCategoryFragment : BaseFragment() {
             categoryID = bundle.getInt(EXTRA_CATEGORY, 0)
         }
 
-        viewModel.initVideoCategoryFragment(categoryID)
-        observeWatchLaterResult()
-        observeFollowResult()
-        observeHideResult()
+        swipeRefreshLayout.startRefreshing()
     }
 
     override fun onResume() {
         super.onResume()
 
+        viewModel.initVideoCategoryFragment(categoryID)
+        observeWatchLaterResult()
+        observeFollowResult()
+        observeUnfollowResult()
+        observeHideResult()
         observeGetAllVideoResult()
     }
 
@@ -138,6 +131,8 @@ class VideoCategoryFragment : BaseFragment() {
         } else {
             viewModel.refreshAllVideo()
         }
+
+        (this.parentFragment as HomeFragment).refresh()
     }
 
     private fun setupRecyclerView(result: PagedList<Video>?) {
@@ -168,15 +163,19 @@ class VideoCategoryFragment : BaseFragment() {
             Observer { result ->
                 when (result?.status) {
                     LOADING -> {
-                        swipeRefreshLayout.startRefreshing()
                     }
                     SUCCESS -> {
                         swipeRefreshLayout.stopRefreshing()
+                        recyclerView.setVisibilityToVisible()
+                        emptyText.setVisibilityToGone()
                     }
                     ERROR -> {
                         swipeRefreshLayout.stopRefreshing()
                         when (result.message) {
-                            ERROR_EMPTY_LIST -> showSnackbar("Tidak ada video")
+                            ERROR_EMPTY_LIST -> {
+                                emptyText.setVisibilityToVisible()
+                                recyclerView.setVisibilityToGone()
+                            }
                             else -> {
                                 handleApiError(errorMessage = result.message)
                                 { message -> showSnackbar(message) }
@@ -188,48 +187,64 @@ class VideoCategoryFragment : BaseFragment() {
     }
 
     private fun observeWatchLaterResult() {
-        viewModel.watchLaterResultLd.observe(this, Observer { result ->
+        viewModel.watchLaterResultLd.observe(viewLifecycleOwner, Observer { result ->
             when (result?.status) {
                 LOADING -> {
                 }
                 SUCCESS -> {
-                    showSnackbar("Berhasil disimpan")
+                    context?.showShortToast("Berhasil disimpan")
                     refresh()
                 }
                 ERROR -> {
-                    showSnackbar(result.message)
+                    context?.showShortToast(result.message)
                 }
             }
         })
     }
 
     private fun observeFollowResult() {
-        viewModel.followChannelResultLd.observe(this, Observer { result ->
+        viewModel.followChannelResultLd.observe(viewLifecycleOwner, Observer { result ->
             when (result?.status) {
                 LOADING -> {
                 }
                 SUCCESS -> {
-                    showSnackbar("Berhasil")
+                    context?.showShortToast("Berhasil mengikuti")
                     refresh()
                 }
                 ERROR -> {
-                    showSnackbar(result.message)
+                    context?.showShortToast(result.message)
+                }
+            }
+        })
+    }
+
+    private fun observeUnfollowResult() {
+        viewModel.unfollowChannelResultLd.observe(viewLifecycleOwner, Observer { result ->
+            when (result?.status) {
+                LOADING -> {
+                }
+                SUCCESS -> {
+                    context?.showShortToast("Berhenti mengikuti")
+                    refresh()
+                }
+                ERROR -> {
+                    context?.showShortToast(result.message)
                 }
             }
         })
     }
 
     private fun observeHideResult() {
-        viewModel.hideChannelResultLd.observe(this, Observer { result ->
+        viewModel.hideChannelResultLd.observe(viewLifecycleOwner, Observer { result ->
             when (result?.status) {
                 LOADING -> {
                 }
                 SUCCESS -> {
-                    showSnackbar(getString(R.string.message_channel_hide))
+                    context?.showShortToast(getString(R.string.message_channel_hide))
                     refresh()
                 }
                 ERROR -> {
-                    showSnackbar(result.message)
+                    context?.showShortToast(result.message)
                 }
             }
         })

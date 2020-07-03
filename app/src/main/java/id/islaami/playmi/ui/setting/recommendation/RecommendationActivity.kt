@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.lifecycle.Observer
+import com.google.android.gms.ads.AdRequest
 import id.islaami.playmi.R
 import id.islaami.playmi.ui.base.BaseActivity
 import id.islaami.playmi.ui.setting.SettingViewModel
@@ -16,6 +17,7 @@ import id.islaami.playmi.util.ui.setVisibilityToVisible
 import id.islaami.playmi.util.ui.showAlertDialog
 import id.islaami.playmi.util.ui.showSnackbar
 import kotlinx.android.synthetic.main.recommendation_activity.*
+import kotlinx.android.synthetic.main.recommendation_activity.toolbar
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class RecommendationActivity : BaseActivity() {
@@ -39,6 +41,9 @@ class RecommendationActivity : BaseActivity() {
         }
 
         setupForm()
+
+        val adRequest = AdRequest.Builder().build()
+        adView.loadAd(adRequest)
     }
 
     private fun setupForm() {

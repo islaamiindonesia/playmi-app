@@ -3,12 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/mainSearch"
-        android:icon="@drawable/ic_search_dark"
-        app:showAsAction="always"
-        android:title="Search" />
+        android:icon="@drawable/ic_search"
+        android:title="Search"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        app:showAsAction="ifRoom|collapseActionView" />
     <item
         android:id="@+id/mainSetting"
-        android:icon="@drawable/ic_settings_dark"
-        app:showAsAction="always"
-        android:title="Setting" />
+        android:icon="@drawable/ic_settings"
+        android:title="Setting"
+        app:showAsAction="ifRoom" />
 </menu>

@@ -3,9 +3,10 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/adCard"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardBackgroundColor="@color/colorCardBackground"
+    app:cardBackgroundColor="@color/white"
     app:cardElevation="@dimen/margin_4_dp"
     app:cardCornerRadius="@dimen/margin_4_dp"
     android:layout_margin="@dimen/margin_4_dp">

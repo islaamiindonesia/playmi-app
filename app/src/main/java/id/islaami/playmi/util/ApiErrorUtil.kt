@@ -9,6 +9,7 @@ import id.islaami.playmi.ui.auth.LoginActivity
 import com.squareup.moshi.Moshi
 import retrofit2.HttpException
 import java.io.IOException
+import java.net.SocketTimeoutException
 import java.util.*
 
 fun Throwable.getErrorMessage(): String {
@@ -22,7 +23,10 @@ fun Throwable.getErrorMessage(): String {
             405 -> processErrorMessage(ERROR_METHOD_NOT_ALLOWED, errorBody.toString())
             else -> processErrorMessage(ERROR_CONNECTION, errorBody.toString())
         }
+    } else if (this is SocketTimeoutException) {
+        return ERROR_CONNECTION
     }
+
     return ERROR_DEFAULT
 }
 

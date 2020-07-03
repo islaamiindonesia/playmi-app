@@ -17,11 +17,11 @@ import id.islaami.playmi.R
 import java.text.NumberFormat
 import java.util.*
 
-/**
- * Created by Kemal Amru Ramadhan on 10/04/2019.
- */
 fun String?.isValidEmail(): Boolean =
     this != null && isNotEmpty() && Patterns.EMAIL_ADDRESS.matcher(this).matches()
+
+fun String?.isValidPassword(): Boolean =
+    this != null && isNotEmpty() && this.length >= 6
 
 fun String?.toDouble(): Double {
     if (this != null && this.isNotEmpty()) return this.toDouble()
@@ -36,13 +36,13 @@ fun String?.digitGrouping(): String {
 
 fun String?.fromHtmlToString() = this?.let {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) Html.fromHtml(it, Html.FROM_HTML_MODE_LEGACY).toString()
-    else Html.fromHtml(it).toString()
+    else HtmlCompat.fromHtml(it, HtmlCompat.FROM_HTML_MODE_LEGACY).toString()
 } ?: ""
 
 fun String?.fromHtmlToSpanned() : Spanned? = this?.let {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-        Html.fromHtml(it, Html.FROM_HTML_MODE_COMPACT)
-    else HtmlCompat.fromHtml(it, HtmlCompat.FROM_HTML_MODE_COMPACT)
+        Html.fromHtml(it, Html.FROM_HTML_MODE_LEGACY)
+    else HtmlCompat.fromHtml(it, HtmlCompat.FROM_HTML_MODE_LEGACY)
 }
 
 fun String?.containsAlphabetAndNumber(): Boolean =

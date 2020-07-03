@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
+import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.Observer
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.firebase.auth.FirebaseUser
@@ -15,6 +16,7 @@ import id.islaami.playmi.util.ResourceStatus.*
 import id.islaami.playmi.util.createClickableString
 import id.islaami.playmi.util.handleApiError
 import id.islaami.playmi.util.ui.*
+import id.islaami.playmi.util.value
 import kotlinx.android.synthetic.main.verification_activity.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -38,6 +40,10 @@ class VerificationActivity : BaseActivity() {
         viewModel.initVerificationActivity()
         observeVerifyResult()
         observeResendCode()
+
+        inputNumber.addTextChangedListener {
+            btnVerify.isEnabled = it?.length.value() > 0
+        }
 
         btnVerify.setOnClickListener {
             viewModel.verifyUser(email, inputNumber.text.toString())
@@ -141,7 +147,7 @@ class VerificationActivity : BaseActivity() {
     }
 
     companion object {
-        fun startActivity(context: Context?, email: String, token: String?) {
+        fun startActivityClearTask(context: Context?, email: String, token: String?) {
             context?.startActivity(
                 Intent(context, VerificationActivity::class.java)
                     .putExtra("EMAIL", email)
@@ -149,17 +155,14 @@ class VerificationActivity : BaseActivity() {
             )
         }
 
-        fun startActivity(context: Context?, user: FirebaseUser?, token: String?) {
-            context?.startActivity(
-                Intent(
-                    context,
-                    VerificationActivity::class.java
-                )
-                    .putExtra("BUNDLE", Bundle().apply {
-                        putParcelable("USER", user)
-                    })
-                    .putExtra("TOKEN", token)
-            )
+        fun startActivityClearTask(context: Context?, user: FirebaseUser?, token: String?) {
+            context?.startActivity(Intent(context, VerificationActivity::class.java).apply {
+                putExtra("BUNDLE", Bundle().apply {
+                    putParcelable("USER", user)
+                })
+                putExtra("TOKEN", token)
+                flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+            })
         }
     }
 }

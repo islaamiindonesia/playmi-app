@@ -147,12 +147,10 @@ class VideoViewModel(
         getVideoDetail(id)
     }
 
-    fun initSearchableActivity(query: String) {
+    fun initSearchableActivity() {
         watchLaterResultLd = MutableLiveData()
         hideResultLd = MutableLiveData()
         followResultLd = MutableLiveData()
         unfollowResultLd = MutableLiveData()
-
-        getAllVideo(query)
     }
 }

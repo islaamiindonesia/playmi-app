@@ -228,7 +228,7 @@ class WatchLaterActivity : BaseActivity() {
                 LOADING -> {
                 }
                 SUCCESS -> {
-                    showSnackbar("Berhasil mengikuti")
+                    showSnackbar("Berhasil dihapus")
                     refresh()
                 }
                 ERROR -> {

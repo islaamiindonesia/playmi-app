@@ -9,15 +9,15 @@ import id.islaami.playmi.util.*
 class OrganizeChannelViewModel(private val repository: ChannelRepository) : BaseViewModel() {
 
     /* CHANNEL */
-    lateinit var getChannelFollowResultLd: MutableLiveData<Resource<List<Channel>>>
+    lateinit var channelFollowingLd: MutableLiveData<Resource<List<Channel>>>
     lateinit var getChannelHiddenResultLd: MutableLiveData<Resource<List<Channel>>>
 
-    fun getChannelFollow() {
-        disposable.add(repository.getChannelFollow().execute()
-            .doOnSubscribe { getChannelFollowResultLd.setLoading() }
+    fun getChannelFollow(query: String? = null) {
+        disposable.add(repository.getChannelFollow(query).execute()
+            .doOnSubscribe { channelFollowingLd.setLoading() }
             .subscribe(
-                { result -> getChannelFollowResultLd.setSuccess(result) },
-                { throwable -> getChannelFollowResultLd.setError(throwable.getErrorMessage()) }
+                { result -> channelFollowingLd.setSuccess(result) },
+                { throwable -> channelFollowingLd.setError(throwable.getErrorMessage()) }
             ))
     }
 
@@ -73,7 +73,7 @@ class OrganizeChannelViewModel(private val repository: ChannelRepository) : Base
     fun initFollowingFragment() {
         followingResultLd = MutableLiveData()
         channelStatusResultLd = MutableLiveData()
-        getChannelFollowResultLd = MutableLiveData()
+        channelFollowingLd = MutableLiveData()
 
         getChannelFollow()
     }

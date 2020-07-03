@@ -1,10 +1,12 @@
 package id.islaami.playmi.ui.channel_following
 
 import android.os.Bundle
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
+import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import id.islaami.playmi.R
@@ -12,10 +14,8 @@ import id.islaami.playmi.ui.adapter.ChannelFollowingAdapter
 import id.islaami.playmi.ui.base.BaseFragment
 import id.islaami.playmi.util.ResourceStatus.*
 import id.islaami.playmi.util.handleApiError
+import id.islaami.playmi.util.ui.*
 import id.islaami.playmi.util.value
-import id.islaami.playmi.util.ui.showSnackbar
-import id.islaami.playmi.util.ui.startRefreshing
-import id.islaami.playmi.util.ui.stopRefreshing
 import kotlinx.android.synthetic.main.following_hidden_fragment.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -23,7 +23,7 @@ class ChannelFollowingFragment : BaseFragment() {
     private val viewModel: OrganizeChannelViewModel by viewModel()
 
     private var adapter = ChannelFollowingAdapter { context, view, channel ->
-        PopupMenu(context, view).apply {
+        PopupMenu(context, view, Gravity.END).apply {
             inflate(R.menu.menu_popup_channel_follow)
 
             setOnMenuItemClickListener { item ->
@@ -63,6 +63,21 @@ class ChannelFollowingFragment : BaseFragment() {
             setColorSchemeResources(R.color.accent)
             setOnRefreshListener { refresh() }
         }
+
+        search.apply {
+            setIconifiedByDefault(false)
+            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    return true
+                }
+
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    viewModel.getChannelFollow(newText)
+
+                    return true
+                }
+            })
+        }
     }
 
     override fun onResume() {
@@ -75,24 +90,29 @@ class ChannelFollowingFragment : BaseFragment() {
         viewModel.getChannelFollow()
     }
 
+    companion object {
+        fun newInstance() = ChannelFollowingFragment()
+    }
+
     private fun observeChannel() {
-        viewModel.getChannelFollowResultLd.observe(this, Observer { result ->
+        viewModel.channelFollowingLd.observe(viewLifecycleOwner, Observer { result ->
             when (result?.status) {
-                LOADING -> {
-                    swipeRefreshLayout.startRefreshing()
-                }
+                LOADING -> { }
                 SUCCESS -> {
                     swipeRefreshLayout.stopRefreshing()
 
                     val list = result.data ?: emptyList()
 
-                    recyclerView.adapter = adapter.apply { add(list) }
+                    recyclerView.adapter = adapter.apply {
+                        add(list)
+                        notifyDataSetChanged()
+                    }
                     recyclerView.layoutManager = LinearLayoutManager(context)
                 }
                 ERROR -> {
                     swipeRefreshLayout.stopRefreshing()
                     handleApiError(errorMessage = result.message) { message ->
-                        showSnackbar(message)
+                        context?.showShortToast(message)
                     }
                 }
             }
@@ -105,11 +125,13 @@ class ChannelFollowingFragment : BaseFragment() {
                 LOADING -> {
                 }
                 SUCCESS -> {
-                    showSnackbar("Berhenti mengikuti")
+                    context?.showShortToast("Berhenti mengikuti")
                     refresh()
                 }
                 ERROR -> {
-                    showSnackbar(result.message)
+                    handleApiError(errorMessage = result.message) { message ->
+                        context?.showShortToast(message)
+                    }
                 }
             }
         })
@@ -121,17 +143,15 @@ class ChannelFollowingFragment : BaseFragment() {
                 LOADING -> {
                 }
                 SUCCESS -> {
-                    showSnackbar(getString(R.string.message_channel_hide))
+                    context?.showShortToast(getString(R.string.message_channel_hide))
                     refresh()
                 }
                 ERROR -> {
-                    showSnackbar(result.message)
+                    handleApiError(errorMessage = result.message) { message ->
+                        context?.showShortToast(message)
+                    }
                 }
             }
         })
-    }
-
-    companion object {
-        fun newInstance() = ChannelFollowingFragment()
     }
 }

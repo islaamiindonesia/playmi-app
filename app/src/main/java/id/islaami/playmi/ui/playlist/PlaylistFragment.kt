@@ -1,11 +1,17 @@
 package id.islaami.playmi.ui.playlist
 
+import android.app.SearchManager
+import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.PopupMenu
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,7 +31,7 @@ class PlaylistFragment : BaseFragment() {
     private val viewModel: PlaylistViewModel by viewModel()
 
     private var playlistAdapter = PlaylistAdapter { context, menuView, playlist ->
-        PopupMenu(context, menuView).apply {
+        PopupMenu(context, menuView, Gravity.END).apply {
             inflate(R.menu.menu_popup_playlist)
 
             setOnMenuItemClickListener { item ->
@@ -64,11 +70,36 @@ class PlaylistFragment : BaseFragment() {
         return inflater.inflate(R.layout.playlist_fragment, container, false)
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         toolbar.inflateMenu(R.menu.menu_main)
-        toolbar.setOnMenuItemClickListener { optionMenuListener(it) }
+
+        // Get the SearchView and set the searchable configuration
+        val searchManager = activity?.getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        (toolbar.menu.findItem(R.id.mainSearch).actionView as SearchView).apply {
+            // Assumes current activity is the searchable activity
+            setSearchableInfo(searchManager.getSearchableInfo(activity?.componentName))
+            queryHint = "Cari Video"
+            isIconified = true // Do not iconify the widget; expand it by default
+            isSubmitButtonEnabled = true
+        }
+
+        toolbar.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.mainSetting -> {
+                    SettingActivity.startActivity(context)
+
+                    true
+                }
+                else -> super.onOptionsItemSelected(it)
+            }
+        }
 
         viewModel.initPlaylistFragment()
         observeWatchLaterAmount()
@@ -104,25 +135,23 @@ class PlaylistFragment : BaseFragment() {
 
         dialogView.playlistName.setText(currentName)
 
-        if (dialogBuilder != null) {
-            dialogBuilder
-                .setView(dialogView)
-                .setPositiveButton("Simpan") { dialogInterface, i ->
-                    if (dialogView.playlistName.text.isNotEmpty()) {
-                        viewModel.changePlaylistName(
-                            playlistId,
-                            dialogView.playlistName.text.toString()
-                        )
-                        dialogInterface.dismiss()
-                    }
-                }
-                .setNegativeButton("Batal") { dialogInterface, i ->
-                    dialogInterface.dismiss()
-                }
+        dialogBuilder?.setView(dialogView)
 
-
-            dialogBuilder.create().show()
+        val dialog = dialogBuilder?.create()
+        dialogView.btnCancel.setOnClickListener {
+            dialog?.dismiss()
         }
+        dialogView.btnOk.setOnClickListener {
+            if (dialogView.playlistName.text.isNotEmpty()) {
+                viewModel.changePlaylistName(
+                    playlistId,
+                    dialogView.playlistName.text.toString()
+                )
+                dialog?.dismiss()
+            }
+        }
+        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog?.show()
     }
 
     private fun observeWatchLaterAmount() {
@@ -139,7 +168,7 @@ class PlaylistFragment : BaseFragment() {
                 ERROR -> {
                     swipeRefreshLayout.stopRefreshing()
                     handleApiError(result.message) {
-                        showSnackbar(getString(R.string.error_message_default))
+                        context?.showShortToast(getString(R.string.error_message_default))
                     }
                 }
             }
@@ -179,12 +208,12 @@ class PlaylistFragment : BaseFragment() {
                 LOADING -> {
                 }
                 SUCCESS -> {
-                    showSnackbar("Berhasil mengubah nama playlist")
+                    context?.showShortToast("Berhasil mengubah nama playlist")
                     refresh()
 
                 }
                 ERROR -> {
-                    showSnackbar(getString(R.string.error_message_default))
+                    context?.showShortToast(getString(R.string.error_message_default))
                 }
             }
         })
@@ -196,11 +225,11 @@ class PlaylistFragment : BaseFragment() {
                 LOADING -> {
                 }
                 SUCCESS -> {
-                    showSnackbar("Playlist telah dihapus")
+                    context?.showShortToast("Playlist telah dihapus")
                     refresh()
                 }
                 ERROR -> {
-                    showSnackbar(getString(R.string.error_message_default))
+                    context?.showShortToast(getString(R.string.error_message_default))
                 }
             }
         })

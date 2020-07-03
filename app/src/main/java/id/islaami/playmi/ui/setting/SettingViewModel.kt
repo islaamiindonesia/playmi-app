@@ -11,11 +11,8 @@ class SettingViewModel(
     private val repository: SettingRepository,
     private val userRepository: UserRepository
 ) : BaseViewModel() {
-    var darkMode: Int
-        get() = userRepository.darkMode
-        set(value) {
-            userRepository.darkMode = value
-        }
+
+    fun getProfile() = userRepository.profile
 
     var selectedLocale: String
         get() = userRepository.selectedLocale
@@ -55,7 +52,7 @@ class SettingViewModel(
         logoutResultLd = MutableLiveData()
         profileNameResultLd = MutableLiveData()
 
-        getProfileName()
+        if (getProfile() == null) getProfileName()
     }
 
     // Report

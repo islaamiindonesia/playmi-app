@@ -1,19 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?android:attr/colorBackground"
     android:orientation="vertical"
-    tools:targetApi="lollipop"
-    tools:context=".ui.video.VideoDetailActivity">
+    tools:context=".ui.video.VideoDetailActivity"
+    tools:targetApi="lollipop">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBar"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:focusable="true">
+        android:focusable="true"
+        ads:layout_constraintEnd_toEndOf="parent"
+        ads:layout_constraintStart_toStartOf="parent"
+        ads:layout_constraintTop_toTopOf="parent">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
@@ -26,8 +30,12 @@
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefreshLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/adView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/appBar">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -38,9 +46,7 @@
                 android:id="@+id/videoPlayer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:autoPlay="true"
-                app:showFullScreenButton="true"
-                app:videoId="dummyId" />
+                app:showFullScreenButton="true" />
 
             <androidx.core.widget.NestedScrollView
                 android:id="@+id/successLayout"
@@ -55,20 +61,21 @@
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/bg_rectangle_white_stroke_bottom"
-                        android:padding="12dp">
+                        android:layout_height="wrap_content">
 
                         <TextView
                             android:id="@+id/videoTitle"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_marginVertical="12dp"
+                            android:layout_marginStart="12dp"
                             android:ellipsize="end"
                             android:fontFamily="sans-serif-medium"
                             android:maxLines="2"
                             android:textColor="?android:attr/textColorPrimary"
                             android:textSize="16sp"
-                            app:layout_constraintEnd_toEndOf="parent"
+                            ads:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@+id/menu"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             tools:text="Google's Video Title" />
@@ -80,11 +87,18 @@
                             android:background="?selectableItemBackground"
                             android:clickable="true"
                             android:focusable="true"
-                            android:paddingHorizontal="10dp"
-                            android:src="@drawable/ic_more"
-                            app:layout_constraintBottom_toBottomOf="@id/videoTitle"
+                            android:paddingHorizontal="12dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toTopOf="@id/videoTitle" />
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:srcCompat="@drawable/ic_more" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_rectangle_white_stroke_bottom"
+                        android:paddingHorizontal="12dp">
 
                         <LinearLayout
                             android:layout_width="0dp"
@@ -93,7 +107,7 @@
                             android:orientation="horizontal"
                             app:layout_constraintBottom_toBottomOf="@+id/subcategoryName"
                             app:layout_constraintEnd_toStartOf="@id/subcategoryName"
-                            app:layout_constraintStart_toStartOf="@id/videoTitle"
+                            app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="@id/subcategoryName">
 
                             <androidx.appcompat.widget.AppCompatImageView
@@ -112,34 +126,41 @@
                                 android:textSize="10sp"
                                 tools:text="500,000 kali" />
 
-                            <androidx.appcompat.widget.AppCompatImageView
-                                android:layout_width="10dp"
-                                android:layout_height="20dp"
-                                android:layout_marginStart="16dp"
-                                app:srcCompat="@drawable/ic_time" />
-
-                            <TextView
-                                android:id="@+id/videoPublishedDate"
+                            <LinearLayout
+                                android:id="@+id/layoutUploadTime"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="8dp"
-                                android:textSize="10sp"
-                                app:tint="?colorControlNormal"
-                                tools:text="6 bulan yang lalu" />
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <androidx.appcompat.widget.AppCompatImageView
+                                    android:layout_width="10dp"
+                                    android:layout_height="20dp"
+                                    android:layout_marginStart="16dp"
+                                    app:srcCompat="@drawable/ic_time" />
+
+                                <TextView
+                                    android:id="@+id/videoPublishedDate"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="8dp"
+                                    android:textSize="10sp"
+                                    app:tint="?colorControlNormal"
+                                    tools:text="6 bulan yang lalu" />
+                            </LinearLayout>
                         </LinearLayout>
 
                         <TextView
                             android:id="@+id/subcategoryName"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
                             android:fontFamily="sans-serif-medium"
                             android:padding="4dp"
                             android:textAllCaps="true"
                             android:textColor="@color/accent"
                             android:textSize="10sp"
-                            app:layout_constraintEnd_toEndOf="@+id/videoTitle"
-                            app:layout_constraintTop_toBottomOf="@id/videoTitle"
+                            ads:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
                             tools:text="Hijrah" />
 
                         <androidx.recyclerview.widget.RecyclerView
@@ -157,21 +178,30 @@
                         android:layout_height="wrap_content"
                         android:background="@drawable/bg_rectangle_white_stroke_bottom"
                         android:orientation="horizontal"
-                        android:padding="12dp">
+                        android:paddingVertical="8dp">
 
-                        <ImageView
-                            android:id="@+id/channelPhoto"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
-                            app:srcCompat="@drawable/dummy_thumbnail" />
+                            android:layout_marginStart="12dp"
+                            app:cardCornerRadius="25dp"
+                            app:cardPreventCornerOverlap="false">
+
+                            <ImageView
+                                android:id="@+id/channelPhoto"
+                                android:layout_width="30dp"
+                                android:layout_height="30dp"
+                                android:scaleType="centerCrop"
+                                app:srcCompat="@drawable/dummy_thumbnail" />
+                        </com.google.android.material.card.MaterialCardView>
 
                         <androidx.constraintlayout.widget.ConstraintLayout
                             android:id="@+id/btnChannel"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
-                            android:layout_marginStart="16dp"
+                            android:layout_marginHorizontal="8dp"
                             android:layout_weight="5"
                             android:background="?selectableItemBackground"
                             android:clickable="true"
@@ -182,53 +212,54 @@
                                 style="@style/LabelText"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:text="Ini Channel Video"
                                 android:textSize="14sp"
                                 app:layout_constraintEnd_toEndOf="parent"
                                 app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
+                                app:layout_constraintTop_toTopOf="parent"
+                                tools:text="Ini Channel Video" />
 
                             <TextView
                                 android:id="@+id/channelFollower"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:text="2.000 Pengikut"
                                 android:textSize="12sp"
                                 app:layout_constraintEnd_toEndOf="@id/channelName"
                                 app:layout_constraintStart_toStartOf="@id/channelName"
-                                app:layout_constraintTop_toBottomOf="@id/channelName" />
+                                app:layout_constraintTop_toBottomOf="@id/channelName"
+                                tools:text="2.000 Pengikut" />
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnFollow"
                             style="@style/ButtonPrimaryRoundedRectangle"
-                            android:layout_width="100dp"
+                            android:layout_width="110dp"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
-                            android:layout_marginEnd="8dp"
-                            android:text="Follow" />
+                            android:layout_marginEnd="12dp"
+                            android:text="Ikuti" />
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnUnfollow"
                             style="@style/ButtonPrimaryOutline"
-                            android:layout_width="100dp"
+                            android:layout_width="110dp"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
-                            android:layout_marginEnd="8dp"
-                            android:text="Unfollow"
+                            android:layout_marginEnd="12dp"
+                            android:text="Mengikuti"
                             android:visibility="gone" />
 
                         <LinearLayout
                             android:id="@+id/layoutNotification"
                             android:layout_width="wrap_content"
-                            android:layout_height="match_parent">
+                            android:layout_height="match_parent"
+                            android:visibility="gone">
 
                             <androidx.appcompat.widget.AppCompatImageView
                                 android:id="@+id/btnNotif"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
-                                android:src="@drawable/ic_notifications" />
+                                app:srcCompat="@drawable/ic_notifications" />
                         </LinearLayout>
                     </LinearLayout>
 
@@ -237,9 +268,20 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:padding="16dp"
-                        android:text="Lorem Ipsum Dolor Sit Amet" />
+                        tools:text="Lorem Ipsum Dolor Sit Amet" />
                 </LinearLayout>
             </androidx.core.widget.NestedScrollView>
         </LinearLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-</LinearLayout>
+
+    <com.google.android.gms.ads.AdView
+        android:id="@+id/adView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        ads:adSize="BANNER"
+        ads:adUnitId="@string/ad_banner_unit_id"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,6 +3,7 @@ package id.islaami.playmi.data.repository
 import id.islaami.playmi.data.api.UserApi
 import id.islaami.playmi.data.cache.UserCache
 import id.islaami.playmi.data.model.profile.LoginBody
+import id.islaami.playmi.data.model.profile.Profile
 import id.islaami.playmi.data.model.profile.RegisterBody
 
 class UserRepository(private val userCache: UserCache, private val userApi: UserApi) {
@@ -10,6 +11,18 @@ class UserRepository(private val userCache: UserCache, private val userApi: User
         get() = userCache.darkMode
         set(value) {
             userCache.darkMode = value
+        }
+
+    var hasSeenIntro: Boolean
+        get() = userCache.hasSeenIntro
+        set(value) {
+            userCache.hasSeenIntro = value
+        }
+
+    var profile: Profile?
+        get() = userCache.profile
+        set(value) {
+            userCache.profile = value
         }
 
     var selectedLocale: String
@@ -22,6 +35,7 @@ class UserRepository(private val userCache: UserCache, private val userApi: User
     fun login(email: String, fcm: String) =
         userApi.login(LoginBody(email, fcm)).map {
             userCache.headerToken = it.data?.token.toString()
+            userCache.profile = it.data?.user
             it.data
         }
 
@@ -31,7 +45,10 @@ class UserRepository(private val userCache: UserCache, private val userApi: User
 
     fun isLoggedIn(): Boolean = userCache.headerToken.isNotEmpty()
 
-    fun getProfileName() = userApi.getProfile().map { it.data?.fullname }
+    fun getProfileName() = userApi.getProfile().map {
+        userCache.profile = it.data
+        it.data?.fullname
+    }
 
     fun register(
         fullname: String,

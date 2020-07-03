@@ -5,8 +5,8 @@ package id.islaami.playmi.util.ui
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
-import id.islaami.playmi.util.fromCurrencyToLong
 import com.google.android.material.textfield.TextInputLayout
+import id.islaami.playmi.util.fromCurrencyToLong
 import java.text.NumberFormat
 import java.util.*
 

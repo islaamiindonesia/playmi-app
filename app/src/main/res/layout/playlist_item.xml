@@ -5,15 +5,17 @@
     android:id="@+id/itemLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/bg_rectangle_white_stroke_bottom"
     android:orientation="vertical"
     tools:targetApi="o">
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/playlistThumbnail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:src="@drawable/ic_playlist_play"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/playmi_icon"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -32,8 +34,8 @@
             android:id="@+id/playlistName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="sans-serif"
-            android:textColor="@color/black"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="@color/text_color"
             android:textSize="14sp"
             tools:text="Judul Playlist" />
 
@@ -41,7 +43,7 @@
             android:id="@+id/videoAmount"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/black_50"
+            android:textColor="@color/text_color"
             android:textSize="12sp"
             tools:text="Judul Playlist" />
     </LinearLayout>
@@ -49,10 +51,10 @@
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/menu"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:src="@drawable/ic_more"
+        android:layout_height="0dp"
+        android:paddingHorizontal="12dp"
         app:layout_constraintBottom_toBottomOf="@id/playlistThumbnail"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/playlistThumbnail" />
+        app:layout_constraintTop_toTopOf="@id/playlistThumbnail"
+        app:srcCompat="@drawable/ic_more" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,11 +4,13 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import id.islaami.playmi.R
 import id.islaami.playmi.ui.base.BaseActivity
 import id.islaami.playmi.util.ui.setVisibilityToGone
 import id.islaami.playmi.util.ui.setVisibilityToVisible
 import id.islaami.playmi.util.ui.showShortToast
+import id.islaami.playmi.util.ui.showSnackbar
 import kotlinx.android.synthetic.main.forgot_password_activity.*
 
 class ForgotPasswordActivity : BaseActivity() {
@@ -33,7 +35,13 @@ class ForgotPasswordActivity : BaseActivity() {
                         textSubtitle.text =
                             "Instruksi pengaturan ulang kata sandi\nsudah dikirimkan ke email Anda"
                     } else {
-                        showShortToast(getString(R.string.error_message_default))
+                        try {
+                            throw task.exception!!
+                        } catch (e: FirebaseAuthInvalidUserException) {
+                            showShortToast(getString(R.string.error_email_not_found, email.text.toString()))
+                        } catch (e: Exception) {
+                            showSnackbar(getString(R.string.error_message_default))
+                        }
                     }
                 }
         }
@@ -42,8 +50,8 @@ class ForgotPasswordActivity : BaseActivity() {
     }
 
     companion object {
-        fun startActivity(context: Context?) {
-            context?.startActivity(Intent(context, ForgotPasswordActivity::class.java))
+        fun startActivity(context: Context) {
+            context.startActivity(Intent(context, ForgotPasswordActivity::class.java))
         }
     }
 }

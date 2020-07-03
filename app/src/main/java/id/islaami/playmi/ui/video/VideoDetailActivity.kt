@@ -1,28 +1,22 @@
 package id.islaami.playmi.ui.video
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.util.Log
+import android.view.View
+import android.view.WindowManager.LayoutParams.FLAG_SECURE
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
-import id.islaami.playmi.R
-import id.islaami.playmi.data.model.video.Video
-import id.islaami.playmi.ui.adapter.PlaylistSelectAdapter
-import id.islaami.playmi.ui.base.BaseActivity
-import id.islaami.playmi.ui.channel.ChannelDetailActivity
-import id.islaami.playmi.util.FullScreenHelper
-import id.islaami.playmi.util.ResourceStatus.*
-import id.islaami.playmi.util.fromHtmlToSpanned
-import id.islaami.playmi.util.ui.*
-import id.islaami.playmi.util.value
+import com.google.android.gms.ads.AdRequest
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.FirebaseApp
 import com.google.firebase.dynamiclinks.DynamicLink
@@ -32,13 +26,24 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstan
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerFullScreenListener
+import id.islaami.playmi.R
+import id.islaami.playmi.data.model.Mode
+import id.islaami.playmi.data.model.video.Video
+import id.islaami.playmi.ui.MainActivity
+import id.islaami.playmi.ui.adapter.PlaylistSelectAdapter
+import id.islaami.playmi.ui.base.BaseActivity
+import id.islaami.playmi.ui.channel.ChannelDetailActivity
+import id.islaami.playmi.util.FullScreenHelper
+import id.islaami.playmi.util.ResourceStatus.*
+import id.islaami.playmi.util.fromHtmlToSpanned
+import id.islaami.playmi.util.ui.*
+import id.islaami.playmi.util.value
 import kotlinx.android.synthetic.main.add_new_playlist_dialog.view.*
 import kotlinx.android.synthetic.main.playlist_bottom_sheet.view.*
 import kotlinx.android.synthetic.main.video_detail_activity.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.regex.Pattern
 
 class VideoDetailActivity : BaseActivity() {
     private val viewModel: VideoViewModel by viewModel()
@@ -54,35 +59,26 @@ class VideoDetailActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.video_detail_activity)
 
-        setupToolbar(toolbar)
+        window.setFlags(
+            FLAG_SECURE,
+            FLAG_SECURE
+        )
 
         videoId = intent.getIntExtra(EXTRA_ID, 0)
 
         FirebaseApp.initializeApp(this)
 
         if (videoId == 0) {
-            FirebaseDynamicLinks.getInstance()
-                .getDynamicLink(intent)
-                .addOnSuccessListener(this) { pendingDynamicLinkData ->
-                    var deepLink: Uri? = null
-                    if (pendingDynamicLinkData != null) {
-                        deepLink = pendingDynamicLinkData.link
-                    }
-
-                    val p = Pattern.compile("-?\\d+")
-                    val m = p.matcher(deepLink.toString())
-                    while (m.find()) {
-                        viewModel.initVideoDetailActivity(m.group().toInt())
-                    }
-                }
-                .addOnFailureListener(this) { e -> Log.d("HEIKAMU", "getDynamicLink:onFailure", e) }
+            setupToolbar(toolbar, backClickHandler = { handleBackPressed() })
+            val uri = Uri.parse(intent.data.toString())
+            viewModel.initVideoDetailActivity(uri.lastPathSegment.toString().toInt())
         } else {
+            setupToolbar(toolbar)
             viewModel.initVideoDetailActivity(videoId)
         }
 
         observeVideoDetail()
         observePlaylist()
-
         observeFollowResult()
         observeUnfollowResult()
         observeWatchLaterResult()
@@ -91,6 +87,28 @@ class VideoDetailActivity : BaseActivity() {
             setColorSchemeResources(R.color.accent)
             setOnRefreshListener { refresh() }
         }
+
+        val adRequest = AdRequest.Builder().build()
+        adView.loadAd(adRequest)
+
+        videoPlayer.addFullScreenListener(object : YouTubePlayerFullScreenListener {
+            override fun onYouTubePlayerEnterFullScreen() {
+                enterFullScreen()
+            }
+
+            override fun onYouTubePlayerExitFullScreen() {
+                exitFullScreen()
+            }
+        })
+    }
+
+    override fun onBackPressed() {
+        if (videoId == 0) handleBackPressed()
+        else super.onBackPressed()
+    }
+
+    private fun handleBackPressed() {
+        MainActivity.startActivityClearTask(this)
     }
 
     private fun refresh() {
@@ -143,6 +161,10 @@ class VideoDetailActivity : BaseActivity() {
         videoDescription.apply {
             text = description.fromHtmlToSpanned()
             movementMethod = LinkMovementMethod.getInstance()
+        }
+
+        if (isUploadShown == false) {
+            layoutUploadTime.setVisibilityToGone()
         }
 
         videoViews.text = "${views}x"
@@ -200,7 +222,7 @@ class VideoDetailActivity : BaseActivity() {
                             true
                         }
                         R.id.popShare -> {
-//                            createDynamicLink("$title-$description", this@showContent)
+                            createDynamicLink("${channel?.name}-$title", this@showContent)
                             true
                         }
                         else -> false
@@ -213,7 +235,7 @@ class VideoDetailActivity : BaseActivity() {
     }
 
     private fun differenceInDays(datePublished: String): Long {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale("id"))
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale("id"))
         val videoDate = dateFormat.parse(datePublished)
         val today = Date()
 
@@ -222,18 +244,17 @@ class VideoDetailActivity : BaseActivity() {
         return difference
     }
 
-
     override fun onConfigurationChanged(newConfiguration: Configuration) {
+        if (newConfiguration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            enterFullScreen()
+        }
         super.onConfigurationChanged(newConfiguration)
-        videoPlayer.getPlayerUiController().getMenu()!!.dismiss()
     }
 
     private fun initVideoPlayer(videoID: String) {
         videoPlayer.addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {
             override fun onReady(youTubePlayer: YouTubePlayer) {
                 youTubePlayer.loadVideo(videoID, 0f)
-
-                addFullScreenListenerToPlayer()
             }
 
             override fun onError(
@@ -244,33 +265,43 @@ class VideoDetailActivity : BaseActivity() {
                 showSnackbar("Terjadi kesalahan pada sistem. Silahkan coba lagi.")
             }
         })
+
+        if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            enterFullScreen()
+        }
     }
 
-    private fun addFullScreenListenerToPlayer() {
-        videoPlayer.addFullScreenListener(object : YouTubePlayerFullScreenListener {
-            override fun onYouTubePlayerEnterFullScreen() {
-                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-                fullScreenHelper.enterFullScreen()
-            }
+    private fun enterFullScreen() {
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+        toolbar.setVisibilityToGone()
+        adView.setVisibilityToGone()
+        fullScreenHelper.enterFullScreen()
+    }
 
-            override fun onYouTubePlayerExitFullScreen() {
-                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-                fullScreenHelper.exitFullScreen()
+    private fun exitFullScreen() {
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        toolbar.setVisibilityToVisible()
+        adView.setVisibilityToVisible()
+        fullScreenHelper.exitFullScreen()
+
+        if (Mode.appMode == AppCompatDelegate.MODE_NIGHT_NO) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
             }
-        })
+        }
     }
 
     private fun createDynamicLink(body: String, video: Video) {
         var shortLink: Uri?
 
         FirebaseDynamicLinks.getInstance().createDynamicLink()
-            .setLink(Uri.parse("http://islaami.id/videos/" + video.ID))
+            .setLink(Uri.parse("https://islaami.id/videos/" + video.ID))
             .setDomainUriPrefix("https://playmi.page.link")
-            // Open links with this app on Android
+            /*// Open links with this app on Android
             .setAndroidParameters(
                 DynamicLink.AndroidParameters.Builder("id.islaami.playmi")
                     .build()
-            )
+            )*/
             .setSocialMetaTagParameters(
                 DynamicLink.SocialMetaTagParameters.Builder()
                     .setTitle(video.title.toString())

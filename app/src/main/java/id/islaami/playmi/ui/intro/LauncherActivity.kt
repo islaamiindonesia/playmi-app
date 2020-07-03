@@ -2,7 +2,7 @@ package id.islaami.playmi.ui.intro
 
 import android.os.Bundle
 import android.os.Handler
-import androidx.appcompat.app.AppCompatDelegate.*
+import com.google.android.gms.ads.MobileAds
 import id.islaami.playmi.R
 import id.islaami.playmi.ui.MainActivity
 import id.islaami.playmi.ui.auth.LoginActivity
@@ -18,20 +18,19 @@ class LauncherActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.launcher_actvitiy)
 
+        MobileAds.initialize(this)
+
         handler = Handler()
 
-        if (viewModel.darkMode > 0) {
-            setDefaultNightMode(viewModel.darkMode)
-        } else {
-            setDefaultNightMode(MODE_NIGHT_NO)
-            viewModel.darkMode = getDefaultNightMode()
-        }
-
         handler.postDelayed({
-            if (viewModel.isLoggedIn()) {
-                MainActivity.startActivityClearTask(this)
+            if (viewModel.hasSeenIntro) {
+                if (viewModel.isLoggedIn()) {
+                    MainActivity.startActivityClearTask(this)
+                } else {
+                    LoginActivity.startActivityClearTask(this)
+                }
             } else {
-                LoginActivity.startActivityClearTask(this)
+                IntroActivity.startActivityClearTask(this)
             }
 
             finish()

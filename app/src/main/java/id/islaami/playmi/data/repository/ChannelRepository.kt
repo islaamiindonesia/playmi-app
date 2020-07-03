@@ -1,11 +1,15 @@
 package id.islaami.playmi.data.repository
 
-import android.util.Log
 import id.islaami.playmi.data.api.ChannelApi
 
 class ChannelRepository(private val api: ChannelApi) {
 
-    fun getChannelFollow() = api.getChannelFollow().map { it.data }
+    fun getChannelFollow(query: String? = null) =
+        if (query.isNullOrEmpty()) {
+            api.getChannelFollow().map { it.data }
+        } else {
+            api.getChannelFollow(query).map { it.data }
+        }
 
     fun getChannelHidden() = api.getChannelHidden().map { it.data }
 

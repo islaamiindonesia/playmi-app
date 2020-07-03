@@ -4,24 +4,25 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/pale_grey"
+    android:background="@color/layout_background_color"
     android:orientation="vertical"
-    tools:context=".ui.MainActivity">
+    tools:targetApi="lollipop">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
-        app:elevation="4dp"
+        android:focusable="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
+            style="@style/ToolbarWhiteBackArrow"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
+            android:layout_height="?android:attr/actionBarSize"
+            android:elevation="4dp"
             app:title="Tonton Nanti" />
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -50,8 +51,7 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerView"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="8dp" />
+                    android:layout_height="wrap_content" />
             </androidx.core.widget.NestedScrollView>
         </LinearLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
