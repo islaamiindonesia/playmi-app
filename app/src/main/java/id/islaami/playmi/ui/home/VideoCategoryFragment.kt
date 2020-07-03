@@ -30,16 +30,8 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 
 
-class VideoCategoryFragment(
-    var categoryID: Int = 0,
-    var listItems: ArrayList<Any> = ArrayList(),
-    var nativeAds: ArrayList<UnifiedNativeAd> = ArrayList()
-) : BaseFragment() {
+class VideoCategoryFragment(var categoryID: Int = 0) : BaseFragment() {
     private val viewModel: HomeViewModel by viewModel()
-
-    lateinit var adLoader: AdLoader
-
-    lateinit var adapter: AdsAdapter
 
     private var videoPagedAdapter = VideoPagedAdapter(context,
         popMenu = { context, menuView, video ->
@@ -120,8 +112,6 @@ class VideoCategoryFragment(
         }
 
         swipeRefreshLayout.startRefreshing()
-
-        adapter = AdsAdapter()
     }
 
     override fun onResume() {
@@ -163,58 +153,10 @@ class VideoCategoryFragment(
             }
     }
 
-    private fun loadNativeAds() {
-        val builder: AdLoader.Builder = AdLoader.Builder(context, getString(R.string.ad_unit_id))
-        adLoader = builder.forUnifiedNativeAd { unifiedNativeAd -> // A native ad loaded successfully, check if the ad loader has finished loading
-                // and if so, insert the ads into the list.
-                nativeAds.add(unifiedNativeAd)
-                if (!adLoader.isLoading) {
-                    insertAdsInMenuItems()
-                }
-            }.withAdListener(
-                object : AdListener() {
-                    override fun onAdFailedToLoad(errorCode: Int) {
-                        // A native ad failed to load, check if the ad loader has finished loading
-                        // and if so, insert the ads into the list.
-                        Log.e(
-                            "MainActivity", "The previous native ad failed to load. Attempting to"
-                                    + " load another."
-                        )
-                        if (!adLoader.isLoading) {
-                            insertAdsInMenuItems()
-                        }
-                    }
-                }).build()
-
-        // Load the Native Express ad.
-        adLoader.loadAds(AdRequest.Builder().build(), NUMBER_OF_ADS)
-    }
-
-    private fun insertAdsInMenuItems() {
-        if (nativeAds.size <= 0) {
-            return
-        }
-        val offset: Int = listItems.size / nativeAds.size.plus(1)
-        var index = 0
-        for (ad in nativeAds) {
-            listItems.add(index, ad)
-            index += offset
-        }
-    }
-
-
     /* OBSERVERS */
     private fun observeGetAllVideoResult() {
         viewModel.videoPagedListResultLd.observe(viewLifecycleOwner, Observer { result ->
-//            setupRecyclerView(result)
-
-            listItems.addAll(result)
-
-            loadNativeAds()
-
-//            recyclerView.adapter = adapter.apply { addList(listItems) }
-            recyclerView.layoutManager =
-                LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+            setupRecyclerView(result)
         })
 
         viewModel.pagedListNetworkStatusLd.observe(

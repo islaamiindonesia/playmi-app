@@ -57,11 +57,10 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    // native ads template
-    implementation project(':nativetemplates')
-
     // Preference Manager
     implementation "androidx.preference:preference-ktx:1.1.1"
+
+    implementation "com.github.marlonlom:timeago:4.0.3"
 
     // Rounded ImageView
     implementation 'com.makeramen:roundedimageview:2.3.0'

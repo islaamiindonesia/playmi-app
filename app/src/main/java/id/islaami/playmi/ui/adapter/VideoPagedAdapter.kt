@@ -1,6 +1,7 @@
 package id.islaami.playmi.ui.adapter
 
 import android.content.Context
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,10 +10,14 @@ import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.github.marlonlom.utilities.timeago.TimeAgo
+import com.github.marlonlom.utilities.timeago.TimeAgoMessages
 import id.islaami.playmi.R
 import id.islaami.playmi.data.model.video.Video
 import id.islaami.playmi.ui.channel.ChannelDetailActivity
 import id.islaami.playmi.ui.video.VideoDetailActivity
+import id.islaami.playmi.util.fromDbFormatDateTimeToAppsFormatDate
+import id.islaami.playmi.util.fromDbFormatDateTimeToCustomFormat
 import id.islaami.playmi.util.ui.loadExternalImage
 import id.islaami.playmi.util.ui.loadImage
 import id.islaami.playmi.util.ui.setVisibilityToGone
@@ -20,6 +25,7 @@ import id.islaami.playmi.util.ui.setVisibilityToVisible
 import id.islaami.playmi.util.value
 import kotlinx.android.synthetic.main.video_item.view.*
 import java.text.SimpleDateFormat
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 class VideoPagedAdapter(
@@ -65,13 +71,16 @@ class VideoPagedAdapter(
                 recyclerView.layoutManager =
                     LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
 
-                publishedDate.apply {
-                    val time = differenceInDays(video.publishedAt.toString())
-                    text = if (time == 0L) {
-                        "Hari ini"
-                    } else {
-                        "$time hari yang lalu"
-                    }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    val locale = Locale.forLanguageTag("id")
+                    val message = TimeAgoMessages.Builder().withLocale(locale).build()
+
+                    val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale("id"))
+                    val videoDate = dateFormat.parse(video.publishedAt.toString())
+
+                    publishedDate.text = TimeAgo.using(videoDate?.time.value(), message)
+                } else {
+                    publishedDate.text = video.publishedAt.fromDbFormatDateTimeToCustomFormat("dd MM yyyy")
                 }
 
                 videoThumbnail.setOnClickListener {
@@ -90,14 +99,6 @@ class VideoPagedAdapter(
                     )
                 }
             }
-        }
-
-        private fun differenceInDays(datePublished: String): Long {
-            val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale("id"))
-            val videoDate = dateFormat.parse(datePublished)
-            val today = Date()
-
-            return (today.time - videoDate.time) / (1000 * 3600 * 24)
         }
     }
 
