@@ -23,5 +23,6 @@ class PlaymiApp : MultiDexApplication() {
 
         // initialization of Dependency Injection library to allow the use of application context
         startKoin { androidContext(this@PlaymiApp) }
+
     }
 }
