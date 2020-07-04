@@ -16,9 +16,8 @@ import androidx.core.content.ContextCompat
 import id.islaami.playmi.R
 import id.islaami.playmi.ui.auth.LoginActivity
 import id.islaami.playmi.ui.base.BaseActivity
-import id.islaami.playmi.ui.setting.help.WebHelpActivity
+import id.islaami.playmi.ui.setting.policy.PolicyActiviy
 import id.islaami.playmi.util.Clickable
-import id.islaami.playmi.util.ui.showShortToast
 import kotlinx.android.synthetic.main.intro_activity.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -48,7 +47,7 @@ class IntroActivity : BaseActivity() {
             spannableString.apply {
                 setSpan(
                     Clickable(1) {
-                        WebHelpActivity.startActivity(this@IntroActivity, annotation?.value.toString())
+                        PolicyActiviy.startActivity(this@IntroActivity, "TNC_PLAYMI")
                     },
                     fulltext.getSpanStart(annotation),
                     fulltext.getSpanEnd(annotation),
@@ -90,7 +89,7 @@ class IntroActivity : BaseActivity() {
             spannableString.apply {
                 setSpan(
                     Clickable(2) {
-                        WebHelpActivity.startActivity(this@IntroActivity, annotation?.value.toString())
+                        PolicyActiviy.startActivity(this@IntroActivity, "PRIVACY_PLAYMI")
                     },
                     fulltext.getSpanStart(annotation),
                     fulltext.getSpanEnd(annotation),

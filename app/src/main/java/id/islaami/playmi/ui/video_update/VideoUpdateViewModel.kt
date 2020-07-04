@@ -34,12 +34,13 @@ class VideoUpdateViewModel(
             LivePagedListBuilder(videoUpdateDataFactory, pageListConfig).build()
     }
 
-    fun refreshAllVideoUpdate() {
+    fun refreshAllVideo() {
         videoUpdateDataFactory.refreshData()
     }
 
     /* FOLLOW UNFOLLOW */
-    lateinit var followChannelResultLd: MutableLiveData<Resource<Any>>
+    lateinit var followChannelResultLd: MutableLiveData<Resource<Boolean>>
+    lateinit var unfollowChannelResultLd: MutableLiveData<Resource<Boolean>>
 
     fun followChannel(id: Int) {
         disposable.add(repository.followChannel(id).execute()
@@ -50,12 +51,12 @@ class VideoUpdateViewModel(
             ))
     }
 
-    fun unfollowChannel(id: Int) {
-        disposable.add(repository.unfollowChannel(id).execute()
-            .doOnSubscribe { followChannelResultLd.setLoading() }
+    fun unfollowChannel(channelID: Int) {
+        disposable.add(repository.unfollowChannel(channelID).execute()
+            .doOnSubscribe { unfollowChannelResultLd.setLoading() }
             .subscribe(
-                { followChannelResultLd.setSuccess() },
-                { throwable -> followChannelResultLd.setError(throwable.getErrorMessage()) }
+                { unfollowChannelResultLd.setSuccess() },
+                { throwable -> unfollowChannelResultLd.setError(throwable.getErrorMessage()) }
             ))
     }
 
@@ -73,6 +74,7 @@ class VideoUpdateViewModel(
 
     fun initVideoUpdateFragment() {
         followChannelResultLd = MutableLiveData()
+        unfollowChannelResultLd = MutableLiveData()
         watchLaterResultLd = MutableLiveData()
 
         getAllVideo()

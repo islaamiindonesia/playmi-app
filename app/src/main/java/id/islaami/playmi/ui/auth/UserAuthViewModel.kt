@@ -46,6 +46,7 @@ class UserAuthViewModel(private val repository: UserRepository) : BaseViewModel(
 
     fun initRegisterAcitivity() {
         registerResultLd = MutableLiveData()
+        loginResultLd = MutableLiveData()
     }
 
     fun register(
@@ -97,7 +98,7 @@ class UserAuthViewModel(private val repository: UserRepository) : BaseViewModel(
             .doOnSubscribe { verificationResultLd.setLoading() }
             .subscribe(
                 { result -> verificationResultLd.setSuccess(result) },
-                { throwable -> verificationResultLd.setError(throwable.getErrorResponse()) }
+                { throwable -> verificationResultLd.setError(throwable.getErrorMessage()) }
             )
         )
     }

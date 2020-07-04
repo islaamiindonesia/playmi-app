@@ -10,6 +10,8 @@ import id.islaami.playmi.data.repository.ChannelRepository
 import id.islaami.playmi.data.repository.PlaylistRepository
 import id.islaami.playmi.data.repository.VideoRepository
 import id.islaami.playmi.ui.base.BaseViewModel
+import id.islaami.playmi.ui.datafactory.VideoByLabelDataFactory
+import id.islaami.playmi.ui.datafactory.VideoBySubcategoryDataFactory
 import id.islaami.playmi.ui.datafactory.VideoDataFactory
 import id.islaami.playmi.util.*
 
@@ -18,16 +20,18 @@ class VideoViewModel(
     private val channel: ChannelRepository,
     private val playlist: PlaylistRepository
 ) : BaseViewModel() {
-    lateinit var pagedListNetworkStatusLd: LiveData<Resource<Unit>>
+    lateinit var networkStatusLd: LiveData<Resource<Unit>>
 
     /* VIDEO */
     lateinit var videoPagedListResultLd: LiveData<PagedList<Video>>
     lateinit var videoDataFactory: VideoDataFactory
+    lateinit var videoBySubcategoryDataFactory: VideoBySubcategoryDataFactory
+    lateinit var videoByLabelDataFactory: VideoByLabelDataFactory
 
     fun getAllVideo(query: String? = null) {
         videoDataFactory = VideoDataFactory(disposable, video, query)
 
-        pagedListNetworkStatusLd = videoDataFactory.getNetworkStatus()
+        networkStatusLd = videoDataFactory.getNetworkStatus()
 
         val pageListConfig = PagedList.Config.Builder()
             .setEnablePlaceholders(false)
@@ -40,6 +44,46 @@ class VideoViewModel(
 
     fun refreshAllVideo() {
         videoDataFactory.refreshData()
+    }
+
+    fun getAllVideoBySubcategory(categoryId: Int, subcategoryId: Int) {
+        videoBySubcategoryDataFactory =
+            VideoBySubcategoryDataFactory(disposable, video, categoryId, subcategoryId)
+
+        networkStatusLd = videoBySubcategoryDataFactory.getNetworkStatus()
+
+        val pageListConfig = PagedList.Config.Builder()
+            .setEnablePlaceholders(false)
+            .setInitialLoadSizeHint(DEFAULT_SIZE)
+            .setPageSize(DEFAULT_SIZE)
+            .build()
+
+        videoPagedListResultLd =
+            LivePagedListBuilder(videoBySubcategoryDataFactory, pageListConfig).build()
+    }
+
+    fun refreshAllVideoBySub() {
+        videoBySubcategoryDataFactory.refreshData()
+    }
+
+    fun getAllVideoByLabel(categoryId: Int, subcategoryId: Int, labelId: Int) {
+        videoByLabelDataFactory =
+            VideoByLabelDataFactory(disposable, video, categoryId, subcategoryId, labelId)
+
+        networkStatusLd = videoByLabelDataFactory.getNetworkStatus()
+
+        val pageListConfig = PagedList.Config.Builder()
+            .setEnablePlaceholders(false)
+            .setInitialLoadSizeHint(DEFAULT_SIZE)
+            .setPageSize(DEFAULT_SIZE)
+            .build()
+
+        videoPagedListResultLd =
+            LivePagedListBuilder(videoByLabelDataFactory, pageListConfig).build()
+    }
+
+    fun refreshAllVideoByLabel() {
+        videoByLabelDataFactory.refreshData()
     }
 
     /* WATCH LATER */
@@ -68,7 +112,7 @@ class VideoViewModel(
             ))
     }
 
-    fun createPlaylist(name: String, videoId: Int) {
+    fun createPlaylist(name: String, videoId: Int? = null) {
         disposable.add(playlist.create(name, videoId).execute()
             .doOnSubscribe { createPlaylistResultLd.setLoading() }
             .subscribe(
@@ -147,7 +191,25 @@ class VideoViewModel(
         getVideoDetail(id)
     }
 
-    fun initSearchableActivity() {
+    fun initVideoSubcategoryActivity(categoryId: Int, subcategoryId: Int) {
+        watchLaterResultLd = MutableLiveData()
+        hideResultLd = MutableLiveData()
+        followResultLd = MutableLiveData()
+        unfollowResultLd = MutableLiveData()
+
+        getAllVideoBySubcategory(categoryId, subcategoryId)
+    }
+
+    fun initVideoLabelActivity(categoryId: Int, subcategoryId: Int, labelId: Int) {
+        watchLaterResultLd = MutableLiveData()
+        hideResultLd = MutableLiveData()
+        followResultLd = MutableLiveData()
+        unfollowResultLd = MutableLiveData()
+
+        getAllVideoByLabel(categoryId, subcategoryId, labelId)
+    }
+
+    fun initVideoSearchActivity() {
         watchLaterResultLd = MutableLiveData()
         hideResultLd = MutableLiveData()
         followResultLd = MutableLiveData()

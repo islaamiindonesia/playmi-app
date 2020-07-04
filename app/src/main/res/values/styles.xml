@@ -20,6 +20,8 @@
 
         <!-- POPUP Menu Style -->
         <item name="popupMenuStyle">@style/MyPopupMenu</item>
+
+        <item name="bottomSheetDialogTheme">@style/BottomSheet</item>
     </style>
 
     <!-- Base application theme. -->
@@ -201,5 +203,25 @@
 
     <style name="DialogNegativeButton" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
         <item name="android:textColor">@color/text_color</item>
+    </style>
+
+    <!-- Styleable Toast -->
+    <style name="PlaymiToast">
+        <item name="stColorBackground">@color/accent</item>
+        <item name="stSolidBackground">true</item>
+        <item name="stRadius">10dp</item>
+        <item name="stTextSize">14sp</item>
+        <item name="stTextColor">@color/white</item>
+    </style>
+
+    <style name="PlaymiMaterialDialog" parent="Theme.MaterialComponents.Dialog" tools:targetApi="lollipop">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColorPrimary">@color/text_color</item>
+        <item name="buttonBarPositiveButtonStyle">@style/DialogPositiveButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/DialogPositiveButton</item>
+    </style>
+
+    <style name="BottomSheet" parent="Theme.MaterialComponents.BottomSheetDialog">
+        <item name="android:windowIsFloating">false</item>
     </style>
 </resources>

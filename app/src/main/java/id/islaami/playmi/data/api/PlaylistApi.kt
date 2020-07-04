@@ -10,9 +10,9 @@ interface PlaylistApi {
     @FormUrlEncoded
     @POST("user/playlists/add")
     fun create(
-        @Field("name") name: String,
-        @Field("video_id") videoId: Int? = null
-    ): Single<ApiResponse<Playlist>>
+        @Query("video") videoId: Int? = null,
+        @Field("name") name: String
+    ): Single<ApiResponse<Any>>
 
     @FormUrlEncoded
     @PUT("user/playlists/{id}/addvideo")
@@ -42,7 +42,10 @@ interface PlaylistApi {
     fun getAllPlaylist(): Single<ApiResponse<List<Playlist>>>
 
     @GET("user/playlists/{id}")
-    fun getPlaylist(@Path("id") playlistId: Int): Single<ApiResponse<Playlist>>
+    fun getPlaylist(
+        @Path("id") playlistId: Int,
+        @Query("query") query: String? = ""
+    ): Single<ApiResponse<Playlist>>
 
     @GET("user/watchlater")
     fun getWatchLater(): Single<ApiResponse<List<Video>>>

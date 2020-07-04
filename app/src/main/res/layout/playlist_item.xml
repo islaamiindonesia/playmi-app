@@ -2,59 +2,66 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/itemLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_rectangle_white_stroke_bottom"
-    android:orientation="vertical"
     tools:targetApi="o">
 
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/playlistThumbnail"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:src="@drawable/playmi_icon"
-        android:layout_marginHorizontal="12dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <LinearLayout
-        android:layout_width="0dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/itemLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="@id/playlistThumbnail"
-        app:layout_constraintEnd_toStartOf="@id/menu"
-        app:layout_constraintStart_toEndOf="@id/playlistThumbnail"
-        app:layout_constraintTop_toTopOf="@id/playlistThumbnail">
+        android:background="?selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/playlistName"
-            android:layout_width="match_parent"
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/playlistThumbnail"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="sans-serif-medium"
-            android:textColor="@color/text_color"
-            android:textSize="14sp"
-            tools:text="Judul Playlist" />
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginVertical="8dp"
+            android:src="@drawable/playmi_icon"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/videoAmount"
-            android:layout_width="match_parent"
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textColor="@color/text_color"
-            android:textSize="12sp"
-            tools:text="Judul Playlist" />
-    </LinearLayout>
+            android:layout_marginHorizontal="16dp"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="@id/playlistThumbnail"
+            app:layout_constraintEnd_toStartOf="@id/menu"
+            app:layout_constraintStart_toEndOf="@id/playlistThumbnail"
+            app:layout_constraintTop_toTopOf="@id/playlistThumbnail">
 
-    <androidx.appcompat.widget.AppCompatImageView
-        android:id="@+id/menu"
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:paddingHorizontal="12dp"
-        app:layout_constraintBottom_toBottomOf="@id/playlistThumbnail"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/playlistThumbnail"
-        app:srcCompat="@drawable/ic_more" />
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/playlistName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="@color/text_color"
+                android:textSize="14sp"
+                tools:text="Judul Playlist" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/videoAmount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color"
+                android:textSize="12sp"
+                tools:text="Judul Playlist" />
+        </LinearLayout>
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/menu"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:paddingHorizontal="12dp"
+            app:layout_constraintBottom_toBottomOf="@id/playlistThumbnail"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/playlistThumbnail"
+            app:srcCompat="@drawable/ic_more" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

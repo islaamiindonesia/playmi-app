@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/popWatchLater"
-        android:title="Simpan ke Tonton Nanti"/>
+        android:title="Simpan ke Tonton Nanti" />
 
     <item
         android:id="@+id/popFollow"
@@ -10,5 +10,5 @@
 
     <item
         android:id="@+id/popHide"
-        android:title="Sembunyikan kanal ini"/>
+        android:title="Sembunyikan kanal ini" />
 </menu>

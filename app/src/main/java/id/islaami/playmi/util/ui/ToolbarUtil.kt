@@ -40,9 +40,11 @@ fun AppCompatActivity.setupToolbar(
     toolbar: Toolbar,
     backClickHandler: (() -> Unit)? = null,
     backButton: Boolean = true,
+    title: String? = null,
     showTitle: Boolean = true
 ) {
     setSupportActionBar(toolbar)
+    if (!title.isNullOrEmpty()) supportActionBar?.title = title
     supportActionBar?.setDisplayShowTitleEnabled(showTitle)
     supportActionBar?.setDisplayHomeAsUpEnabled(backButton)
     supportActionBar?.setDisplayShowHomeEnabled(backButton)

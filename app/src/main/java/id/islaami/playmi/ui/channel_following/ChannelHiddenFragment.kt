@@ -10,13 +10,16 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import id.islaami.playmi.R
 import id.islaami.playmi.ui.adapter.ChannelHiddenAdapter
 import id.islaami.playmi.ui.base.BaseFragment
+import id.islaami.playmi.util.ERROR_CONNECTION
+import id.islaami.playmi.util.ERROR_CONNECTION_TIMEOUT
+import id.islaami.playmi.util.ERROR_EMPTY_LIST
 import id.islaami.playmi.util.ResourceStatus.*
 import id.islaami.playmi.util.handleApiError
-import id.islaami.playmi.util.ui.hideKeyboard
-import id.islaami.playmi.util.ui.showShortToast
-import id.islaami.playmi.util.ui.startRefreshing
-import id.islaami.playmi.util.ui.stopRefreshing
+import id.islaami.playmi.util.ui.*
 import kotlinx.android.synthetic.main.following_hidden_fragment.*
+import kotlinx.android.synthetic.main.following_hidden_fragment.recyclerView
+import kotlinx.android.synthetic.main.following_hidden_fragment.swipeRefreshLayout
+import kotlinx.android.synthetic.main.video_category_fragment.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ChannelHiddenFragment : BaseFragment() {
@@ -33,8 +36,6 @@ class ChannelHiddenFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.initHiddenFragment()
-        observeChannel()
-        observeShow()
 
         swipeRefreshLayout.apply {
             setColorSchemeResources(R.color.accent)
@@ -46,7 +47,7 @@ class ChannelHiddenFragment : BaseFragment() {
             setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean {
                     hideKeyboard()
-                    context?.showShortToast(query)
+                    showLongToast(context, query)
 
                     return true
                 }
@@ -62,6 +63,9 @@ class ChannelHiddenFragment : BaseFragment() {
         super.onResume()
 
         refresh()
+
+        observeChannel()
+        observeShow()
     }
 
     private fun refresh() {
@@ -88,8 +92,34 @@ class ChannelHiddenFragment : BaseFragment() {
                 }
                 ERROR -> {
                     swipeRefreshLayout.stopRefreshing()
-                    handleApiError(errorMessage = result.message) { message ->
-                        context?.showShortToast(message)
+                    when (result.message) {
+                        ERROR_EMPTY_LIST -> {
+                            emptyText.setVisibilityToVisible()
+                            recyclerView.setVisibilityToGone()
+                        }
+                        ERROR_CONNECTION -> {
+                            showMaterialAlertDialog(
+                                context,
+                                getString(R.string.error_connection),
+                                "Coba Lagi",
+                                positiveCallback = { refresh() },
+                                dismissCallback = { refresh() }
+                            )
+                        }
+                        ERROR_CONNECTION_TIMEOUT -> {
+                            showMaterialAlertDialog(
+                                context,
+                                getString(R.string.error_connection_timeout),
+                                "Coba Lagi",
+                                positiveCallback = { refresh() },
+                                dismissCallback = { refresh() }
+                            )
+                        }
+                        else -> {
+                            handleApiError(errorMessage = result.message) { message ->
+                                showLongToast(context, message)
+                            }
+                        }
                     }
                 }
             }
@@ -102,12 +132,12 @@ class ChannelHiddenFragment : BaseFragment() {
                 LOADING -> {
                 }
                 SUCCESS -> {
-                    context?.showShortToast(getString(R.string.message_channel_show))
+                    showLongToast(context, getString(R.string.message_channel_show))
                     refresh()
                 }
                 ERROR -> {
                     handleApiError(errorMessage = result.message) { message ->
-                        context?.showShortToast(message)
+                        showLongToast(context, message)
                     }
                 }
             }

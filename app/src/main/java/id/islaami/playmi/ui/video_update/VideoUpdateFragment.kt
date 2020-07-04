@@ -11,18 +11,15 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.paging.PagedList
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import id.islaami.playmi.R
-import id.islaami.playmi.data.model.video.Video
 import id.islaami.playmi.ui.adapter.VideoPagedAdapter
 import id.islaami.playmi.ui.base.BaseFragment
 import id.islaami.playmi.ui.setting.SettingActivity
-import id.islaami.playmi.util.ERROR_EMPTY_LIST
+import id.islaami.playmi.util.*
 import id.islaami.playmi.util.ResourceStatus.*
-import id.islaami.playmi.util.handleApiError
 import id.islaami.playmi.util.ui.*
-import id.islaami.playmi.util.value
 import kotlinx.android.synthetic.main.video_update_fragment.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -41,7 +38,7 @@ class VideoUpdateFragment : BaseFragment() {
                     when (item.itemId) {
                         R.id.popWatchLater -> {
                             context.showAlertDialogWith2Buttons(
-                                "Simpan ke daftar ic_watch Nanti?",
+                                "Simpan ke Daftar Nanti?",
                                 "Iya",
                                 "Batal",
                                 positiveCallback = {
@@ -54,25 +51,20 @@ class VideoUpdateFragment : BaseFragment() {
                         }
                         R.id.popFollow -> {
                             if (video.channel?.isFollowed != true) {
-                                context.showAlertDialogWith2Buttons(
-                                    "Apakah ingin mulai mengikuti ${video.channel?.name}?",
-                                    "Iya",
-                                    "Batal",
-                                    positiveCallback = {
-                                        viewModel.followChannel(video.channel?.ID.value())
-                                        it.dismiss()
-                                    },
-                                    negativeCallback = { it.dismiss() })
+                                PlaymiDialogFragment.show(
+                                    fragmentManager = childFragmentManager,
+                                    text = getString(R.string.channel_follow, video.channel?.name),
+                                    okCallback = { viewModel.followChannel(video.channel?.ID.value()) }
+                                )
                             } else {
-                                context.showAlertDialogWith2Buttons(
-                                    "Apakah ingin berhenti mengikuti ${video.channel?.name}?",
-                                    "Iya",
-                                    "Batal",
-                                    positiveCallback = {
-                                        viewModel.unfollowChannel(video.channel?.ID.value())
-                                        it.dismiss()
-                                    },
-                                    negativeCallback = { it.dismiss() })
+                                PlaymiDialogFragment.show(
+                                    fragmentManager = childFragmentManager,
+                                    text = getString(
+                                        R.string.channel_unfollow,
+                                        video.channel?.name
+                                    ),
+                                    okCallback = { viewModel.unfollowChannel(video.channel?.ID.value()) }
+                                )
                             }
 
                             true
@@ -103,10 +95,10 @@ class VideoUpdateFragment : BaseFragment() {
 
         swipeRefreshLayout.apply {
             setColorSchemeResources(R.color.accent)
-            setOnRefreshListener {
-                refresh()
-            }
+            setOnRefreshListener { refresh() }
         }
+
+        swipeRefreshLayout.startRefreshing()
 
         toolbar.inflateMenu(R.menu.menu_main)
 
@@ -130,25 +122,40 @@ class VideoUpdateFragment : BaseFragment() {
                 else -> super.onOptionsItemSelected(it)
             }
         }
+
+        viewModel.initVideoUpdateFragment()
+        observeFollowResult()
+        observeUnfollowResult()
+        observeWatchLaterResult()
     }
 
     override fun onResume() {
         super.onResume()
 
-        viewModel.initVideoUpdateFragment()
         observeGetAllVideoResult()
-        observeFollowResult()
-        observeWatchLaterResult()
+
+        val position =
+            PreferenceManager.getDefaultSharedPreferences(context).getInt("UPDATE_SCROLL", 0)
+        recyclerView.scrollToPosition(position)
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        val layoutManager = recyclerView.layoutManager
+        if (layoutManager != null) {
+            val position =
+                (layoutManager as LinearLayoutManager).findFirstCompletelyVisibleItemPosition()
+
+            PreferenceManager.getDefaultSharedPreferences(context)
+                .edit()
+                .putInt("UPDATE_SCROLL", position)
+                .apply()
+        }
     }
 
     private fun refresh() {
-        viewModel.refreshAllVideoUpdate()
-    }
-
-    private fun setupRecyclerView(result: PagedList<Video>?) {
-        recyclerView.adapter = videoPagedAdapter.apply { addVideoList(result) }
-        recyclerView.layoutManager =
-            LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        viewModel.refreshAllVideo()
     }
 
     companion object {
@@ -156,25 +163,49 @@ class VideoUpdateFragment : BaseFragment() {
     }
 
     private fun observeGetAllVideoResult() {
-        viewModel.videoUpdatePagedListResultLd.observe(this, Observer { result ->
-            setupRecyclerView(result)
+        viewModel.videoUpdatePagedListResultLd.observe(viewLifecycleOwner, Observer { result ->
+            recyclerView.adapter = videoPagedAdapter.apply { addVideoList(result) }
+            recyclerView.layoutManager =
+                LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         })
 
-        viewModel.networkStatusLd.observe(this, Observer { result ->
+        viewModel.networkStatusLd.observe(viewLifecycleOwner, Observer { result ->
             when (result?.status) {
                 LOADING -> {
-                    swipeRefreshLayout.startRefreshing()
                 }
                 SUCCESS -> {
                     swipeRefreshLayout.stopRefreshing()
                 }
                 ERROR -> {
                     swipeRefreshLayout.stopRefreshing()
+
                     when (result.message) {
-                        ERROR_EMPTY_LIST -> showSnackbar("Anda belum mengikuti kanal manapun")
+                        ERROR_EMPTY_LIST -> showLongToast(
+                            context,
+                            "Anda belum mengikuti kanal manapun"
+                        )
+                        ERROR_CONNECTION -> {
+                            showMaterialAlertDialog(
+                                context,
+                                message = getString(R.string.error_connection),
+                                positive = "Coba Lagi",
+                                positiveCallback = { refresh() },
+                                dismissCallback = { refresh() }
+                            )
+                        }
+                        ERROR_CONNECTION_TIMEOUT -> {
+                            showMaterialAlertDialog(
+                                context,
+                                message = getString(R.string.error_connection),
+                                positive = "Coba Lagi",
+                                positiveCallback = { refresh() },
+                                dismissCallback = { refresh() }
+                            )
+                        }
                         else -> {
-                            handleApiError(errorMessage = result.message)
-                            { message -> showSnackbar(message) }
+                            handleApiError(errorMessage = result.message) { message ->
+                                showLongToast(context, message)
+                            }
                         }
                     }
                 }
@@ -186,15 +217,33 @@ class VideoUpdateFragment : BaseFragment() {
         viewModel.followChannelResultLd.observe(viewLifecycleOwner, Observer { result ->
             when (result?.status) {
                 LOADING -> {
-                    swipeRefreshLayout.startRefreshing()
                 }
                 SUCCESS -> {
-                    swipeRefreshLayout.stopRefreshing()
+                    showLongToast(context, "Berhasil mengikuti")
                     refresh()
                 }
                 ERROR -> {
-                    swipeRefreshLayout.stopRefreshing()
-                    showSnackbar(result.message)
+                    handleApiError(errorMessage = result.message) { message ->
+                        showLongToast(context, message)
+                    }
+                }
+            }
+        })
+    }
+
+    private fun observeUnfollowResult() {
+        viewModel.unfollowChannelResultLd.observe(viewLifecycleOwner, Observer { result ->
+            when (result?.status) {
+                LOADING -> {
+                }
+                SUCCESS -> {
+                    showLongToast(context, "Berhenti mengikuti")
+                    refresh()
+                }
+                ERROR -> {
+                    handleApiError(errorMessage = result.message) { message ->
+                        showLongToast(context, message)
+                    }
                 }
             }
         })
@@ -204,21 +253,13 @@ class VideoUpdateFragment : BaseFragment() {
         viewModel.watchLaterResultLd.observe(viewLifecycleOwner, Observer { result ->
             when (result?.status) {
                 LOADING -> {
-                    swipeRefreshLayout.startRefreshing()
                 }
                 SUCCESS -> {
-                    swipeRefreshLayout.stopRefreshing()
-                    context?.showShortToast("Berhasil disimpan")
-                    refresh()
+                    showLongToast(context, "Berhasil disimpan")
                 }
                 ERROR -> {
-                    swipeRefreshLayout.stopRefreshing()
-                    when (result.message) {
-                        "DATA_EXIST" -> showSnackbar("Anda telah menyimpan video ke ic_watch Nanti")
-                        else -> {
-                            handleApiError(errorMessage = result.message)
-                            { showSnackbar(it) }
-                        }
+                    handleApiError(errorMessage = result.message) { message ->
+                        showLongToast(context, message)
                     }
                 }
             }

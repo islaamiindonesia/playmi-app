@@ -5,11 +5,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import id.islaami.playmi.R
+import id.islaami.playmi.data.model.category.Label
 import id.islaami.playmi.util.value
 import kotlinx.android.synthetic.main.label_item.view.*
 
 class LabelAdapter(
-    var list: List<String> = emptyList()
+    var list: List<Label> = emptyList(),
+    var itemClickListener: (Int, String) -> Unit
 ) :
     RecyclerView.Adapter<LabelAdapter.ViewHolder>() {
 
@@ -26,8 +28,12 @@ class LabelAdapter(
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        fun bind(label: String) = with(itemView) {
-            name.text = label
+        fun bind(label: Label) = with(itemView) {
+            name.text = label.name
+
+            itemLayout.setOnClickListener {
+                itemClickListener(label.ID.value(), label.name.toString())
+            }
         }
     }
 }

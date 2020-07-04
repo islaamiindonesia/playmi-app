@@ -20,7 +20,7 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.location.*
 import com.google.firebase.iid.FirebaseInstanceId
 import id.islaami.playmi.R
-import id.islaami.playmi.data.model.Mode
+import id.islaami.playmi.data.model.kotpref.Mode
 import id.islaami.playmi.ui.auth.LoginActivity
 import id.islaami.playmi.ui.base.BaseActivity
 import id.islaami.playmi.ui.setting.help.WebHelpActivity
@@ -146,7 +146,7 @@ class SettingActivity : BaseActivity() {
 
         btnAccount.setOnClickListener()
         {
-            showShortToast("open islaami")
+            showLongToast("open islaami")
         }
 
         btnRecommendation.setOnClickListener()
@@ -233,7 +233,7 @@ class SettingActivity : BaseActivity() {
                     }
                 }
             } else {
-                showShortToast("Turn on location")
+                showLongToast("Turn on location")
                 startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
             }
         } else {

@@ -6,7 +6,7 @@
 
     <item
         android:id="@+id/popSavePlaylist"
-        android:title="Simpan ke daftar putar"/>
+        android:title="Simpan ke daftar video"/>
 
     <item
         android:id="@+id/popDeleteList"

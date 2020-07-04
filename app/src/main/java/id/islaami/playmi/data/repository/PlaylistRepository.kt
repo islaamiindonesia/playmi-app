@@ -19,7 +19,7 @@ class PlaylistRepository(
     fun removeLater(videoId: Int) = video.deleteFromlater(videoId)
 
     /* PLAYLIST */
-    fun create(name: String, videoId: Int? = null) = playlist.create(name, videoId).map { it.data }
+    fun create(name: String, videoId: Int? = null) = playlist.create(videoId, name).map { it.data }
 
     fun addVideo(videoId: Int, id: Int) =
         playlist.addVideo(id = id, videoId = videoId)
@@ -34,7 +34,8 @@ class PlaylistRepository(
 
     fun getAllPlaylist() = playlist.getAllPlaylist().map { it.data }
 
-    fun getPlaylist(id: Int) = playlist.getPlaylist(id).map { it.data }
+    fun getPlaylist(id: Int, query: String? = null) =
+        playlist.getPlaylist(id, query).map { it.data }
 
     fun followChannel(id: Int) = channel.followChannel(id)
 

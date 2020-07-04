@@ -10,7 +10,7 @@ import id.islaami.playmi.util.*
 class PlaylistViewModel(private val repository: PlaylistRepository) : BaseViewModel() {
 
     /* PLAYLIST */
-    lateinit var createPlaylistResultLd: MutableLiveData<Resource<Playlist>>
+    lateinit var createPlaylistResultLd: MutableLiveData<Resource<Any>>
     lateinit var addToPlaylistResultLd: MutableLiveData<Resource<Any>>
     lateinit var removeFromPlaylistResultLd: MutableLiveData<Resource<Any>>
     lateinit var changePlaylistNameResultLd: MutableLiveData<Resource<Any>>
@@ -18,7 +18,7 @@ class PlaylistViewModel(private val repository: PlaylistRepository) : BaseViewMo
     lateinit var getPlaylistResultLd: MutableLiveData<Resource<List<Playlist>>>
     lateinit var getPlaylistDetailResultLd: MutableLiveData<Resource<Playlist>>
 
-    fun getPlaylist() {
+    fun allPlaylists() {
         disposable.add(repository.getAllPlaylist().execute()
             .doOnSubscribe { getPlaylistResultLd.setLoading() }
             .subscribe(
@@ -27,8 +27,8 @@ class PlaylistViewModel(private val repository: PlaylistRepository) : BaseViewMo
             ))
     }
 
-    fun getPlaylistDetail(playlistId: Int) {
-        disposable.add(repository.getPlaylist(playlistId).execute()
+    fun getPlaylistDetail(playlistId: Int, query: String? = null) {
+        disposable.add(repository.getPlaylist(playlistId, query).execute()
             .doOnSubscribe { getPlaylistDetailResultLd.setLoading() }
             .subscribe(
                 { result -> getPlaylistDetailResultLd.setSuccess(result) },
@@ -134,8 +134,7 @@ class PlaylistViewModel(private val repository: PlaylistRepository) : BaseViewMo
         getPlaylistResultLd = MutableLiveData()
         getWatchLaterAmountLd = MutableLiveData()
 
-        getWatchLaterAmount()
-        getPlaylist()
+        allPlaylists()
     }
 
     fun initPlaylistDetailActivity(playlistId: Int) {
@@ -150,11 +149,11 @@ class PlaylistViewModel(private val repository: PlaylistRepository) : BaseViewMo
         getPlaylistResultLd = MutableLiveData()
 
         getPlaylistDetail(playlistId)
-        getPlaylist()
     }
 
     /* FOLLOW UNFOLLOW */
-    lateinit var followChannelResultLd: MutableLiveData<Resource<Any>>
+    lateinit var followChannelResultLd: MutableLiveData<Resource<Boolean>>
+    lateinit var unfollowChannelResultLd: MutableLiveData<Resource<Boolean>>
 
     fun followChannel(id: Int) {
         disposable.add(repository.followChannel(id).execute()
@@ -165,24 +164,25 @@ class PlaylistViewModel(private val repository: PlaylistRepository) : BaseViewMo
             ))
     }
 
-    fun unfollowChannel(id: Int) {
-        disposable.add(repository.unfollowChannel(id).execute()
-            .doOnSubscribe { followChannelResultLd.setLoading() }
+    fun unfollowChannel(channelID: Int) {
+        disposable.add(repository.unfollowChannel(channelID).execute()
+            .doOnSubscribe { unfollowChannelResultLd.setLoading() }
             .subscribe(
-                { followChannelResultLd.setSuccess() },
-                { throwable -> followChannelResultLd.setError(throwable.getErrorMessage()) }
+                { unfollowChannelResultLd.setSuccess() },
+                { throwable -> unfollowChannelResultLd.setError(throwable.getErrorMessage()) }
             ))
     }
 
     fun initWatchLaterActivity() {
         getPlaylistResultLd = MutableLiveData()
         followChannelResultLd = MutableLiveData()
+        unfollowChannelResultLd = MutableLiveData()
         createPlaylistResultLd = MutableLiveData()
         addToPlaylistResultLd = MutableLiveData()
         watchLaterVideoResultLd = MutableLiveData()
         deleteFromLaterResultLd = MutableLiveData()
 
-        getPlaylist()
+        allPlaylists()
         getWatchLater()
     }
 }

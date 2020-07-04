@@ -3,13 +3,12 @@ package id.islaami.playmi.ui.auth
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.lifecycle.Observer
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.auth.api.signin.*
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.*
 import com.google.firebase.iid.FirebaseInstanceId
 import id.islaami.playmi.R
@@ -32,16 +31,16 @@ class LoginActivity(
 ) : BaseActivity() {
     private val viewModel: UserAuthViewModel by viewModel()
 
-    val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-        .requestIdToken(getString(R.string.default_web_client_id))
-        .requestEmail()
-        .build()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.login_activity)
 
         firebaseAuth = FirebaseAuth.getInstance()
+
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
         googleClient = GoogleSignIn.getClient(this, gso)
 
         getInstanceID()
@@ -77,8 +76,12 @@ class LoginActivity(
                 // Google Sign In was successful, authenticate with Firebase
                 firebaseAuthWithGoogle(task.getResult(ApiException::class.java))
             } catch (e: ApiException) {
-                // Google Sign In failed, update UI appropriately
-                showShortToast(getString(R.string.error_message_default))
+                btnLogin.setVisibilityToVisible()
+                progressBar.setVisibilityToGone()
+
+                if (e.statusCode != GoogleSignInStatusCodes.SIGN_IN_CANCELLED) {
+                    showLongToast(getString(R.string.error_message_default))
+                }
             }
         }
     }
@@ -94,6 +97,8 @@ class LoginActivity(
                 // Get new Instance ID token
                 audId = task.result?.id.toString()
                 token = task.result?.token.toString()
+
+                Log.d("FCM", "$token")
             })
     }
 
@@ -116,11 +121,13 @@ class LoginActivity(
                 try {
                     throw task.exception!!
                 } catch (e: FirebaseAuthInvalidCredentialsException) {
-                    showShortToast(getString(R.string.invalid_credentials))
+                    showLongToast(getString(R.string.invalid_credentials))
                 } catch (e: FirebaseAuthInvalidUserException) {
                     showDialogRegisterUser()
+                } catch (e: FirebaseNetworkException) {
+                    showLongToast(getString(R.string.error_connection))
                 } catch (e: Exception) {
-                    showShortToast(getString(R.string.error_message_default))
+                    showLongToast(getString(R.string.error_message_default))
                 }
             }
         }
@@ -138,7 +145,13 @@ class LoginActivity(
                     progressBar.setVisibilityToGone()
 
                     // If sign in fails, display a message to the user.
-                    showShortToast(getString(R.string.error_message_default))
+                    try {
+                        throw task.exception!!
+                    } catch (e: FirebaseNetworkException) {
+                        showLongToast(getString(R.string.error_connection))
+                    } catch (e: Exception) {
+                        showLongToast(getString(R.string.error_message_default))
+                    }
                 }
             }
     }
@@ -226,16 +239,23 @@ class LoginActivity(
                 ERROR -> {
                     btnLogin.setVisibilityToVisible()
                     progressBar.setVisibilityToGone()
+
                     when (result.message) {
                         "UNVERIFIED" -> {
                             viewModel.resendCode(email.text.toString(), token)
                         }
                         "EMAIL_NOT_FOUND" -> {
-                            if (isGoogle) CompleteProfileActivity.startActivity(this, user, token)
+                            if (isGoogle) RegisterActivity.startActivityFromGoogleAccount(
+                                this,
+                                audID = audId,
+                                notifToken = token,
+                                fullName = user?.displayName.toString(),
+                                email = user?.email.toString()
+                            )
                             else showDialogRegisterUser()
                         }
                         else -> {
-                            handleApiError(result.message) { showShortToast(it) }
+                            handleApiError(result.message) { showLongToast(it) }
                         }
                     }
                 }
@@ -261,13 +281,8 @@ class LoginActivity(
                     btnLogin.setVisibilityToVisible()
 
                     when (result.message) {
-                        "EMAIL_NOT_FOUND" -> {
-                            if (isGoogle) CompleteProfileActivity.startActivity(this, user, token)
-                            else showDialogRegisterUser()
-                        }
-                        else -> {
-                            handleApiError(result.message) { showShortToast(it) }
-                        }
+                        "EMAIL_NOT_FOUND" -> showDialogRegisterUser()
+                        else -> handleApiError(result.message) { showLongToast(it) }
                     }
                 }
             }

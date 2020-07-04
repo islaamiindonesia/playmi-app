@@ -9,7 +9,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import id.islaami.playmi.R
 import id.islaami.playmi.util.fromHtmlToSpanned
-import kotlinx.android.synthetic.main.custom_dialog_fragment.*
+import kotlinx.android.synthetic.main.playmi_dialog_fragment.*
 import java.io.Serializable
 
 class PlaymiDialogFragment : DialogFragment() {

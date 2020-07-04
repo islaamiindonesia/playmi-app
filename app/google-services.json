@@ -52,11 +52,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "140070247727-13kndug7bhimhalub9lhc7l0iij8c9rt.apps.googleusercontent.com",
+          "client_id": "140070247727-ashnjfondibrarbhbltl4msuvc8n3nu5.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "id.islaami.playmi",
-            "certificate_hash": "3a6a40e7279a0ff9596710771f2ba5cd90ff1c99"
+            "certificate_hash": "8a0b54b064a2556c3f1a3c08593503b0639a0704"
           }
         },
         {

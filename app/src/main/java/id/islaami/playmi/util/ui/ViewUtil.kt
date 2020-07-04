@@ -4,7 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Bitmap
-import android.os.Handler
+import android.os.Build
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -18,7 +18,9 @@ import androidx.fragment.app.Fragment
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import com.muddzdev.styleabletoast.StyleableToast
 import id.islaami.playmi.R
 import id.islaami.playmi.util.STORAGE_URL
 
@@ -40,6 +42,93 @@ fun SwipeRefreshLayout.startRefreshing() {
 
 fun SwipeRefreshLayout.stopRefreshing() {
     isRefreshing = false
+}
+
+fun Context.createMaterialAlertDialog(
+    positive: String,
+    positiveCallback: (() -> Unit)? = null,
+    dismissCallback: (() -> Unit)? = null
+): AlertDialog {
+    val alertDialog = MaterialAlertDialogBuilder(this, R.style.PlaymiMaterialDialog)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        alertDialog.background = getDrawable(R.drawable.bg_dialog)
+    }
+
+    alertDialog.setPositiveButton(positive) { dialogInterface, _ ->
+        positiveCallback?.invoke()
+        dialogInterface.dismiss()
+    }
+    alertDialog.setNegativeButton("Tutup") { dialogInterface, _ ->
+        dialogInterface.dismiss()
+    }
+
+    alertDialog.setOnDismissListener { dismissCallback?.invoke() }
+
+    return alertDialog.create()
+}
+
+fun Context.showMaterialAlertDialog(dialog: AlertDialog, message: String) {
+    dialog.setMessage(message)
+    dialog.show()
+
+    val positiveBtn = dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE)
+    positiveBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
+    positiveBtn.setTextColor(ContextCompat.getColor(this, R.color.accent))
+
+    val negativeBtn = dialog.getButton(android.app.AlertDialog.BUTTON_NEGATIVE)
+    negativeBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
+    negativeBtn.setTextColor(ContextCompat.getColor(this, R.color.text_color))
+}
+
+fun Fragment.showMaterialAlertDialog(
+    context: Context?,
+    dialog: AlertDialog,
+    message: String
+) {
+    context?.showMaterialAlertDialog(dialog, message)
+}
+
+fun Context.showMaterialAlertDialog(
+    message: String,
+    positive: String,
+    positiveCallback: (() -> Unit)? = null,
+    dismissCallback: (() -> Unit)? = null
+) {
+    val alertDialog = MaterialAlertDialogBuilder(this, R.style.PlaymiMaterialDialog)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        alertDialog.background = getDrawable(R.drawable.bg_dialog)
+    }
+    alertDialog.setMessage(message)
+    alertDialog.setPositiveButton(positive) { dialogInterface, _ ->
+        positiveCallback?.invoke()
+        dialogInterface.dismiss()
+    }
+    alertDialog.setNegativeButton("Tutup") { dialogInterface, _ ->
+        dialogInterface.dismiss()
+    }
+
+    alertDialog.setOnDismissListener { dismissCallback?.invoke() }
+    val dialog = alertDialog.create()
+
+    dialog.show()
+
+    val positiveBtn = dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE)
+    positiveBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
+    positiveBtn.setTextColor(ContextCompat.getColor(this, R.color.accent))
+
+    val negativeBtn = dialog.getButton(android.app.AlertDialog.BUTTON_NEGATIVE)
+    negativeBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
+    negativeBtn.setTextColor(ContextCompat.getColor(this, R.color.text_color))
+}
+
+fun Fragment.showMaterialAlertDialog(
+    context: Context?,
+    message: String,
+    positive: String,
+    positiveCallback: (() -> Unit)? = null,
+    dismissCallback: (() -> Unit)? = null
+) {
+    context?.showMaterialAlertDialog(message, positive, positiveCallback, dismissCallback)
 }
 
 fun ViewGroup.inflate(layoutId: Int, attachToRoot: Boolean = false): View =
@@ -87,27 +176,16 @@ fun Activity.showSnackbarWithUndo(message: String?, duration: Int? = null, undoA
     }
 }
 
-fun Fragment.showSnackbarWithUndo(message: String?, duration: Int? = null, undoAction: () -> Unit) {
-    activity?.showSnackbarWithUndo(message, duration, undoAction)
+fun Context.showLongToast(content: String?) {
+    StyleableToast.makeText(
+        this, content,
+        Toast.LENGTH_LONG, R.style.PlaymiToast
+    ).show()
 }
 
-fun postDelayed(delay: Long, action: () -> Unit) {
-    Handler().postDelayed({ action() }, delay)
+fun Fragment.showLongToast(context: Context?, content: String?) {
+    context?.showLongToast(content)
 }
-
-fun Context.showShortToast(content: String?) {
-    val toast = Toast.makeText(this, content.toString(), Toast.LENGTH_SHORT)
-    val view = toast.view
-    view.setBackgroundResource(R.drawable.bg_toast)
-    view.findViewById<TextView>(android.R.id.message).apply {
-        setTextColor(ContextCompat.getColor(this@showShortToast, R.color.white))
-        setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(R.dimen.text_14))
-    }
-    view.alpha = .8f
-
-    toast.show()
-}
-
 
 fun Context.showAlertDialogWith2Buttons(
     message: String,

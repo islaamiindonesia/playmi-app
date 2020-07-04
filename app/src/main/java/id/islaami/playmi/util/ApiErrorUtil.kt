@@ -2,6 +2,7 @@ package id.islaami.playmi.util
 
 import android.app.Activity
 import android.content.Context
+import android.util.Log
 import androidx.fragment.app.Fragment
 import id.islaami.playmi.R
 import id.islaami.playmi.data.model.ErrorResponse
@@ -13,9 +14,10 @@ import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import java.util.*
+import kotlin.math.log
 
 fun Throwable.getErrorMessage(): String {
-    when(this) {
+    when (this) {
         is HttpException -> {
             val errorBody = response()?.errorBody()?.string()
             return when (response()?.code()) {
@@ -38,25 +40,6 @@ fun Throwable.getErrorMessage(): String {
     return ERROR_DEFAULT
 }
 
-fun Throwable.getErrorResponse(): ErrorResponse? {
-    if (this is HttpException) {
-        val errorBody = response()?.errorBody()?.string()
-        return when (response()?.code()) {
-            in 500 until 599 -> processErrorResponse(ERROR_INTERNAL_SERVER, errorBody.toString())
-            401 -> processErrorResponse(ERROR_UNAUTHORIZED, errorBody.toString())
-            403 -> processErrorResponse(ERROR_INVALID_TOKEN, errorBody.toString())
-            404 -> processErrorResponse(ERROR_PAGE_NOT_FOUND, errorBody.toString())
-            405 -> processErrorResponse(ERROR_METHOD_NOT_ALLOWED, errorBody.toString())
-            else -> processErrorResponse(ERROR_CONNECTION, errorBody.toString())
-        }
-    }
-
-    return ErrorResponse(
-        message = ERROR_DEFAULT,
-        userMessage = "Terjadi kesalahan. Silahkan coba sesaat lagi."
-    )
-}
-
 fun processErrorMessage(default: String, json: String): String {
     return try {
         val jsonErrorAdapter = Moshi.Builder().build().adapter(ErrorResponse::class.java)
@@ -65,20 +48,6 @@ fun processErrorMessage(default: String, json: String): String {
     } catch (ioException: IOException) {
         default
     }
-}
-
-fun processErrorResponse(default: String, json: String): ErrorResponse? {
-    val jsonErrorAdapter = Moshi.Builder().build().adapter(ErrorResponse::class.java)
-    return jsonErrorAdapter.fromJson(json)
-}
-
-fun String?.isNotCommonApiError(): Boolean {
-    return (this != null &&
-            this != ERROR_INTERNAL_SERVER &&
-            this != ERROR_INVALID_TOKEN &&
-            this != ERROR_PAGE_NOT_FOUND &&
-            this != ERROR_METHOD_NOT_ALLOWED &&
-            this != ERROR_UNAUTHORIZED)
 }
 
 fun Context.checkForCommonApiError(errorMessage: String?) {
@@ -92,8 +61,7 @@ fun Context.checkForCommonApiError(errorMessage: String?) {
 }
 
 fun Context.checkApiForMessage(errorMessage: String?): String =
-    when (errorMessage.toString().toLowerCase(Locale("id", "ID"))) {
-        ERROR_UNVERIFIED_ACCOUNT -> getString(R.string.error_email_not_verified)
+    when (errorMessage.toString()) {
         ERROR_CONNECTION_TIMEOUT -> getString(R.string.error_connection_timeout)
         ERROR_CONNECTION -> getString(R.string.error_connection)
         else -> getString(R.string.error_message_default)
@@ -106,19 +74,12 @@ fun Context.checkApiForMessage(errorMessage: String?): String =
  */
 fun Activity.handleApiError(
     errorMessage: String?,
-    processErrorMessage: ((String) -> Unit)? = null
+    processErrorMessage: ((String) -> Unit)
 ) {
     checkForCommonApiError(errorMessage)
-    if (processErrorMessage != null) {
-        if (errorMessage != null && errorMessage.isNotCommonApiError()) {
-            processErrorMessage(errorMessage)
-        } else {
-            val message = checkApiForMessage(errorMessage)
-            processErrorMessage(message)
-        }
-    }
+    processErrorMessage.invoke(checkApiForMessage(errorMessage))
 }
 
-fun Fragment.handleApiError(errorMessage: String?, errorHandler: ((String) -> Unit)? = null) {
+fun Fragment.handleApiError(errorMessage: String?, errorHandler: ((String) -> Unit)) {
     activity?.handleApiError(errorMessage, errorHandler)
 }

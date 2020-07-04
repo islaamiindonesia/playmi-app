@@ -9,8 +9,7 @@ import id.islaami.playmi.R
 import id.islaami.playmi.ui.base.BaseActivity
 import id.islaami.playmi.util.ui.setVisibilityToGone
 import id.islaami.playmi.util.ui.setVisibilityToVisible
-import id.islaami.playmi.util.ui.showShortToast
-import id.islaami.playmi.util.ui.showSnackbar
+import id.islaami.playmi.util.ui.showLongToast
 import kotlinx.android.synthetic.main.forgot_password_activity.*
 
 class ForgotPasswordActivity : BaseActivity() {
@@ -36,9 +35,14 @@ class ForgotPasswordActivity : BaseActivity() {
                         try {
                             throw task.exception!!
                         } catch (e: FirebaseAuthInvalidUserException) {
-                            showShortToast(getString(R.string.error_email_not_found, email.text.toString()))
+                            showLongToast(
+                                getString(
+                                    R.string.error_email_not_found,
+                                    email.text.toString()
+                                )
+                            )
                         } catch (e: Exception) {
-                            showShortToast(getString(R.string.error_message_default))
+                            showLongToast(getString(R.string.error_message_default))
                         }
                     }
                 }

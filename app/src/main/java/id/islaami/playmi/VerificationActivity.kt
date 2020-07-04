@@ -18,7 +18,7 @@ import id.islaami.playmi.util.handleApiError
 import id.islaami.playmi.util.ui.setVisibilityToGone
 import id.islaami.playmi.util.ui.setVisibilityToVisible
 import id.islaami.playmi.util.ui.showAlertDialog
-import id.islaami.playmi.util.ui.showShortToast
+import id.islaami.playmi.util.ui.showLongToast
 import id.islaami.playmi.util.value
 import kotlinx.android.synthetic.main.verification_activity.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -98,7 +98,7 @@ class VerificationActivity(var email: String = "") : BaseActivity() {
                     btnResend.setVisibilityToVisible()
 
                     when (result.message) {
-                        "WRONG_VERIFICATION_NUMBER" -> showShortToast("Nomor verifikasi tidak valid")
+                        "WRONG_VERIFICATION_NUMBER" -> showLongToast("Nomor verifikasi tidak valid")
                         else -> handleApiError(result.message) { message ->
                             showAlertDialog(
                                 message = message,
@@ -118,10 +118,10 @@ class VerificationActivity(var email: String = "") : BaseActivity() {
                 LOADING -> {
                 }
                 SUCCESS -> {
-                    showShortToast("Kode Verifikasi sudah terkirim ulang")
+                    showLongToast("Kode Verifikasi sudah terkirim ulang")
                 }
                 ERROR -> {
-                    handleApiError(result.message) { showShortToast(it) }
+                    handleApiError(result.message) { showLongToast(it) }
                 }
             }
         })

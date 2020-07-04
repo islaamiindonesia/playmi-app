@@ -2,6 +2,7 @@ package id.islaami.playmi.data.api
 
 import id.islaami.playmi.data.model.ApiMessageResult
 import id.islaami.playmi.data.model.ApiResponse
+import id.islaami.playmi.data.model.LegalContent
 import id.islaami.playmi.data.model.profile.LoginBody
 import id.islaami.playmi.data.model.profile.LoginResult
 import id.islaami.playmi.data.model.profile.Profile
@@ -52,7 +53,10 @@ interface UserApi {
     @GET("user/profile")
     fun getProfile(): Single<ApiResponse<Profile>>
 
-    @FormUrlEncoded
+    @GET("tnc")
+    fun getTnc(): Single<ApiResponse<LegalContent>>
+
+    /*@FormUrlEncoded
     @PUT("users/profile/update")
     fun updateProfile(
         @Field("fullname") fullname: String,
@@ -63,5 +67,5 @@ interface UserApi {
 
     @FormUrlEncoded
     @PATCH("user/password/update")
-    fun updatePassword(@Field("password") password: String): Single<ApiMessageResult>
+    fun updatePassword(@Field("password") password: String): Single<ApiMessageResult>*/
 }

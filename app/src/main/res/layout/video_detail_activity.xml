@@ -38,8 +38,10 @@
         app:layout_constraintTop_toBottomOf="@id/appBar">
 
         <LinearLayout
+            android:id="@+id/successLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:visibility="gone"
             android:orientation="vertical">
 
             <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
@@ -49,7 +51,6 @@
                 app:showFullScreenButton="true" />
 
             <androidx.core.widget.NestedScrollView
-                android:id="@+id/successLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fillViewport="true">

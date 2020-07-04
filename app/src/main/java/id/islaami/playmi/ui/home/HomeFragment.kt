@@ -3,7 +3,6 @@ package id.islaami.playmi.ui.home
 import android.app.SearchManager
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,15 +10,18 @@ import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.lifecycle.Observer
-import com.google.android.gms.ads.AdLoader
-import com.google.android.gms.ads.formats.UnifiedNativeAd
 import id.islaami.playmi.R
 import id.islaami.playmi.data.model.category.Category
 import id.islaami.playmi.ui.base.BaseFragment
 import id.islaami.playmi.ui.setting.SettingActivity
+import id.islaami.playmi.ui.video.VideoCategoryFragment
+import id.islaami.playmi.util.ERROR_CONNECTION
+import id.islaami.playmi.util.ERROR_CONNECTION_TIMEOUT
 import id.islaami.playmi.util.ResourceStatus.*
 import id.islaami.playmi.util.handleApiError
-import id.islaami.playmi.util.ui.showSnackbar
+import id.islaami.playmi.util.ui.createMaterialAlertDialog
+import id.islaami.playmi.util.ui.showLongToast
+import id.islaami.playmi.util.ui.showMaterialAlertDialog
 import id.islaami.playmi.util.value
 import kotlinx.android.synthetic.main.home_fragment.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -33,16 +35,10 @@ class HomeFragment(var list: List<Category> = emptyList()) : BaseFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        viewModel.initHome()
-
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.home_fragment, container, false)
-    }
+    ): View? = inflater.inflate(R.layout.home_fragment, container, false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewPagerAdapter = ViewPagerAdapter()
         setHasOptionsMenu(true)
     }
 
@@ -72,10 +68,7 @@ class HomeFragment(var list: List<Category> = emptyList()) : BaseFragment() {
             }
         }
 
-        viewPager.adapter = viewPagerAdapter
-        viewPager.offscreenPageLimit = 4
-        tabLayout.setupWithViewPager(viewPager)
-
+        viewModel.initHome()
         observeGetAllCategory()
     }
 
@@ -84,18 +77,54 @@ class HomeFragment(var list: List<Category> = emptyList()) : BaseFragment() {
     }
 
     private fun observeGetAllCategory() {
+        val dialog = context?.createMaterialAlertDialog(
+            "Coba Lagi",
+            positiveCallback = { refresh() },
+            dismissCallback = { refresh() }
+        )
+
         viewModel.getCategoryListResultLd.observe(viewLifecycleOwner, Observer { result ->
             when (result?.status) {
                 LOADING -> {
+                    dialog?.dismiss()
                 }
                 SUCCESS -> {
                     if (!result.data.isNullOrEmpty()) {
+                        viewPagerAdapter = ViewPagerAdapter()
+                        viewPager.adapter = viewPagerAdapter
+                        viewPager.offscreenPageLimit = 4
+                        tabLayout.setupWithViewPager(viewPager)
+
                         setupTab(result.data)
                     }
                 }
                 ERROR -> {
-                    handleApiError(errorMessage = result.message)
-                    { message -> showSnackbar(message) }
+                    when (result.message) {
+                        ERROR_CONNECTION -> {
+                            dialog?.let {
+                                context?.showMaterialAlertDialog(
+                                    it,
+                                    getString(R.string.error_connection)
+                                )
+                            }
+                        }
+                        ERROR_CONNECTION_TIMEOUT -> {
+                            dialog?.let {
+                                context?.showMaterialAlertDialog(
+                                    it,
+                                    getString(R.string.error_connection_timeout)
+                                )
+                            }
+                        }
+                        else -> {
+                            handleApiError(errorMessage = result.message) {
+                                showLongToast(
+                                    context,
+                                    it
+                                )
+                            }
+                        }
+                    }
                 }
             }
         })
@@ -106,7 +135,8 @@ class HomeFragment(var list: List<Category> = emptyList()) : BaseFragment() {
         viewPagerAdapter?.notifyDataSetChanged()
     }
 
-    inner class ViewPagerAdapter : FragmentStatePagerAdapter(childFragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+    inner class ViewPagerAdapter :
+        FragmentStatePagerAdapter(childFragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
 
         override fun getItem(position: Int): Fragment {
             return VideoCategoryFragment.newInstance(list[position].ID.value())

@@ -24,6 +24,21 @@ interface VideoApi {
         @Query("page") page: Int
     ): Single<ApiResponse<List<Video>>>
 
+    @GET("categories/{categoryId}/subcategories/{subcategoryId}/videos")
+    fun getAllVideoBySubcategory(
+        @Path("categoryId") categoryId: Int,
+        @Path("subcategoryId") subcategoryId: Int,
+        @Query("page") page: Int
+    ): Single<ApiResponse<List<Video>>>
+
+    @GET("categories/{categoryId}/subcategories/{subcategoryId}/labels/{labelId}/videos")
+    fun getAllVideoByLabel(
+        @Path("categoryId") categoryId: Int,
+        @Path("subcategoryId") subcategoryId: Int,
+        @Path("labelId") labelId: Int,
+        @Query("page") page: Int
+    ): Single<ApiResponse<List<Video>>>
+
     @GET("videos/following")
     fun getAllVideoByFollowing(@Query("page") page: Int): Single<ApiResponse<List<Video>>>
 

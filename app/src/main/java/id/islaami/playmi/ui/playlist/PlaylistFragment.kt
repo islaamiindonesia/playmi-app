@@ -2,23 +2,25 @@ package id.islaami.playmi.ui.playlist
 
 import android.app.SearchManager
 import android.content.Context
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContextCompat.getDrawable
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import id.islaami.playmi.R
 import id.islaami.playmi.ui.adapter.PlaylistAdapter
 import id.islaami.playmi.ui.base.BaseFragment
 import id.islaami.playmi.ui.setting.SettingActivity
+import id.islaami.playmi.util.ERROR_CONNECTION
+import id.islaami.playmi.util.ERROR_CONNECTION_TIMEOUT
 import id.islaami.playmi.util.ResourceStatus.*
 import id.islaami.playmi.util.handleApiError
 import id.islaami.playmi.util.ui.*
@@ -44,14 +46,11 @@ class PlaylistFragment : BaseFragment() {
                         true
                     }
                     R.id.popDelete -> {
-                        context.showAlertDialogWith2Buttons("Apakah Anda ingin menghapus daftar ${playlist.name}?",
-                            positiveText = "Ya",
-                            positiveCallback = {
-                                viewModel.deletePlaylist(playlist.ID.value())
-                                it.dismiss()
-                            },
-                            negativeText = "Batal",
-                            negativeCallback = { it.dismiss() })
+                        PlaymiDialogFragment.show(
+                            childFragmentManager,
+                            text = getString(R.string.playlist_remove, playlist.name),
+                            okCallback = { viewModel.deletePlaylist(playlist.ID.value()) }
+                        )
                         true
                     }
                     else -> false
@@ -65,10 +64,7 @@ class PlaylistFragment : BaseFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.playlist_fragment, container, false)
-    }
+    ): View? = inflater.inflate(R.layout.playlist_fragment, container, false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -102,20 +98,22 @@ class PlaylistFragment : BaseFragment() {
         }
 
         viewModel.initPlaylistFragment()
+        observePlaylist()
         observeWatchLaterAmount()
+
         observePlaylistChange()
         observePlaylistDelete()
 
         swipeRefreshLayout.apply {
             setColorSchemeResources(R.color.accent)
-            setOnRefreshListener {
-                refresh()
-            }
+            setOnRefreshListener { refresh() }
         }
 
         btnLater.setOnClickListener {
             WatchLaterActivity.startActivity(context)
         }
+
+        swipeRefreshLayout.startRefreshing()
     }
 
     override fun onResume() {
@@ -125,50 +123,77 @@ class PlaylistFragment : BaseFragment() {
     }
 
     private fun refresh() {
-        viewModel.getWatchLaterAmount()
-        viewModel.getPlaylist()
+        viewModel.allPlaylists()
     }
 
     private fun showPlaylistNameDialog(playlistId: Int, currentName: String) {
-        val dialogBuilder = context?.let { AlertDialog.Builder(it) }
-        val dialogView = layoutInflater.inflate(R.layout.change_playlist_name_dialog, null)
+        context?.let { MaterialAlertDialogBuilder(it, R.style.PlaymiMaterialDialog) }?.run {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                background = getDrawable(context, R.drawable.bg_dialog)
+            }
 
-        dialogView.playlistName.setText(currentName)
+            val dialogView = layoutInflater.inflate(R.layout.change_playlist_name_dialog, null)
+            dialogView.playlistName.setText(currentName)
 
-        dialogBuilder?.setView(dialogView)
-
-        val dialog = dialogBuilder?.create()
-        dialogView.btnCancel.setOnClickListener {
-            dialog?.dismiss()
-        }
-        dialogView.btnOk.setOnClickListener {
-            if (dialogView.playlistName.text.isNotEmpty()) {
+            setView(dialogView)
+            setPositiveButton("SIMPAN") { dialogInterface, _ ->
                 viewModel.changePlaylistName(
                     playlistId,
                     dialogView.playlistName.text.toString()
                 )
-                dialog?.dismiss()
+                dialogInterface.dismiss()
             }
+            setNegativeButton("BATAL") { dialogInterface, _ ->
+                dialogInterface.dismiss()
+            }
+
+            val dialog = create()
+            dialog.show()
         }
-        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        dialog?.show()
+    }
+
+    companion object {
+        fun newInstance(): Fragment = PlaylistFragment()
     }
 
     private fun observeWatchLaterAmount() {
         viewModel.getWatchLaterAmountLd.observe(viewLifecycleOwner, Observer { result ->
             when (result?.status) {
                 LOADING -> {
-                    swipeRefreshLayout.startRefreshing()
-                    successLayout.setVisibilityToGone()
                 }
                 SUCCESS -> {
+                    swipeRefreshLayout.stopRefreshing()
+                    successLayout.setVisibilityToVisible()
+
                     watchLaterAmount.text = "${result.data} Video"
-                    observePlaylist()
                 }
                 ERROR -> {
                     swipeRefreshLayout.stopRefreshing()
-                    handleApiError(result.message) {
-                        context?.showShortToast(getString(R.string.error_message_default))
+
+                    when (result.message) {
+                        ERROR_CONNECTION -> {
+                            showMaterialAlertDialog(
+                                context,
+                                message = getString(R.string.error_connection),
+                                positive = "Coba Lagi",
+                                positiveCallback = { refresh() },
+                                dismissCallback = { refresh() }
+                            )
+                        }
+                        ERROR_CONNECTION_TIMEOUT -> {
+                            showMaterialAlertDialog(
+                                context,
+                                message = getString(R.string.error_connection),
+                                positive = "Coba Lagi",
+                                positiveCallback = { refresh() },
+                                dismissCallback = { refresh() }
+                            )
+                        }
+                        else -> {
+                            handleApiError(errorMessage = result.message) {
+                                showLongToast(context, it)
+                            }
+                        }
                     }
                 }
             }
@@ -181,21 +206,45 @@ class PlaylistFragment : BaseFragment() {
                 LOADING -> {
                 }
                 SUCCESS -> {
-                    swipeRefreshLayout.stopRefreshing()
-                    successLayout.setVisibilityToVisible()
-
                     val list = result.data ?: emptyList()
 
-                    recyclerView.adapter = playlistAdapter.apply { add(list) }
-                    recyclerView.layoutManager = LinearLayoutManager(context)
+                    if (list.isEmpty()) {
+                        playlist.setVisibilityToGone()
+                    } else {
+                        playlist.setVisibilityToVisible()
+                        recyclerView.adapter = playlistAdapter.apply { add(list) }
+                        recyclerView.layoutManager = LinearLayoutManager(context)
+                    }
+
+                    viewModel.getWatchLaterAmount()
                 }
                 ERROR -> {
                     swipeRefreshLayout.stopRefreshing()
-                    handleApiError(result.message) {
-                        context?.showAlertDialog(
-                            message = getString(R.string.error_message_default),
-                            btnText = "OK"
-                        ) { it.dismiss() }
+
+                    when (result.message) {
+                        ERROR_CONNECTION -> {
+                            showMaterialAlertDialog(
+                                context,
+                                message = getString(R.string.error_connection),
+                                positive = "Coba Lagi",
+                                positiveCallback = { refresh() },
+                                dismissCallback = { refresh() }
+                            )
+                        }
+                        ERROR_CONNECTION_TIMEOUT -> {
+                            showMaterialAlertDialog(
+                                context,
+                                message = getString(R.string.error_connection),
+                                positive = "Coba Lagi",
+                                positiveCallback = { refresh() },
+                                dismissCallback = { refresh() }
+                            )
+                        }
+                        else -> {
+                            handleApiError(errorMessage = result.message) {
+                                showLongToast(context, it)
+                            }
+                        }
                     }
                 }
             }
@@ -208,12 +257,12 @@ class PlaylistFragment : BaseFragment() {
                 LOADING -> {
                 }
                 SUCCESS -> {
-                    context?.showShortToast("Berhasil mengubah nama playlist")
+                    showLongToast(context, "Berhasil mengubah nama playlist")
                     refresh()
 
                 }
                 ERROR -> {
-                    context?.showShortToast(getString(R.string.error_message_default))
+                    showLongToast(context, getString(R.string.error_message_default))
                 }
             }
         })
@@ -225,17 +274,13 @@ class PlaylistFragment : BaseFragment() {
                 LOADING -> {
                 }
                 SUCCESS -> {
-                    context?.showShortToast("Playlist telah dihapus")
+                    showLongToast(context, "Berhasil dihapus")
                     refresh()
                 }
                 ERROR -> {
-                    context?.showShortToast(getString(R.string.error_message_default))
+                    showLongToast(context, getString(R.string.error_message_default))
                 }
             }
         })
-    }
-
-    companion object {
-        fun newInstance(): Fragment = PlaylistFragment()
     }
 }

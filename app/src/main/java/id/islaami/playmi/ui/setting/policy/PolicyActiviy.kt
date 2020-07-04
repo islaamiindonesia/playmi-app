@@ -28,24 +28,28 @@ class PolicyActiviy : BaseActivity() {
 
         when (intent.getStringExtra(TYPE)) {
             "ABOUT_PLAYMI" -> {
-                viewModel.aboutApp()
+//                viewModel.aboutApp()
                 supportActionBar?.title = "Tentang Aplikasi"
+                content.loadUrl("https://islaami.id/about")
             }
             "COOP_PLAYMI" -> {
-                viewModel.cooperation()
+//                viewModel.cooperation()
                 supportActionBar?.title = "Kerjasama"
+                content.loadUrl("https://islaami.id/cooperation")
             }
             "TNC_PLAYMI" -> {
-                viewModel.userTNC()
+//                viewModel.userTNC()
                 supportActionBar?.title = "Ketentuan Pengguna"
+                content.loadUrl("https://islaami.id/terms-and-condition")
             }
             "PRIVACY_PLAYMI" -> {
-                viewModel.privacyPolicy()
+//                viewModel.privacyPolicy()
                 supportActionBar?.title = "Kebijakan Privasi"
+                content.loadUrl("https://islaami.id/privacy-policy")
             }
         }
 
-        observePolicy()
+//        observePolicy()
     }
 
     companion object {
@@ -68,7 +72,7 @@ class PolicyActiviy : BaseActivity() {
                 SUCCESS -> {
                     val policy = result.data ?: Policy()
 
-                    content.text = policy.content.fromHtmlToSpanned()
+//                    content.text = policy.content.fromHtmlToSpanned()
                 }
                 ERROR -> {
                     showSnackbar(getString(R.string.error_message_default))

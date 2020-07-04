@@ -18,7 +18,7 @@
         android:theme="@style/AppTheme"
         tools:targetApi="n">
         <activity android:name=".ui.setting.policy.PolicyActiviy" />
-        <activity android:name=".ui.setting.help.WebHelpActivity" />
+        <activity android:name=".ui.setting.tnc.TermsConditionActivity" />
         <activity android:name="id.islaami.playmi.VerificationActivity" />
         <activity
             android:name=".ui.video.VideoDetailActivity"
@@ -41,11 +41,11 @@
             android:name=".ui.auth.RegisterActivity"
             android:theme="@style/RegisterTheme">
 
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
+            <!--            <intent-filter>-->
+            <!--                <action android:name="android.intent.action.MAIN" />-->
 
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
+            <!--                <category android:name="android.intent.category.LAUNCHER" />-->
+            <!--            </intent-filter>-->
         </activity>
         <activity
             android:name=".ui.channel.ChannelDetailActivity"
@@ -54,10 +54,12 @@
         <activity
             android:name=".ui.setting.SettingActivity"
             android:theme="@style/RegisterTheme" />
-        <activity android:name=".ui.MainActivity">
+        <activity
+            android:name=".ui.MainActivity"
+            android:windowSoftInputMode="adjustPan">
             <meta-data
                 android:name="android.app.default_searchable"
-                android:value=".ui.video.VideoSearchActivity" />
+                android:value=".ui.search.VideoSearchActivity" />
         </activity>
         <activity
             android:name=".ui.auth.ForgotPasswordActivity"
@@ -86,26 +88,24 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ui.playlist.PlaylistDetailActivity"
-            android:launchMode="singleTop">
-
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
-            </intent-filter>
+        <activity android:name=".ui.playlist.PlaylistDetailActivity">
 
             <meta-data
-                android:name="android.app.searchable"
-                android:resource="@xml/searchable" />
+                android:name="android.app.default_searchable"
+                android:value=".ui.search.VideoSearchActivity" />
         </activity>
-        <activity android:name=".ui.playlist.WatchLaterActivity" />
+        <activity android:name=".ui.playlist.WatchLaterActivity">
+
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value=".ui.search.VideoSearchActivity" />
+        </activity>
         <activity android:name=".ui.setting.report.ReportActivity" />
         <activity android:name=".ui.setting.insight.InsightActivity" />
         <activity android:name=".ui.setting.collaborate.CollaborateActivity" />
         <activity android:name=".ui.auth.ResetPasswordActivity" />
-        <activity android:name=".ui.auth.CompleteProfileActivity" />
         <activity
-            android:name=".ui.video.VideoSearchActivity"
+            android:name=".ui.search.VideoSearchActivity"
             android:launchMode="singleTop">
 
             <intent-filter>
@@ -115,19 +115,21 @@
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
-
-            <meta-data
-                android:name="android.app.default_searchable"
-                android:value=".ui.video.VideoSearchActivity" />
         </activity>
         <activity android:name=".ui.channel.ChannelVideoActivity" />
+        <activity
+            android:name=".ui.video.VideoSubcategoryActivity"
+            android:launchMode="singleTop" />
+        <activity
+            android:name=".ui.video.VideoLabelActivity"
+            android:launchMode="singleTop" />
 
         <!-- METAS -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="@string/default_notification_channel_id" />
 
-        <!--Set custom default icon. This is used when no icon is set for incoming notification messages.
+        <!--Set custom default playmi_icon. This is used when no playmi_icon is set for incoming notification messages.
              See README(https://goo.gl/l4GJaQ) for more.-->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"

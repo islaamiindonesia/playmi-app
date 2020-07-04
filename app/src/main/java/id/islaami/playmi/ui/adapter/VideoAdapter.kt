@@ -5,12 +5,16 @@ import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.marlonlom.utilities.timeago.TimeAgo
 import com.github.marlonlom.utilities.timeago.TimeAgoMessages
 import id.islaami.playmi.R
 import id.islaami.playmi.data.model.video.Video
+import id.islaami.playmi.ui.channel.ChannelDetailActivity
 import id.islaami.playmi.ui.video.VideoDetailActivity
+import id.islaami.playmi.ui.video.VideoLabelActivity
+import id.islaami.playmi.ui.video.VideoSubcategoryActivity
 import id.islaami.playmi.util.fromDbFormatDateTimeToCustomFormat
 import id.islaami.playmi.util.ui.loadExternalImage
 import id.islaami.playmi.util.ui.loadImage
@@ -53,7 +57,31 @@ class VideoAdapter(
                 layoutUploadTime.setVisibilityToGone()
             }
 
-            subcategoryName.text = video.subcategory?.name
+            subcategoryName.apply {
+                text = video.subcategory?.name
+                setOnClickListener {
+                    VideoSubcategoryActivity.startActivity(
+                        context,
+                        video.category?.ID.value(),
+                        video.subcategory?.ID.value(),
+                        video.subcategory?.name.toString()
+                    )
+                }
+            }
+
+            recyclerView.adapter =
+                LabelAdapter(video.labels ?: emptyList(),
+                    itemClickListener = { labelId, labelName ->
+                        VideoLabelActivity.startActivity(
+                            context,
+                            video.category?.ID.value(),
+                            video.subcategory?.ID.value(),
+                            labelId,
+                            labelName
+                        )
+                    })
+            recyclerView.layoutManager =
+                LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 val locale = Locale.forLanguageTag("id")
@@ -74,6 +102,14 @@ class VideoAdapter(
 
             menu.setOnClickListener { view ->
                 popMenu(context, view, video)
+            }
+
+            channelLayout.setOnClickListener {
+                ChannelDetailActivity.startActivity(
+                    context,
+                    video.channel.toString(),
+                    video.channel?.ID.value()
+                )
             }
         }
     }

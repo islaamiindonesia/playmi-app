@@ -4,15 +4,15 @@ import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.lifecycle.Observer
+import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException
-import com.google.firebase.auth.FirebaseUser
 import com.jakewharton.rxbinding3.widget.textChanges
 import id.islaami.playmi.R
 import id.islaami.playmi.VerificationActivity
+import id.islaami.playmi.ui.MainActivity
 import id.islaami.playmi.ui.base.BaseRegisterActivity
 import id.islaami.playmi.util.*
 import id.islaami.playmi.util.ResourceStatus.*
@@ -20,9 +20,13 @@ import id.islaami.playmi.util.ui.*
 import io.reactivex.Observable
 import io.reactivex.functions.Function6
 import kotlinx.android.synthetic.main.register_activity.*
+import kotlinx.android.synthetic.main.register_activity.etBirtdate
+import kotlinx.android.synthetic.main.register_activity.etPassword
+import kotlinx.android.synthetic.main.register_activity.layoutEtPassword
+import kotlinx.android.synthetic.main.register_activity.progressBar
+import kotlinx.android.synthetic.main.register_activity.radioGender
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
-
 
 class RegisterActivity(
     var firebaseAuth: FirebaseAuth? = null,
@@ -39,6 +43,7 @@ class RegisterActivity(
 
         viewModel.initRegisterAcitivity()
         observeRegister()
+        observeRegisterFromGoogle()
 
         setupBirthDateDatePickerListener()
         setupForm(intent.getStringExtra("NOTIF_TOKEN"))
@@ -69,12 +74,24 @@ class RegisterActivity(
 
     /* CUSTOM METHOD */
     private fun setupForm(token: String?) {
+        etName.setText(intent.getStringExtra(FULLNAME) ?: "")
         etEmail.setText(intent.getStringExtra(EMAIL) ?: "")
         etPassword.setText(intent.getStringExtra(PASSWORD) ?: "")
 
         btnRegister.setOnClickListener {
             if (validateAll()) {
-                firebaseAuthWithPassword(token.toString())
+                if ((intent.getStringExtra(FULLNAME) ?: "").isEmpty()) {
+                    firebaseAuthWithPassword(token.toString())
+                } else {
+                    viewModel.registerFromGoogle(
+                        fullname = etName.text.toString(),
+                        email = etEmail.text.toString(),
+                        birthdate = etBirtdate.text.toString().fromAppsFormatDateToDbFormatDate()
+                            .toString(),
+                        gender = gender,
+                        notifToken = token.toString()
+                    )
+                }
             }
         }
     }
@@ -132,19 +149,13 @@ class RegisterActivity(
                 btnRegister.setVisibilityToVisible()
 
                 when (task.exception) {
-                    is FirebaseAuthWeakPasswordException -> showShortToast("Kata Sandi kurang dari 6 karakter")
-                    is FirebaseAuthUserCollisionException -> showShortToast("Email ${etEmail.text.toString()} sudah digunakan.")
-                    else -> {
-                        showShortToast(getString(R.string.error_message_default))
-                    }
+                    is FirebaseAuthWeakPasswordException -> showLongToast("Kata Sandi kurang dari 6 karakter")
+                    is FirebaseAuthUserCollisionException -> showLongToast("Email ${etEmail.text.toString()} sudah digunakan.")
+                    is FirebaseNetworkException -> showLongToast(getString(R.string.error_connection))
+                    else -> showLongToast(getString(R.string.error_message_default))
                 }
             }
         }
-    }
-
-    private fun updateUI(currentUser: FirebaseUser?) {
-        val token = intent.getStringExtra("NOTIF_TOKEN")
-        VerificationActivity.startActivityClearTask(this, currentUser, token)
     }
 
     private fun setupBirthDateDatePickerListener() {
@@ -184,6 +195,7 @@ class RegisterActivity(
     companion object {
         const val AUD_ID = "AUD_ID"
         const val NOTIF_TOKEN = "NOTIF_TOKEN"
+        const val FULLNAME = "FULLNAME"
         const val EMAIL = "EMAIL"
         const val PASSWORD = "PASSSWORD"
 
@@ -202,6 +214,22 @@ class RegisterActivity(
                     .putExtra(PASSWORD, password)
             )
         }
+
+        fun startActivityFromGoogleAccount(
+            context: Context?,
+            audID: String,
+            notifToken: String,
+            fullName: String,
+            email: String
+        ) {
+            context?.startActivity(
+                Intent(context, RegisterActivity::class.java)
+                    .putExtra(AUD_ID, audID)
+                    .putExtra(NOTIF_TOKEN, notifToken)
+                    .putExtra(FULLNAME, fullName)
+                    .putExtra(EMAIL, email)
+            )
+        }
     }
 
     private fun observeRegister() {
@@ -215,13 +243,41 @@ class RegisterActivity(
                     progressBar.setVisibilityToGone()
                     btnRegister.setVisibilityToVisible()
 
-                    updateUI(firebaseAuth?.currentUser)
+                    val token = intent.getStringExtra("NOTIF_TOKEN")
+                    VerificationActivity.startActivityClearTask(
+                        this,
+                        intent.getStringExtra(EMAIL) ?: "",
+                        token
+                    )
                 }
                 ERROR -> {
                     progressBar.setVisibilityToGone()
                     btnRegister.setVisibilityToVisible()
 
-                    handleApiError(result.message) { showShortToast(it) }
+                    handleApiError(result.message) { showLongToast(it) }
+                }
+            }
+        })
+    }
+
+    private fun observeRegisterFromGoogle() {
+        viewModel.loginResultLd.observe(this, Observer { result ->
+            when (result.status) {
+                LOADING -> {
+                    progressBar.setVisibilityToVisible()
+                    btnRegister.setVisibilityToGone()
+                }
+                SUCCESS -> {
+                    progressBar.setVisibilityToGone()
+                    btnRegister.setVisibilityToVisible()
+
+                    MainActivity.startActivityClearTask(this)
+                }
+                ERROR -> {
+                    progressBar.setVisibilityToGone()
+                    btnRegister.setVisibilityToVisible()
+
+                    handleApiError(result.message) { showLongToast(it) }
                 }
             }
         })

@@ -4,7 +4,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.multidex.MultiDexApplication
 import com.chibatching.kotpref.Kotpref
 import id.islaami.playmi.config.CacheLibrary
-import id.islaami.playmi.data.model.Mode
+import id.islaami.playmi.data.model.kotpref.Mode
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 

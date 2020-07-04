@@ -60,10 +60,10 @@ class VideoPagedAdapterOld(
                     }
                 }
 
-                recyclerView.adapter =
-                    LabelAdapter(video.labels?.map { it.name.toString() } ?: emptyList())
+                /*recyclerView.adapter =
+                    LabelAdapter(video.labels ?: emptyList())
                 recyclerView.layoutManager =
-                    LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+                    LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)*/
 
                 publishedDate.apply {
                     val time = differenceInDays(video.publishedAt.toString())

@@ -1,6 +1,7 @@
 package id.islaami.playmi.ui.channel_following
 
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -12,11 +13,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import id.islaami.playmi.R
 import id.islaami.playmi.ui.adapter.ChannelFollowingAdapter
 import id.islaami.playmi.ui.base.BaseFragment
+import id.islaami.playmi.util.*
 import id.islaami.playmi.util.ResourceStatus.*
-import id.islaami.playmi.util.handleApiError
 import id.islaami.playmi.util.ui.*
-import id.islaami.playmi.util.value
 import kotlinx.android.synthetic.main.following_hidden_fragment.*
+import kotlinx.android.synthetic.main.following_hidden_fragment.recyclerView
+import kotlinx.android.synthetic.main.following_hidden_fragment.swipeRefreshLayout
+import kotlinx.android.synthetic.main.video_category_fragment.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ChannelFollowingFragment : BaseFragment() {
@@ -55,9 +58,6 @@ class ChannelFollowingFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.initFollowingFragment()
-        observeChannel()
-        observeUnfollow()
-        observeHide()
 
         swipeRefreshLayout.apply {
             setColorSchemeResources(R.color.accent)
@@ -84,6 +84,10 @@ class ChannelFollowingFragment : BaseFragment() {
         super.onResume()
 
         refresh()
+
+        observeChannel()
+        observeUnfollow()
+        observeHide()
     }
 
     private fun refresh() {
@@ -97,7 +101,9 @@ class ChannelFollowingFragment : BaseFragment() {
     private fun observeChannel() {
         viewModel.channelFollowingLd.observe(viewLifecycleOwner, Observer { result ->
             when (result?.status) {
-                LOADING -> { }
+                LOADING -> {
+
+                }
                 SUCCESS -> {
                     swipeRefreshLayout.stopRefreshing()
 
@@ -111,8 +117,35 @@ class ChannelFollowingFragment : BaseFragment() {
                 }
                 ERROR -> {
                     swipeRefreshLayout.stopRefreshing()
-                    handleApiError(errorMessage = result.message) { message ->
-                        context?.showShortToast(message)
+                    Log.d("HEIKAMU", "observeChannel: ")
+                    when (result.message) {
+                        ERROR_EMPTY_LIST -> {
+                            emptyText.setVisibilityToVisible()
+                            recyclerView.setVisibilityToGone()
+                        }
+                        ERROR_CONNECTION -> {
+                            showMaterialAlertDialog(
+                                context,
+                                getString(R.string.error_connection),
+                                "Coba Lagi",
+                                positiveCallback = { refresh() },
+                                dismissCallback = { refresh() }
+                            )
+                        }
+                        ERROR_CONNECTION_TIMEOUT -> {
+                            showMaterialAlertDialog(
+                                context,
+                                getString(R.string.error_connection_timeout),
+                                "Coba Lagi",
+                                positiveCallback = { refresh() },
+                                dismissCallback = { refresh() }
+                            )
+                        }
+                        else -> {
+                            handleApiError(errorMessage = result.message) { message ->
+                                showLongToast(context, message)
+                            }
+                        }
                     }
                 }
             }
@@ -125,12 +158,12 @@ class ChannelFollowingFragment : BaseFragment() {
                 LOADING -> {
                 }
                 SUCCESS -> {
-                    context?.showShortToast("Berhenti mengikuti")
+                    showLongToast(context, "Berhenti mengikuti")
                     refresh()
                 }
                 ERROR -> {
                     handleApiError(errorMessage = result.message) { message ->
-                        context?.showShortToast(message)
+                        showLongToast(context, message)
                     }
                 }
             }
@@ -143,12 +176,12 @@ class ChannelFollowingFragment : BaseFragment() {
                 LOADING -> {
                 }
                 SUCCESS -> {
-                    context?.showShortToast(getString(R.string.message_channel_hide))
+                    showLongToast(context, getString(R.string.message_channel_hide))
                     refresh()
                 }
                 ERROR -> {
                     handleApiError(errorMessage = result.message) { message ->
-                        context?.showShortToast(message)
+                        showLongToast(context, message)
                     }
                 }
             }

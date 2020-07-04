@@ -46,7 +46,8 @@
             <androidx.core.widget.NestedScrollView
                 android:id="@+id/successLayout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:visibility="gone">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerView"

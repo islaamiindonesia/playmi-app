@@ -3,7 +3,6 @@ package id.islaami.playmi.ui.adapter
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,7 +17,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.marlonlom.utilities.timeago.TimeAgo
 import com.github.marlonlom.utilities.timeago.TimeAgoMessages
-import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdLoader
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.formats.MediaView
@@ -29,6 +27,8 @@ import id.islaami.playmi.R
 import id.islaami.playmi.data.model.video.Video
 import id.islaami.playmi.ui.channel.ChannelDetailActivity
 import id.islaami.playmi.ui.video.VideoDetailActivity
+import id.islaami.playmi.ui.video.VideoLabelActivity
+import id.islaami.playmi.ui.video.VideoSubcategoryActivity
 import id.islaami.playmi.util.fromDbFormatDateTimeToCustomFormat
 import id.islaami.playmi.util.ui.loadExternalImage
 import id.islaami.playmi.util.ui.loadImage
@@ -78,14 +78,9 @@ class VideoPagedAdapter(
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (position % 10 == 0 && position != 0) {
-            UNIFIED_NATIVE_AD_VIEW_TYPE
-        } else {
-            VIDEO_ITEM_VIEW_TYPE
-        }
+        return if (position % 7 == 0 && position != 0) UNIFIED_NATIVE_AD_VIEW_TYPE
+        else VIDEO_ITEM_VIEW_TYPE
     }
-
-    fun getItemAtPosition(position: Int): Video? = getItem(position)
 
     fun addVideoList(list: PagedList<Video>?) {
         submitList(list)
@@ -105,7 +100,17 @@ class VideoPagedAdapter(
                 channelIcon.loadImage(video.channel?.thumbnail)
                 views.text = "${video.views ?: 0}x"
 
-                subcategoryName.text = video.subcategory?.name
+                subcategoryName.apply {
+                    text = video.subcategory?.name
+                    setOnClickListener {
+                        VideoSubcategoryActivity.startActivity(
+                            context,
+                            video.category?.ID.value(),
+                            video.subcategory?.ID.value(),
+                            video.subcategory?.name.toString()
+                        )
+                    }
+                }
 
                 if (video.isUploadShown == false) {
                     layoutUploadTime.setVisibilityToGone()
@@ -116,7 +121,16 @@ class VideoPagedAdapter(
                 }
 
                 recyclerView.adapter =
-                    LabelAdapter(video.labels?.map { it.name.toString() } ?: emptyList())
+                    LabelAdapter(video.labels ?: emptyList(),
+                        itemClickListener = { labelId, labelName ->
+                            VideoLabelActivity.startActivity(
+                                context,
+                                video.category?.ID.value(),
+                                video.subcategory?.ID.value(),
+                                labelId,
+                                labelName
+                            )
+                        })
                 recyclerView.layoutManager =
                     LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
 
@@ -190,18 +204,11 @@ class VideoPagedAdapter(
             val adLoader = AdLoader.Builder(
                 itemView.context,
                 itemView.context.getString(R.string.active_ad_native_unit_id)
-            )
-                .forUnifiedNativeAd { ad ->
-                    currentNativeAd = ad
+            ).forUnifiedNativeAd { ad ->
+                currentNativeAd = ad
 
-                    unav?.let { populateAd(ad, it) }
-                }
-                .withAdListener(object : AdListener() {
-                    override fun onAdFailedToLoad(p0: Int) {
-                        super.onAdFailedToLoad(p0)
-                    }
-                })
-                .withNativeAdOptions(NativeAdOptions.Builder().build())
+                unav?.let { populateAd(ad, it) }
+            }.withNativeAdOptions(NativeAdOptions.Builder().build())
                 .build()
 
             adLoader.loadAd(AdRequest.Builder().build())

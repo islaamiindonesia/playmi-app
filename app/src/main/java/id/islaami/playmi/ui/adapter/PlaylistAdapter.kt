@@ -38,7 +38,7 @@ class PlaylistAdapter(
             playlistName.text = playList.name
             videoAmount.text = "${playList.videoCount.toString()} video"
             itemLayout.setOnClickListener {
-                PlaylistDetailActivity.startActivity(context, playList.ID.value())
+                PlaylistDetailActivity.startActivity(context, playList.ID.value(), playList.name.toString())
             }
 
             menu.setOnClickListener { view ->

@@ -21,7 +21,6 @@
         Dengan daftar dan masuk ke aplikasi ini, berarti Anda menyetujui <annotation type="tnc">Ketentuan Pengguna</annotation> serta <annotation type="privacy">Kebijakan Privasi</annotation> kami.</string>
     <string name="error_message_default">Terjadi Kesalahan.\nSilakan coba sesaat lagi</string>
     <string name="error_email_not_found">%1$s belum terdaftar sebagai akun.</string>
-    <string name="error_email_not_verified">Email Anda belum terverifikasi</string>
     <string name="error_connection_timeout">Waktu sambungan habis.\nSilakan coba sesaat lagi.</string>
     <string name="error_connection">Tidak ada koneksi.\nCek koneksi internet Anda dan coba lagi</string>
     <string name="default_notification_channel_id">channelID</string>
@@ -41,7 +40,8 @@
     <string name="email_sent">Berhasil terkirim</string>
     <string name="channel_follow">Apakah ingin mulai mengikuti <![CDATA[<b>%1$s</b>]]>?</string>
     <string name="channel_unfollow">Apakah ingin berhenti mengikuti <![CDATA[<b>%1$s</b>]]>?</string>
-    <string name="channel_hide">Anda tidak akan melihat seluruh video dari kanal ini <![CDATA[<br><br>]]>Apakah ingin berhenti mengikuti <![CDATA[<b>%1$s</b>]]>?</string>
+    <string name="channel_hide">Anda tidak akan melihat seluruh video dari kanal ini<![CDATA[<br><br>]]>Apakah ingin berhenti mengikuti <![CDATA[<b>%1$s</b>]]>?</string>
+    <string name="playlist_remove">Apakah ingin menghapus daftar <![CDATA[<b>%1$s</b>]]>?</string>
     <string name="video">Video</string>
     <string name="about">Tentang</string>
 </resources>

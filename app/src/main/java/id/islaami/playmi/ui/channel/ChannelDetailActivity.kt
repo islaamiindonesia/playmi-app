@@ -18,12 +18,16 @@ import com.google.android.material.tabs.TabLayout
 import id.islaami.playmi.R
 import id.islaami.playmi.data.model.channel.Channel
 import id.islaami.playmi.ui.base.BaseActivity
+import id.islaami.playmi.util.*
 import id.islaami.playmi.util.ResourceStatus.*
-import id.islaami.playmi.util.fromHtmlToSpanned
-import id.islaami.playmi.util.handleApiError
 import id.islaami.playmi.util.ui.*
-import id.islaami.playmi.util.value
 import kotlinx.android.synthetic.main.channel_detail_activity.*
+import kotlinx.android.synthetic.main.channel_detail_activity.successLayout
+import kotlinx.android.synthetic.main.channel_detail_activity.swipeRefreshLayout
+import kotlinx.android.synthetic.main.channel_detail_activity.toolbar
+import kotlinx.android.synthetic.main.video_category_fragment.*
+import kotlinx.android.synthetic.main.video_category_fragment.recyclerView
+import kotlinx.android.synthetic.main.watch_later_activity.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ChannelDetailActivity : BaseActivity() {
@@ -157,7 +161,7 @@ class ChannelDetailActivity : BaseActivity() {
                     setOnMenuItemClickListener { item ->
                         when (item.itemId) {
                             R.id.notifEnabled -> {
-                                showShortToast("Enable Notif")
+                                showLongToast("Enable Notif")
                                 notif?.icon =
                                     ContextCompat.getDrawable(
                                         this@ChannelDetailActivity,
@@ -167,7 +171,7 @@ class ChannelDetailActivity : BaseActivity() {
                                 true
                             }
                             else -> {
-                                showShortToast("Disable Notif")
+                                showLongToast("Disable Notif")
                                 notif?.icon =
                                     ContextCompat.getDrawable(
                                         this@ChannelDetailActivity,
@@ -252,14 +256,30 @@ class ChannelDetailActivity : BaseActivity() {
                 }
                 ERROR -> {
                     swipeRefreshLayout.stopRefreshing()
-                    handleApiError(result.message) { message ->
-                        showAlertDialog(
-                            message = message,
-                            btnText = "OK",
-                            btnCallback = {
-                                it.dismiss()
-                                onBackPressed()
-                            })
+                    when (result.message) {
+                        ERROR_CONNECTION -> {
+                            RefreshDialogFragment.show(
+                                fragmentManager = supportFragmentManager,
+                                text = getString(R.string.error_connection),
+                                btnOk = "Coba Lagi",
+                                okCallback = { refresh() },
+                                outsideTouchCallback = { refresh() }
+                            )
+                        }
+                        ERROR_CONNECTION_TIMEOUT -> {
+                            RefreshDialogFragment.show(
+                                fragmentManager = supportFragmentManager,
+                                text = getString(R.string.error_connection_timeout),
+                                btnOk = "Coba Lagi",
+                                okCallback = { refresh() },
+                                outsideTouchCallback = { refresh() }
+                            )
+                        }
+                        else -> {
+                            handleApiError(errorMessage = result.message) { message ->
+                                showLongToast(message)
+                            }
+                        }
                     }
                 }
             }
@@ -272,11 +292,11 @@ class ChannelDetailActivity : BaseActivity() {
                 LOADING -> {
                 }
                 SUCCESS -> {
-                    showShortToast("Kanal ditampilkan")
+                    showLongToast("Kanal ditampilkan")
                     refresh()
                 }
                 ERROR -> {
-                    handleApiError(result.message) { showShortToast(it) }
+                    handleApiError(result.message) { showLongToast(it) }
                 }
             }
         })
@@ -288,11 +308,11 @@ class ChannelDetailActivity : BaseActivity() {
                 LOADING -> {
                 }
                 SUCCESS -> {
-                    showShortToast("Kanal telah disembunyikan")
+                    showLongToast("Kanal telah disembunyikan")
                     refresh()
                 }
                 ERROR -> {
-                    handleApiError(result.message) { showShortToast(it) }
+                    handleApiError(result.message) { showLongToast(it) }
                 }
             }
         })
@@ -304,11 +324,11 @@ class ChannelDetailActivity : BaseActivity() {
                 LOADING -> {
                 }
                 SUCCESS -> {
-                    showShortToast("Berhasil mengikuti")
+                    showLongToast("Berhasil mengikuti")
                     refresh()
                 }
                 ERROR -> {
-                    handleApiError(result.message) { showShortToast(it) }
+                    handleApiError(result.message) { showLongToast(it) }
                 }
             }
         })
@@ -320,11 +340,11 @@ class ChannelDetailActivity : BaseActivity() {
                 LOADING -> {
                 }
                 SUCCESS -> {
-                    showShortToast("Berhenti mengikuti")
+                    showLongToast("Berhenti mengikuti")
                     refresh()
                 }
                 ERROR -> {
-                    handleApiError(result.message) { showShortToast(it) }
+                    handleApiError(result.message) { showLongToast(it) }
                 }
             }
         })

@@ -117,38 +117,6 @@ class HomeViewModel(
         getAllCategory()
     }
 
-    /* PLAYLIST */
-    lateinit var getPlaylistsResultLd: MutableLiveData<Resource<List<Playlist>>>
-    lateinit var createPlaylistResultLd: MutableLiveData<Resource<Any>>
-    lateinit var addToPlaylistResultLd: MutableLiveData<Resource<Any>>
-
-    fun getPlaylists() {
-        disposable.add(playlist.getAllPlaylist().execute()
-            .doOnSubscribe { getPlaylistsResultLd.setLoading() }
-            .subscribe(
-                { result -> getPlaylistsResultLd.setSuccess(result) },
-                { throwable -> getPlaylistsResultLd.setError(throwable.getErrorMessage()) }
-            ))
-    }
-
-    fun createPlaylist(name: String) {
-        disposable.add(playlist.create(name).execute()
-            .doOnSubscribe { createPlaylistResultLd.setLoading() }
-            .subscribe(
-                { result -> createPlaylistResultLd.setSuccess(result) },
-                { throwable -> createPlaylistResultLd.setError(throwable.getErrorMessage()) }
-            ))
-    }
-
-    fun addToPlaylist(videoId: Int, playlistId: Int) {
-        disposable.add(playlist.addVideo(videoId, playlistId).execute()
-            .doOnSubscribe { addToPlaylistResultLd.setLoading() }
-            .subscribe(
-                { result -> addToPlaylistResultLd.setSuccess(result) },
-                { throwable -> addToPlaylistResultLd.setError(throwable.getErrorMessage()) }
-            ))
-    }
-
     /* WATCH LATER */
     lateinit var watchLaterResultLd: MutableLiveData<Resource<Any>>
 
@@ -166,7 +134,6 @@ class HomeViewModel(
         followChannelResultLd = MutableLiveData()
         unfollowChannelResultLd = MutableLiveData()
         watchLaterResultLd = MutableLiveData()
-        getPlaylistsResultLd = MutableLiveData()
 
         if (categoryId > 0) getAllVideoByCategory(categoryId)
         else getAllVideo()

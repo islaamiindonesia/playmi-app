@@ -9,15 +9,19 @@ import android.os.Build
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.util.Log
+import android.util.TypedValue
 import android.view.View
 import android.view.WindowManager.LayoutParams.FLAG_SECURE
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.github.marlonlom.utilities.timeago.TimeAgo
+import com.github.marlonlom.utilities.timeago.TimeAgoMessages
 import com.google.android.gms.ads.AdRequest
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.FirebaseApp
 import com.google.firebase.dynamiclinks.DynamicLink
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
@@ -26,18 +30,18 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstan
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerFullScreenListener
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.utils.loadOrCueVideo
 import id.islaami.playmi.R
-import id.islaami.playmi.data.model.Mode
+import id.islaami.playmi.data.model.kotpref.Mode
 import id.islaami.playmi.data.model.video.Video
 import id.islaami.playmi.ui.MainActivity
+import id.islaami.playmi.ui.adapter.LabelAdapter
 import id.islaami.playmi.ui.adapter.PlaylistSelectAdapter
 import id.islaami.playmi.ui.base.BaseActivity
 import id.islaami.playmi.ui.channel.ChannelDetailActivity
-import id.islaami.playmi.util.FullScreenHelper
+import id.islaami.playmi.util.*
 import id.islaami.playmi.util.ResourceStatus.*
-import id.islaami.playmi.util.fromHtmlToSpanned
 import id.islaami.playmi.util.ui.*
-import id.islaami.playmi.util.value
 import kotlinx.android.synthetic.main.add_new_playlist_dialog.view.*
 import kotlinx.android.synthetic.main.playlist_bottom_sheet.view.*
 import kotlinx.android.synthetic.main.video_detail_activity.*
@@ -45,15 +49,15 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
-class VideoDetailActivity : BaseActivity() {
+class VideoDetailActivity(
+    var videoId: Int = 0,
+    var channelId: Int = 0
+) : BaseActivity() {
     private val viewModel: VideoViewModel by viewModel()
 
     private val fullScreenHelper = FullScreenHelper(this)
 
     lateinit var playlistSelectAdapter: PlaylistSelectAdapter
-
-    private var videoId = 0
-    private var channelId = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,7 +82,6 @@ class VideoDetailActivity : BaseActivity() {
         }
 
         observeVideoDetail()
-        observePlaylist()
         observeFollowResult()
         observeUnfollowResult()
         observeWatchLaterResult()
@@ -87,6 +90,8 @@ class VideoDetailActivity : BaseActivity() {
             setColorSchemeResources(R.color.accent)
             setOnRefreshListener { refresh() }
         }
+
+        swipeRefreshLayout.startRefreshing()
 
         val adRequest = AdRequest.Builder().build()
         adView.loadAd(adRequest)
@@ -104,14 +109,16 @@ class VideoDetailActivity : BaseActivity() {
 
     override fun onBackPressed() {
         if (videoId == 0) handleBackPressed()
-        else super.onBackPressed()
+        else finish()
     }
 
     private fun handleBackPressed() {
         MainActivity.startActivityClearTask(this)
+        finish()
     }
 
     private fun refresh() {
+        viewModel.getPlaylists()
         viewModel.getVideoDetail(videoId)
     }
 
@@ -137,19 +144,31 @@ class VideoDetailActivity : BaseActivity() {
     }
 
     private fun showAddNewPlaylistDialog(videoId: Int) {
-        val dialogBuilder = AlertDialog.Builder(this)
+        val alertDialog = MaterialAlertDialogBuilder(this, R.style.PlaymiMaterialDialog)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            alertDialog.background = getDrawable(R.drawable.bg_dialog)
+        }
+
         val dialogView = layoutInflater.inflate(R.layout.add_new_playlist_dialog, null)
+        alertDialog.setView(dialogView)
+        alertDialog.setPositiveButton("SIMPAN") { dialogInterface, _ ->
+            viewModel.createPlaylist(dialogView.playlistName.text.toString(), videoId)
+            dialogInterface.dismiss()
+        }
+        alertDialog.setNegativeButton("BATAL") { dialogInterface, _ ->
+            dialogInterface.dismiss()
+        }
 
-        dialogBuilder.setView(dialogView)
-            .setPositiveButton("Simpan") { dialogInterface, i ->
-                viewModel.createPlaylist(dialogView.playlistName.text.toString(), videoId)
-                dialogInterface.dismiss()
-            }
-            .setNegativeButton("Batal") { dialogInterface, i ->
-                dialogInterface.dismiss()
-            }
+        val dialog = alertDialog.create()
+        dialog.show()
 
-        dialogBuilder.create().show()
+        val positiveBtn = dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE)
+        positiveBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+        positiveBtn.setTextColor(ContextCompat.getColor(this, R.color.accent))
+
+        val negativeBtn = dialog.getButton(android.app.AlertDialog.BUTTON_NEGATIVE)
+        negativeBtn.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+        negativeBtn.setTextColor(ContextCompat.getColor(this, R.color.accent))
     }
 
     private fun Video.showContent() {
@@ -168,24 +187,48 @@ class VideoDetailActivity : BaseActivity() {
         }
 
         videoViews.text = "${views}x"
-        videoPublishedDate.apply {
-            val days = differenceInDays(publishedAt.toString())
-            text = if (days == 0L) {
-                "Hari ini"
-            } else {
-                "$days hari yang lalu"
-            }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            val locale = Locale.forLanguageTag("id")
+            val message = TimeAgoMessages.Builder().withLocale(locale).build()
+
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale("id"))
+            val videoDate = dateFormat.parse(publishedAt.toString())
+
+            videoPublishedDate.text = TimeAgo.using(videoDate?.time.value(), message)
+        } else {
+            videoPublishedDate.text =
+                publishedAt.fromDbFormatDateTimeToCustomFormat("dd MM yyyy")
         }
+
         channelName.text = channel?.name.toString()
         channelPhoto.loadImage(channel?.thumbnail)
         channelFollower.text = "${channel?.followers.toString()} pengikut"
-        subcategoryName.text = subcategory?.name
-
-        /*btnNotif.apply {
+        subcategoryName.apply {
+            text = subcategory?.name
             setOnClickListener {
-                this.setImageResource(R.drawable.ic_notifications_active)
+                VideoSubcategoryActivity.startActivity(
+                    this@VideoDetailActivity,
+                    category?.ID.value(),
+                    subcategory?.ID.value(),
+                    subcategory?.name.toString()
+                )
             }
-        }*/
+        }
+
+        recyclerView.adapter =
+            LabelAdapter(labels ?: emptyList(),
+                itemClickListener = { labelId, labelName ->
+                    VideoLabelActivity.startActivity(
+                        this@VideoDetailActivity,
+                        category?.ID.value(),
+                        subcategory?.ID.value(),
+                        labelId,
+                        labelName
+                    )
+                })
+        recyclerView.layoutManager =
+            LinearLayoutManager(this@VideoDetailActivity, LinearLayoutManager.HORIZONTAL, false)
 
         btnChannel.setOnClickListener {
             ChannelDetailActivity.startActivity(
@@ -234,16 +277,6 @@ class VideoDetailActivity : BaseActivity() {
         }
     }
 
-    private fun differenceInDays(datePublished: String): Long {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale("id"))
-        val videoDate = dateFormat.parse(datePublished)
-        val today = Date()
-
-        val difference = (today.time - videoDate.time) / (1000 * 3600 * 24)
-
-        return difference
-    }
-
     override fun onConfigurationChanged(newConfiguration: Configuration) {
         if (newConfiguration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             enterFullScreen()
@@ -252,9 +285,10 @@ class VideoDetailActivity : BaseActivity() {
     }
 
     private fun initVideoPlayer(videoID: String) {
+        videoPlayer.enableBackgroundPlayback(false)
         videoPlayer.addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {
             override fun onReady(youTubePlayer: YouTubePlayer) {
-                youTubePlayer.loadVideo(videoID, 0f)
+                youTubePlayer.loadOrCueVideo(lifecycle, videoID, 0f)
             }
 
             override fun onError(
@@ -340,25 +374,35 @@ class VideoDetailActivity : BaseActivity() {
         viewModel.getVideoResultLd.observe(this, Observer { result ->
             when (result?.status) {
                 LOADING -> {
-                    swipeRefreshLayout.startRefreshing()
-                    successLayout.setVisibilityToGone()
                 }
                 SUCCESS -> {
-                    swipeRefreshLayout.stopRefreshing()
-                    successLayout.setVisibilityToVisible()
-
                     result.data?.showContent()
+                    observePlaylist()
                 }
                 ERROR -> {
                     swipeRefreshLayout.stopRefreshing()
-                    CustomDialogFragment.show(
-                        fragmentManager = supportFragmentManager,
-                        text = result.message.toString(),
-                        btnOk = "Coba Lagi",
-                        btnCancel = "Kembali",
-                        okCallback = { refresh() },
-                        outsideTouchCallback = { finish() }
-                    )
+
+                    when (result.message) {
+                        ERROR_CONNECTION -> {
+                            showMaterialAlertDialog(
+                                getString(R.string.error_connection),
+                                "Coba Lagi",
+                                positiveCallback = { refresh() },
+                                dismissCallback = { refresh() }
+                            )
+                        }
+                        ERROR_CONNECTION_TIMEOUT -> {
+                            showMaterialAlertDialog(
+                                getString(R.string.error_connection_timeout),
+                                "Coba Lagi",
+                                positiveCallback = { refresh() },
+                                dismissCallback = { refresh() }
+                            )
+                        }
+                        else -> {
+                            handleApiError(errorMessage = result.message) { showLongToast(it) }
+                        }
+                    }
                 }
             }
         })
@@ -370,10 +414,33 @@ class VideoDetailActivity : BaseActivity() {
                 LOADING -> {
                 }
                 SUCCESS -> {
+                    swipeRefreshLayout.stopRefreshing()
+                    successLayout.setVisibilityToVisible()
+
                     playlistSelectAdapter = PlaylistSelectAdapter(result.data)
                 }
                 ERROR -> {
-                    showSnackbar(result.message)
+                    swipeRefreshLayout.stopRefreshing()
+
+                    when (result.message) {
+                        ERROR_CONNECTION -> {
+                            showMaterialAlertDialog(
+                                getString(R.string.error_connection),
+                                "Coba Lagi",
+                                positiveCallback = { refresh() },
+                                dismissCallback = { refresh() }
+                            )
+                        }
+                        ERROR_CONNECTION_TIMEOUT -> {
+                            showMaterialAlertDialog(
+                                getString(R.string.error_connection_timeout),
+                                "Coba Lagi",
+                                positiveCallback = { refresh() },
+                                dismissCallback = { refresh() }
+                            )
+                        }
+                        else -> handleApiError(errorMessage = result.message) { showLongToast(it) }
+                    }
                 }
             }
         })
@@ -388,11 +455,30 @@ class VideoDetailActivity : BaseActivity() {
                 LOADING -> {
                 }
                 SUCCESS -> {
-                    showSnackbar("Berhasil membuat daftar putar")
-                    viewModel.getPlaylists()
+                    showLongToast("Berhasil membuat daftar putar")
                 }
                 ERROR -> {
-                    showSnackbar(result.message)
+                    when (result.message) {
+                        ERROR_CONNECTION -> {
+                            showMaterialAlertDialog(
+                                getString(R.string.error_connection),
+                                "Coba Lagi",
+                                positiveCallback = { refresh() },
+                                dismissCallback = { refresh() }
+                            )
+                        }
+                        ERROR_CONNECTION_TIMEOUT -> {
+                            showMaterialAlertDialog(
+                                getString(R.string.error_connection_timeout),
+                                "Coba Lagi",
+                                positiveCallback = { refresh() },
+                                dismissCallback = { refresh() }
+                            )
+                        }
+                        else -> {
+                            handleApiError(errorMessage = result.message) { showLongToast(it) }
+                        }
+                    }
                 }
             }
         })
