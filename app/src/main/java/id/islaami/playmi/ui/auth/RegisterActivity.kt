@@ -3,11 +3,8 @@ package id.islaami.playmi.ui.auth
 import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.WindowManager
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
@@ -16,12 +13,9 @@ import com.google.firebase.auth.FirebaseUser
 import com.jakewharton.rxbinding3.widget.textChanges
 import id.islaami.playmi.R
 import id.islaami.playmi.VerificationActivity
-import id.islaami.playmi.ui.base.BaseActivity
+import id.islaami.playmi.ui.base.BaseRegisterActivity
+import id.islaami.playmi.util.*
 import id.islaami.playmi.util.ResourceStatus.*
-import id.islaami.playmi.util.fromAppsFormatDateToDbFormatDate
-import id.islaami.playmi.util.fromDbFormatDateToAppsFormatDate
-import id.islaami.playmi.util.isValidEmail
-import id.islaami.playmi.util.isValidPassword
 import id.islaami.playmi.util.ui.*
 import io.reactivex.Observable
 import io.reactivex.functions.Function6
@@ -30,25 +24,16 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 
 
-class RegisterActivity(var gender: String = "L") : BaseActivity() {
+class RegisterActivity(
+    var firebaseAuth: FirebaseAuth? = null,
+    var gender: String = "L"
+) : BaseRegisterActivity() {
     private val viewModel: UserAuthViewModel by viewModel()
-
-    lateinit var firebaseAuth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.register_activity)
         setupToolbar(toolbar)
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-            window.statusBarColor = ContextCompat.getColor(this, R.color.accent_dark)
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            window.decorView.systemUiVisibility = 0
-        }
 
         firebaseAuth = FirebaseAuth.getInstance()
 
@@ -82,13 +67,14 @@ class RegisterActivity(var gender: String = "L") : BaseActivity() {
         })
     }
 
-    private fun setupForm(notifToken: String?) {
+    /* CUSTOM METHOD */
+    private fun setupForm(token: String?) {
         etEmail.setText(intent.getStringExtra(EMAIL) ?: "")
         etPassword.setText(intent.getStringExtra(PASSWORD) ?: "")
 
         btnRegister.setOnClickListener {
             if (validateAll()) {
-                firebaseAuthWithPassword(notifToken.toString())
+                firebaseAuthWithPassword(token.toString())
             }
         }
     }
@@ -129,10 +115,10 @@ class RegisterActivity(var gender: String = "L") : BaseActivity() {
         progressBar.setVisibilityToVisible()
         btnRegister.setVisibilityToGone()
 
-        firebaseAuth.createUserWithEmailAndPassword(
+        firebaseAuth?.createUserWithEmailAndPassword(
             etEmail.text.toString(),
             etPassword.text.toString()
-        ).addOnCompleteListener(this) { task ->
+        )?.addOnCompleteListener(this) { task ->
             if (task.isSuccessful) {
                 viewModel.register(
                     fullname = etName.text.toString(),
@@ -149,7 +135,6 @@ class RegisterActivity(var gender: String = "L") : BaseActivity() {
                     is FirebaseAuthWeakPasswordException -> showShortToast("Kata Sandi kurang dari 6 karakter")
                     is FirebaseAuthUserCollisionException -> showShortToast("Email ${etEmail.text.toString()} sudah digunakan.")
                     else -> {
-                        Log.d("HEIKAMU", "firebaseAuthWithPassword: ${task.exception}")
                         showShortToast(getString(R.string.error_message_default))
                     }
                 }
@@ -229,12 +214,14 @@ class RegisterActivity(var gender: String = "L") : BaseActivity() {
                 SUCCESS -> {
                     progressBar.setVisibilityToGone()
                     btnRegister.setVisibilityToVisible()
-                    updateUI(firebaseAuth.currentUser)
+
+                    updateUI(firebaseAuth?.currentUser)
                 }
                 ERROR -> {
                     progressBar.setVisibilityToGone()
                     btnRegister.setVisibilityToVisible()
-                    showSnackbar(result.message)
+
+                    handleApiError(result.message) { showShortToast(it) }
                 }
             }
         })

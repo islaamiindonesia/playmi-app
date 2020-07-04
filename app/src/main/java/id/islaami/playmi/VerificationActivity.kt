@@ -15,12 +15,15 @@ import id.islaami.playmi.ui.base.BaseActivity
 import id.islaami.playmi.util.ResourceStatus.*
 import id.islaami.playmi.util.createClickableString
 import id.islaami.playmi.util.handleApiError
-import id.islaami.playmi.util.ui.*
+import id.islaami.playmi.util.ui.setVisibilityToGone
+import id.islaami.playmi.util.ui.setVisibilityToVisible
+import id.islaami.playmi.util.ui.showAlertDialog
+import id.islaami.playmi.util.ui.showShortToast
 import id.islaami.playmi.util.value
 import kotlinx.android.synthetic.main.verification_activity.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class VerificationActivity : BaseActivity() {
+class VerificationActivity(var email: String = "") : BaseActivity() {
     private val viewModel: UserAuthViewModel by viewModel()
 
     private val receiver: BroadcastReceiver = object : BroadcastReceiver() {
@@ -28,8 +31,6 @@ class VerificationActivity : BaseActivity() {
             onReceiveBroadcast(intent)
         }
     }
-
-    lateinit var email: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,10 +96,11 @@ class VerificationActivity : BaseActivity() {
                 ERROR -> {
                     progressBar.setVisibilityToGone()
                     btnResend.setVisibilityToVisible()
-                    handleApiError(result.message) { message ->
-                        when (message) {
-                            "WRONG_VERIFICATION_NUMBER" -> showSnackbar("Nomor tidak valid")
-                            else -> showAlertDialog(
+
+                    when (result.message) {
+                        "WRONG_VERIFICATION_NUMBER" -> showShortToast("Nomor verifikasi tidak valid")
+                        else -> handleApiError(result.message) { message ->
+                            showAlertDialog(
                                 message = message,
                                 btnText = "Coba Lagi",
                                 btnCallback = { it.dismiss() }
@@ -119,9 +121,7 @@ class VerificationActivity : BaseActivity() {
                     showShortToast("Kode Verifikasi sudah terkirim ulang")
                 }
                 ERROR -> {
-                    handleApiError(result.message) {
-                        showSnackbar("Gagal kirim ulang Kode Verifikasi")
-                    }
+                    handleApiError(result.message) { showShortToast(it) }
                 }
             }
         })
@@ -138,7 +138,6 @@ class VerificationActivity : BaseActivity() {
     }
 
     private fun onReceiveBroadcast(intent: Intent) {
-        // Get extra data included in the Intent
         val message = intent.getStringExtra("VERIFICATION_CODE") ?: ""
 
         if (message.isNotEmpty()) {

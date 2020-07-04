@@ -21,7 +21,7 @@ class LoginErrorDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        dialog?.window?.setBackgroundDrawableResource(R.drawable.bg_dialog)
+        dialog?.window?.setBackgroundDrawableResource(R.drawable.bg_rounded_rectangle)
 
         arguments?.let { bundle ->
             message.text = bundle.getString(EXTRA_TEXT)

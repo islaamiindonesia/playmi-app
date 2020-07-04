@@ -22,7 +22,7 @@ class HomeViewModel(
     private val category: CategoryRepository,
     private val playlist: PlaylistRepository
 ) : BaseViewModel() {
-    lateinit var pagedListNetworkStatusLd: LiveData<Resource<Unit>>
+    lateinit var networkStatusLd: LiveData<Resource<Unit>>
 
     /* CHANNEL */
     lateinit var hideChannelResultLd: MutableLiveData<Resource<Any>>
@@ -64,7 +64,7 @@ class HomeViewModel(
     fun getAllVideoByCategory(categoryId: Int) {
         videoByCategoryDataFactory = VideoByCategoryDataFactory(disposable, video, categoryId)
 
-        pagedListNetworkStatusLd = videoByCategoryDataFactory.getNetworkStatus()
+        networkStatusLd = videoByCategoryDataFactory.getNetworkStatus()
 
         val pageListConfig = PagedList.Config.Builder()
             .setEnablePlaceholders(false)
@@ -83,7 +83,7 @@ class HomeViewModel(
     fun getAllVideo() {
         videoDataFactory = VideoDataFactory(disposable, video)
 
-        pagedListNetworkStatusLd = videoDataFactory.getNetworkStatus()
+        networkStatusLd = videoDataFactory.getNetworkStatus()
 
         val pageListConfig = PagedList.Config.Builder()
             .setEnablePlaceholders(false)

@@ -22,6 +22,8 @@
     <string name="error_message_default">Terjadi Kesalahan.\nSilakan coba sesaat lagi</string>
     <string name="error_email_not_found">%1$s belum terdaftar sebagai akun.</string>
     <string name="error_email_not_verified">Email Anda belum terverifikasi</string>
+    <string name="error_connection_timeout">Waktu sambungan habis.\nSilakan coba sesaat lagi.</string>
+    <string name="error_connection">Tidak ada koneksi.\nCek koneksi internet Anda dan coba lagi</string>
     <string name="default_notification_channel_id">channelID</string>
     <string name="following">Diikuti</string>
     <string name="hidden">Disembunyikan</string>

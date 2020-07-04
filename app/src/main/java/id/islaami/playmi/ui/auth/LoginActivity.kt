@@ -3,7 +3,6 @@ package id.islaami.playmi.ui.auth
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.lifecycle.Observer
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -18,46 +17,34 @@ import id.islaami.playmi.VerificationActivity
 import id.islaami.playmi.ui.MainActivity
 import id.islaami.playmi.ui.base.BaseActivity
 import id.islaami.playmi.util.ResourceStatus.*
+import id.islaami.playmi.util.handleApiError
 import id.islaami.playmi.util.ui.*
 import kotlinx.android.synthetic.main.login_activity.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class LoginActivity : BaseActivity() {
+class LoginActivity(
+    var audId: String = "",
+    var token: String = "",
+    var user: FirebaseUser? = null,
+    var googleClient: GoogleSignInClient? = null,
+    var firebaseAuth: FirebaseAuth? = null,
+    var isGoogle: Boolean = false
+) : BaseActivity() {
     private val viewModel: UserAuthViewModel by viewModel()
 
-    lateinit var googleClient: GoogleSignInClient
-    lateinit var firebaseAuth: FirebaseAuth
-
-    lateinit var audId: String
-    lateinit var token: String
-
-    private var user: FirebaseUser? = null
-    private var isGoogle: Boolean = false
+    val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+        .requestIdToken(getString(R.string.default_web_client_id))
+        .requestEmail()
+        .build()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.login_activity)
 
         firebaseAuth = FirebaseAuth.getInstance()
-
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id))
-            .requestEmail()
-            .build()
         googleClient = GoogleSignIn.getClient(this, gso)
 
-        FirebaseInstanceId.getInstance().instanceId
-            .addOnCompleteListener(OnCompleteListener { task ->
-                if (!task.isSuccessful) {
-                    return@OnCompleteListener
-                }
-
-                // Get new Instance ID token
-                audId = task.result?.id.toString()
-                token = task.result?.token.toString()
-
-                Log.d("HEIKAMU", "onCreate: $token")
-            })
+        getInstanceID()
 
         viewModel.initLoginActivity()
         checkIfSessionIsExpired()
@@ -68,8 +55,7 @@ class LoginActivity : BaseActivity() {
             progressBar.setVisibilityToVisible()
             btnLogin.setVisibilityToGone()
 
-            val signInIntent = googleClient.signInIntent
-            startActivityForResult(signInIntent, GOOGLE_CODE)
+            startActivityForResult(googleClient?.signInIntent, GOOGLE_CODE)
         }
 
         btnForgot.setOnClickListener {
@@ -89,8 +75,7 @@ class LoginActivity : BaseActivity() {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             try {
                 // Google Sign In was successful, authenticate with Firebase
-                val account = task.getResult(ApiException::class.java)
-                firebaseAuthWithGoogle(account)
+                firebaseAuthWithGoogle(task.getResult(ApiException::class.java))
             } catch (e: ApiException) {
                 // Google Sign In failed, update UI appropriately
                 showShortToast(getString(R.string.error_message_default))
@@ -98,14 +83,28 @@ class LoginActivity : BaseActivity() {
         }
     }
 
+    /* CUSTOM METHOD */
+    private fun getInstanceID() {
+        FirebaseInstanceId.getInstance().instanceId
+            .addOnCompleteListener(OnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    return@OnCompleteListener
+                }
+
+                // Get new Instance ID token
+                audId = task.result?.id.toString()
+                token = task.result?.token.toString()
+            })
+    }
+
     private fun firebaseAuthWithPassword() {
         progressBar.setVisibilityToVisible()
         btnLogin.setVisibilityToGone()
 
-        firebaseAuth.signInWithEmailAndPassword(
+        firebaseAuth?.signInWithEmailAndPassword(
             email.text.toString(),
             password.text.toString()
-        ).addOnCompleteListener(this) { task ->
+        )?.addOnCompleteListener(this) { task ->
             if (task.isSuccessful) {
                 isGoogle = false
                 viewModel.login(email.text.toString(), token)
@@ -128,11 +127,10 @@ class LoginActivity : BaseActivity() {
     }
 
     private fun firebaseAuthWithGoogle(account: GoogleSignInAccount?) {
-        val credential = GoogleAuthProvider.getCredential(account?.idToken, null)
-        firebaseAuth.signInWithCredential(credential)
-            .addOnCompleteListener(this) { task ->
+        firebaseAuth?.signInWithCredential(GoogleAuthProvider.getCredential(account?.idToken, null))
+            ?.addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    user = firebaseAuth.currentUser
+                    user = firebaseAuth?.currentUser
                     isGoogle = true
                     viewModel.login(user?.email.toString(), token)
                 } else {
@@ -170,7 +168,7 @@ class LoginActivity : BaseActivity() {
 
     private fun showDialogRegisterUser() {
         AccountNotFoundDialogFragment.show(
-            supportFragmentManager,
+            fragmentManager = supportFragmentManager,
             email = email.text.toString(),
             btnCancel = "Batal",
             btnOk = "Buat Akun",
@@ -230,26 +228,14 @@ class LoginActivity : BaseActivity() {
                     progressBar.setVisibilityToGone()
                     when (result.message) {
                         "UNVERIFIED" -> {
-                            LoginErrorDialogFragment.show(
-                                supportFragmentManager,
-                                message = getString(R.string.error_email_not_verified),
-                                btnCancel = "Batal",
-                                btnOk = "Verifikasi Ulang",
-                                okCallback = {
-                                    viewModel.resendCode(email.text.toString(), token)
-                                }
-                            )
+                            viewModel.resendCode(email.text.toString(), token)
                         }
                         "EMAIL_NOT_FOUND" -> {
                             if (isGoogle) CompleteProfileActivity.startActivity(this, user, token)
                             else showDialogRegisterUser()
                         }
                         else -> {
-                            showAlertDialog(
-                                message = getString(R.string.error_message_default),
-                                btnText = "Coba Lagi",
-                                btnCallback = { it.dismiss() }
-                            )
+                            handleApiError(result.message) { showShortToast(it) }
                         }
                     }
                 }
@@ -273,7 +259,16 @@ class LoginActivity : BaseActivity() {
                 ERROR -> {
                     progressBar.setVisibilityToGone()
                     btnLogin.setVisibilityToVisible()
-                    showSnackbar(result.message)
+
+                    when (result.message) {
+                        "EMAIL_NOT_FOUND" -> {
+                            if (isGoogle) CompleteProfileActivity.startActivity(this, user, token)
+                            else showDialogRegisterUser()
+                        }
+                        else -> {
+                            handleApiError(result.message) { showShortToast(it) }
+                        }
+                    }
                 }
             }
         })

@@ -9,22 +9,30 @@ import id.islaami.playmi.ui.auth.LoginActivity
 import com.squareup.moshi.Moshi
 import retrofit2.HttpException
 import java.io.IOException
+import java.net.ConnectException
 import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 import java.util.*
 
 fun Throwable.getErrorMessage(): String {
-    if (this is HttpException) {
-        val errorBody = response()?.errorBody()?.string()
-        return when (response()?.code()) {
-            in 500 until 599 -> processErrorMessage(ERROR_INTERNAL_SERVER, errorBody.toString())
-            401 -> processErrorMessage(ERROR_UNAUTHORIZED, errorBody.toString())
-            403 -> processErrorMessage(ERROR_INVALID_TOKEN, errorBody.toString())
-            404 -> processErrorMessage(ERROR_PAGE_NOT_FOUND, errorBody.toString())
-            405 -> processErrorMessage(ERROR_METHOD_NOT_ALLOWED, errorBody.toString())
-            else -> processErrorMessage(ERROR_CONNECTION, errorBody.toString())
+    when(this) {
+        is HttpException -> {
+            val errorBody = response()?.errorBody()?.string()
+            return when (response()?.code()) {
+                in 500 until 599 -> processErrorMessage(ERROR_INTERNAL_SERVER, errorBody.toString())
+                401 -> processErrorMessage(ERROR_UNAUTHORIZED, errorBody.toString())
+                403 -> processErrorMessage(ERROR_INVALID_TOKEN, errorBody.toString())
+                404 -> processErrorMessage(ERROR_PAGE_NOT_FOUND, errorBody.toString())
+                405 -> processErrorMessage(ERROR_METHOD_NOT_ALLOWED, errorBody.toString())
+                else -> processErrorMessage(ERROR_DEFAULT, errorBody.toString())
+            }
         }
-    } else if (this is SocketTimeoutException) {
-        return ERROR_CONNECTION
+        is SocketTimeoutException, is ConnectException -> {
+            return ERROR_CONNECTION_TIMEOUT
+        }
+        is UnknownHostException -> {
+            return ERROR_CONNECTION
+        }
     }
 
     return ERROR_DEFAULT
@@ -86,6 +94,8 @@ fun Context.checkForCommonApiError(errorMessage: String?) {
 fun Context.checkApiForMessage(errorMessage: String?): String =
     when (errorMessage.toString().toLowerCase(Locale("id", "ID"))) {
         ERROR_UNVERIFIED_ACCOUNT -> getString(R.string.error_email_not_verified)
+        ERROR_CONNECTION_TIMEOUT -> getString(R.string.error_connection_timeout)
+        ERROR_CONNECTION -> getString(R.string.error_connection)
         else -> getString(R.string.error_message_default)
     }
 

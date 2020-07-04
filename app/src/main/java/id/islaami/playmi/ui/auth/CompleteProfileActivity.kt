@@ -14,17 +14,17 @@ import id.islaami.playmi.util.BUNDLE
 import id.islaami.playmi.util.ResourceStatus.*
 import id.islaami.playmi.util.fromAppsFormatDateToDbFormatDate
 import id.islaami.playmi.util.fromDbFormatDateToAppsFormatDate
+import id.islaami.playmi.util.handleApiError
 import id.islaami.playmi.util.ui.setVisibilityToGone
 import id.islaami.playmi.util.ui.setVisibilityToVisible
+import id.islaami.playmi.util.ui.showShortToast
 import id.islaami.playmi.util.ui.showSnackbar
 import kotlinx.android.synthetic.main.complete_profile_activity.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 
-class CompleteProfileActivity : BaseActivity() {
+class CompleteProfileActivity(var gender: String = "") : BaseActivity() {
     private val viewModel: UserAuthViewModel by viewModel()
-
-    var gender = String()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,8 +54,8 @@ class CompleteProfileActivity : BaseActivity() {
         progressBar.setVisibilityToVisible()
         btnSave.setVisibilityToGone()
 
-        user!!.updatePassword(etPassword.text.toString())
-            .addOnCompleteListener { task ->
+        user?.updatePassword(etPassword.text.toString())
+            ?.addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val birthDate = etBirtdate.text.toString()
 
@@ -70,9 +70,7 @@ class CompleteProfileActivity : BaseActivity() {
                     progressBar.setVisibilityToGone()
                     btnSave.setVisibilityToVisible()
 
-                    showSnackbar(getString(R.string.error_message_default))
-
-                    Log.d("HEIKAMU", task.exception?.message.toString())
+                    showShortToast(getString(R.string.error_message_default))
                 }
             }
     }
@@ -103,11 +101,7 @@ class CompleteProfileActivity : BaseActivity() {
 
 
     companion object {
-        fun startActivity(
-            context: Context,
-            user: FirebaseUser?,
-            token: String
-        ) {
+        fun startActivity(context: Context, user: FirebaseUser?, token: String) {
             context.startActivity(
                 Intent(context, CompleteProfileActivity::class.java).apply {
                     putExtra(BUNDLE, Bundle().apply {
@@ -135,7 +129,8 @@ class CompleteProfileActivity : BaseActivity() {
                 ERROR -> {
                     progressBar.setVisibilityToGone()
                     btnSave.setVisibilityToVisible()
-                    showSnackbar(result.message)
+
+                    handleApiError(result.message) { showShortToast(it) }
                 }
             }
         })

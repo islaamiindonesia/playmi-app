@@ -18,13 +18,11 @@ class ForgotPasswordActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.forgot_password_activity)
 
-        val auth = FirebaseAuth.getInstance()
-
         btnSend.setOnClickListener {
             btnSend.setVisibilityToGone()
             progressBar.setVisibilityToVisible()
 
-            auth.sendPasswordResetEmail(email.text.toString())
+            FirebaseAuth.getInstance().sendPasswordResetEmail(email.text.toString())
                 .addOnCompleteListener { task ->
                     btnSend.setVisibilityToVisible()
                     progressBar.setVisibilityToGone()
@@ -40,7 +38,7 @@ class ForgotPasswordActivity : BaseActivity() {
                         } catch (e: FirebaseAuthInvalidUserException) {
                             showShortToast(getString(R.string.error_email_not_found, email.text.toString()))
                         } catch (e: Exception) {
-                            showSnackbar(getString(R.string.error_message_default))
+                            showShortToast(getString(R.string.error_message_default))
                         }
                     }
                 }

@@ -1,7 +1,6 @@
 package id.islaami.playmi.ui.home
 
 import android.os.Bundle
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -10,10 +9,6 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.Observer
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.gms.ads.AdListener
-import com.google.android.gms.ads.AdLoader
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.formats.UnifiedNativeAd
 import id.islaami.playmi.R
 import id.islaami.playmi.data.model.video.Video
 import id.islaami.playmi.ui.adapter.VideoPagedAdapter
@@ -25,7 +20,6 @@ import id.islaami.playmi.util.ui.*
 import id.islaami.playmi.util.value
 import kotlinx.android.synthetic.main.video_category_fragment.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.util.*
 
 
 class VideoCategoryFragment(var categoryID: Int = 0) : BaseFragment() {
@@ -156,32 +150,31 @@ class VideoCategoryFragment(var categoryID: Int = 0) : BaseFragment() {
             setupRecyclerView(result)
         })
 
-        viewModel.pagedListNetworkStatusLd.observe(
-            viewLifecycleOwner,
-            Observer { result ->
-                when (result?.status) {
-                    LOADING -> {
-                    }
-                    SUCCESS -> {
-                        swipeRefreshLayout.stopRefreshing()
-                        recyclerView.setVisibilityToVisible()
-                        emptyText.setVisibilityToGone()
-                    }
-                    ERROR -> {
-                        swipeRefreshLayout.stopRefreshing()
-                        when (result.message) {
-                            ERROR_EMPTY_LIST -> {
-                                emptyText.setVisibilityToVisible()
-                                recyclerView.setVisibilityToGone()
-                            }
-                            else -> {
-                                handleApiError(errorMessage = result.message)
-                                { message -> showSnackbar(message) }
+        viewModel.networkStatusLd.observe(viewLifecycleOwner, Observer { result ->
+            when (result?.status) {
+                LOADING -> {
+                }
+                SUCCESS -> {
+                    swipeRefreshLayout.stopRefreshing()
+                    recyclerView.setVisibilityToVisible()
+                    emptyText.setVisibilityToGone()
+                }
+                ERROR -> {
+                    swipeRefreshLayout.stopRefreshing()
+                    when (result.message) {
+                        ERROR_EMPTY_LIST -> {
+                            emptyText.setVisibilityToVisible()
+                            recyclerView.setVisibilityToGone()
+                        }
+                        else -> {
+                            handleApiError(errorMessage = result.message) { message ->
+                                context?.showShortToast(message)
                             }
                         }
                     }
                 }
-            })
+            }
+        })
     }
 
     private fun observeWatchLaterResult() {
@@ -191,10 +184,11 @@ class VideoCategoryFragment(var categoryID: Int = 0) : BaseFragment() {
                 }
                 SUCCESS -> {
                     context?.showShortToast("Berhasil disimpan")
-                    refresh()
                 }
                 ERROR -> {
-                    context?.showShortToast(result.message)
+                    handleApiError(errorMessage = result.message) { message ->
+                        context?.showShortToast(message)
+                    }
                 }
             }
         })
@@ -210,7 +204,9 @@ class VideoCategoryFragment(var categoryID: Int = 0) : BaseFragment() {
                     refresh()
                 }
                 ERROR -> {
-                    context?.showShortToast(result.message)
+                    handleApiError(errorMessage = result.message) { message ->
+                        context?.showShortToast(message)
+                    }
                 }
             }
         })
@@ -226,7 +222,9 @@ class VideoCategoryFragment(var categoryID: Int = 0) : BaseFragment() {
                     refresh()
                 }
                 ERROR -> {
-                    context?.showShortToast(result.message)
+                    handleApiError(errorMessage = result.message) { message ->
+                        context?.showShortToast(message)
+                    }
                 }
             }
         })
@@ -242,7 +240,9 @@ class VideoCategoryFragment(var categoryID: Int = 0) : BaseFragment() {
                     refresh()
                 }
                 ERROR -> {
-                    context?.showShortToast(result.message)
+                    handleApiError(errorMessage = result.message) { message ->
+                        context?.showShortToast(message)
+                    }
                 }
             }
         })
