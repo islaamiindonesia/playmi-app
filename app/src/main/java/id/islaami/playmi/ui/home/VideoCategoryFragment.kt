@@ -28,9 +28,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 
 
-class VideoCategoryFragment(
-    var categoryID: Int = 0
-) : BaseFragment() {
+class VideoCategoryFragment(var categoryID: Int = 0) : BaseFragment() {
     private val viewModel: HomeViewModel by viewModel()
 
     private var videoPagedAdapter = VideoPagedAdapter(context,

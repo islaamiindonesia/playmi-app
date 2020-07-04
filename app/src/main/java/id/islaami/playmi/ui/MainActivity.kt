@@ -34,10 +34,6 @@ class MainActivity : BaseActivity() {
 
         FirebaseMessaging.getInstance().subscribeToTopic("playmi")
 
-        MobileAds.initialize(this) {
-            Log.d("HEIKAMU", it.adapterStatusMap.toString())
-        }
-
         setupTabLayout()
     }
 

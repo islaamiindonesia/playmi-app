@@ -2,31 +2,34 @@ package id.islaami.playmi.ui.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.TextView
 import android.widget.ImageView
 import android.widget.RatingBar
+import android.widget.TextView
 import androidx.paging.PagedList
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.github.marlonlom.utilities.timeago.TimeAgo
+import com.github.marlonlom.utilities.timeago.TimeAgoMessages
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdLoader
 import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.AdRequest.*
+import com.google.android.gms.ads.formats.MediaView
 import com.google.android.gms.ads.formats.NativeAdOptions
 import com.google.android.gms.ads.formats.UnifiedNativeAd
 import com.google.android.gms.ads.formats.UnifiedNativeAdView
-import com.google.android.gms.ads.formats.MediaView
 import id.islaami.playmi.R
 import id.islaami.playmi.data.model.video.Video
 import id.islaami.playmi.ui.channel.ChannelDetailActivity
 import id.islaami.playmi.ui.video.VideoDetailActivity
+import id.islaami.playmi.util.fromDbFormatDateTimeToCustomFormat
 import id.islaami.playmi.util.ui.loadExternalImage
 import id.islaami.playmi.util.ui.loadImage
 import id.islaami.playmi.util.ui.setVisibilityToGone
@@ -56,9 +59,15 @@ class VideoPagedAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return when (viewType) {
-            VIDEO_ITEM_VIEW_TYPE -> VideoViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.video_item, parent, false))
-            UNIFIED_NATIVE_AD_VIEW_TYPE -> AdViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.ad_unified, parent, false))
-            else -> EmptyDataPlaceHolder(LayoutInflater.from(parent.context).inflate(R.layout.empty_row, parent, false))
+            VIDEO_ITEM_VIEW_TYPE -> VideoViewHolder(
+                LayoutInflater.from(parent.context).inflate(R.layout.video_item, parent, false)
+            )
+            UNIFIED_NATIVE_AD_VIEW_TYPE -> AdViewHolder(
+                LayoutInflater.from(parent.context).inflate(R.layout.ad_unified, parent, false)
+            )
+            else -> EmptyDataPlaceHolder(
+                LayoutInflater.from(parent.context).inflate(R.layout.empty_row, parent, false)
+            )
         }
     }
 
@@ -69,11 +78,11 @@ class VideoPagedAdapter(
     }
 
     override fun getItemViewType(position: Int): Int {
-       return if(position % 10 == 0 && position != 0) {
-           UNIFIED_NATIVE_AD_VIEW_TYPE
-       }else{
-           VIDEO_ITEM_VIEW_TYPE
-       }
+        return if (position % 10 == 0 && position != 0) {
+            UNIFIED_NATIVE_AD_VIEW_TYPE
+        } else {
+            VIDEO_ITEM_VIEW_TYPE
+        }
     }
 
     fun getItemAtPosition(position: Int): Video? = getItem(position)
@@ -82,7 +91,7 @@ class VideoPagedAdapter(
         submitList(list)
     }
 
-    abstract class ViewHolder(itemView: View) :RecyclerView.ViewHolder(itemView){
+    abstract class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         abstract fun bindView(data: Video?)
     }
 
@@ -111,13 +120,17 @@ class VideoPagedAdapter(
                 recyclerView.layoutManager =
                     LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
 
-                publishedDate.apply {
-                    val time = differenceInDays(video.publishedAt.toString())
-                    text = if (time == 0L) {
-                        "Hari ini"
-                    } else {
-                        "$time hari yang lalu"
-                    }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    val locale = Locale.forLanguageTag("id")
+                    val message = TimeAgoMessages.Builder().withLocale(locale).build()
+
+                    val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale("id"))
+                    val videoDate = dateFormat.parse(video.publishedAt.toString())
+
+                    publishedDate.text = TimeAgo.using(videoDate?.time.value(), message)
+                } else {
+                    publishedDate.text =
+                        video.publishedAt.fromDbFormatDateTimeToCustomFormat("dd MM yyyy")
                 }
 
                 videoThumbnail.setOnClickListener {
@@ -136,14 +149,6 @@ class VideoPagedAdapter(
                     )
                 }
             }
-        }
-
-        private fun differenceInDays(datePublished: String): Long {
-            val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale("id"))
-            val videoDate = dateFormat.parse(datePublished)
-            val today = Date()
-
-            return (today.time - videoDate.time) / (1000 * 3600 * 24)
         }
     }
 
@@ -182,7 +187,10 @@ class VideoPagedAdapter(
             hideAdViews()
             currentNativeAd?.destroy()
 
-            val adLoader = AdLoader.Builder(itemView.context, itemView.context.getString(R.string.ad_native_unit_id))
+            val adLoader = AdLoader.Builder(
+                itemView.context,
+                itemView.context.getString(R.string.active_ad_native_unit_id)
+            )
                 .forUnifiedNativeAd { ad ->
                     currentNativeAd = ad
 
@@ -199,7 +207,10 @@ class VideoPagedAdapter(
             adLoader.loadAd(AdRequest.Builder().build())
         }
 
-        private fun populateAd(unifiedNativeAd: UnifiedNativeAd, unifiedNativeAdView: UnifiedNativeAdView) {
+        private fun populateAd(
+            unifiedNativeAd: UnifiedNativeAd,
+            unifiedNativeAdView: UnifiedNativeAdView
+        ) {
             ad_headline?.text = unifiedNativeAd.headline
             ad_media?.setMediaContent(unifiedNativeAd.mediaContent)
 
@@ -266,7 +277,7 @@ class VideoPagedAdapter(
         }
     }
 
-    inner class EmptyDataPlaceHolder(itemView: View):ViewHolder(itemView){
+    inner class EmptyDataPlaceHolder(itemView: View) : ViewHolder(itemView) {
         override fun bindView(data: Video?) {
             TODO("Not yet implemented")
         }

@@ -18,13 +18,23 @@ fun String?.fromAppsFormatDateToDbFormatDate(): String? = this?.let { input ->
     try {
         formatter.format(parser.parse(input))
     } catch (parseException: ParseException) {
-        Log.d("HEIKAMU", parseException.message.toString())
         null
     }
 }
 
 fun String?.fromDbFormatDateToCustomFormatDate(outputDateFormat: String): String? = this?.let { input ->
     val parser = SimpleDateFormat("yyyy-MM-dd")
+    val formatter = SimpleDateFormat(outputDateFormat, localeIndonesia)
+
+    try {
+        formatter.format(parser.parse(input))
+    } catch (parseException: ParseException) {
+        null
+    }
+}
+
+fun String?.fromDbFormatDateTimeToCustomFormat(outputDateFormat: String): String? = this?.let { input ->
+    val parser = SimpleDateFormat("yyyy-MM-dd HH:mm", localeIndonesia)
     val formatter = SimpleDateFormat(outputDateFormat, localeIndonesia)
 
     try {

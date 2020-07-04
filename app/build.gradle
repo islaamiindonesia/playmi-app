@@ -60,6 +60,9 @@ dependencies {
     // Preference Manager
     implementation "androidx.preference:preference-ktx:1.1.1"
 
+    // TimeAgo
+    implementation "com.github.marlonlom:timeago:4.0.3"
+
     // Rounded ImageView
     implementation 'com.makeramen:roundedimageview:2.3.0'
 
