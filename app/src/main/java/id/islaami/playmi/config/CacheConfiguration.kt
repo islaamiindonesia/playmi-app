@@ -25,21 +25,3 @@ class Cache<T> {
     fun save(key: String, anyObject: T): T =
         book.write(key, anyObject).run { anyObject }
 }
-
-class ReactiveCache<T> {
-    private val book: RxPaperBook = RxPaperBook.with(io())
-
-    fun load(key: String): Single<T> = book.read(key)
-
-    fun save(key: String, anyObject: T): Single<T> =
-        book.write(key, anyObject).toSingleDefault(anyObject)
-}
-
-class MemoryCache<T> {
-    private val map: MutableMap<String, T> = mutableMapOf()
-
-    fun load(key: String): T = map.getValue(key)
-
-    fun save(key: String, anyObject: T): T =
-        map.put(key, anyObject).run { anyObject }
-}

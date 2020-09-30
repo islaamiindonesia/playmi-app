@@ -31,6 +31,7 @@
             android:id="@+id/successLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:visibility="gone"
             android:fillViewport="true">
 
             <LinearLayout
@@ -40,7 +41,8 @@
 
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    app:cardBackgroundColor="@color/layout_background_color">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
@@ -168,7 +170,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="8dp"
                                 android:layout_weight="5"
-                                android:text="Follow" />
+                                android:text="Ikuti" />
 
                             <com.google.android.material.button.MaterialButton
                                 android:id="@+id/btnUnfollow"
@@ -177,7 +179,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="8dp"
                                 android:layout_weight="5"
-                                android:text="Unfollow"
+                                android:text="Mengikuti"
                                 android:visibility="gone" />
 
                             <com.google.android.material.button.MaterialButton
@@ -210,10 +212,16 @@
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </com.google.android.material.card.MaterialCardView>
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/border_color" />
+
                 <com.google.android.material.tabs.TabLayout
                     android:id="@+id/tabLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    app:tabBackground="@color/layout_background_color"
                     app:tabIndicatorColor="@color/accent"
                     app:tabMode="fixed"
                     app:tabSelectedTextColor="@color/accent"

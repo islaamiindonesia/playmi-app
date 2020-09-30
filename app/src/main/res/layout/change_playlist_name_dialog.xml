@@ -18,5 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:hint="Nama Daftar" />
+        android:hint="Nama Daftar"
+        android:textCursorDrawable="@drawable/accent_cursor"
+        android:backgroundTint="@color/accent"/>
 </LinearLayout>

@@ -5,9 +5,9 @@
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/white</item>
         <item name="colorAccent">@color/accent</item>
+        <item name="colorControlNormal">@color/icon_color</item>
 
         <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
-        <item name="colorControlNormal">@color/icon_color</item>
 
         <!-- Style to use for Snackbars in this theme. -->
         <!--<item name="snackbarStyle">@style/Widget.MaterialComponents.Snackbar</item>-->
@@ -23,10 +23,13 @@
 
         <item name="bottomSheetDialogTheme">@style/BottomSheet</item>
     </style>
+    
+    <style name="SearchViewStyle" parent="Widget.AppCompat.SearchView">
+        <item name="android:textCursorDrawable">@drawable/accent_cursor</item>
+    </style>
 
-    <!-- Base application theme. -->
-    <style name="RegisterTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <!-- Customize your theme here. -->
+    <!-- Special Theme -->
+    <style name="SpecialTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorAccent">@color/accent</item>
         <item name="colorControlNormal">@color/white</item>
         <item name="colorOnSurface">@color/icon_color</item>
@@ -42,10 +45,15 @@
 
         <!-- Style to use for message text within a Snackbar in this theme. -->
         <item name="snackbarTextViewStyle">@style/SnackBar.Text</item>
+    </style>
 
-        <!--<item name="android:datePickerDialogTheme" tools:targetApi="lollipop">
-            @style/DatePickerDialog
-        </item>-->
+    <style name="VideoTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorAccent">@color/accent</item>
+        <item name="colorControlNormal">@color/white</item>
+        <item name="colorOnSurface">@color/icon_color</item>
+        <item name="colorPrimary">@color/accent</item>
+
+        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
     </style>
 
     <style name="AppTheme.Launcher" parent="AppTheme">
@@ -141,7 +149,7 @@
         <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
-    <style name="ToolbarRegister" parent="RegisterTheme">
+    <style name="ToolbarRegister" parent="SpecialTheme">
         <item name="android:background">@color/accent</item>
         <item name="android:textSize">20sp</item>
         <item name="titleTextColor">@color/white</item>
@@ -176,9 +184,10 @@
         <item name="hintTextAppearance">@style/TextAppearance.AppCompat.Caption</item>
     </style>
 
-    <style name="EditText" parent="RegisterTheme">
+    <style name="EditText" parent="SpecialTheme">
         <item name="colorControlNormal">@color/icon_color</item>
         <item name="colorControlActivated">@color/accent</item>
+        <item name="android:textCursorDrawable">@drawable/accent_cursor</item>
     </style>
 
     <!-- CARD -->

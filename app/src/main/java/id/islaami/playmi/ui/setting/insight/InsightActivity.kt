@@ -3,22 +3,18 @@ package id.islaami.playmi.ui.setting.insight
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.Observer
 import id.islaami.playmi.R
-import id.islaami.playmi.ui.base.BaseActivity
+import id.islaami.playmi.ui.base.BaseSpecialActivity
 import id.islaami.playmi.ui.setting.SettingViewModel
 import id.islaami.playmi.util.ResourceStatus.*
 import id.islaami.playmi.util.handleApiError
-import id.islaami.playmi.util.ui.setTextChangedListener
-import id.islaami.playmi.util.ui.setupToolbar
-import id.islaami.playmi.util.ui.setVisibilityToGone
-import id.islaami.playmi.util.ui.setVisibilityToVisible
-import id.islaami.playmi.util.ui.showAlertDialog
-import id.islaami.playmi.util.ui.showSnackbar
+import id.islaami.playmi.util.ui.*
 import kotlinx.android.synthetic.main.insight_activity.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class InsightActivity : BaseActivity() {
+class InsightActivity : BaseSpecialActivity() {
     private val viewModel: SettingViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,11 +30,8 @@ class InsightActivity : BaseActivity() {
             viewModel.addInsight(userInsight.text.toString())
         }
 
-        userInsight.setTextChangedListener(
-            layoutInsight,
-            errorMessage = "Anda belum mengisi saran/masukan"
-        ) {
-            btnSend.isEnabled = it.isNotEmpty()
+        userInsight.addTextChangedListener {
+            btnSend.isEnabled = it.toString().isNotEmpty()
         }
     }
 
@@ -53,13 +46,12 @@ class InsightActivity : BaseActivity() {
                     btnSend.setVisibilityToVisible()
                     progressBar.setVisibilityToGone()
 
-                    showAlertDialog(
-                        message = "Terima kasih atas masukkan Anda.",
-                        btnText = "OK",
-                        btnCallback = { dialog ->
-                            dialog.dismiss()
-                            onBackPressed()
-                        }
+                    ReportDialogFragment.show(
+                        fragmentManager = supportFragmentManager,
+                        title = "Terima kasih atas saran/masukkan Anda untuk membantu Playmi menjadi lebih baik.",
+                        text = "Kami tidak dapat melihat dan menanggapi setiap masukan, namun eberapa masukan membantu kami meningkatkan layanan untuk semua orang.",
+                        okCallback = { userInsight.setText("") },
+                        outsideTouchCallback = { userInsight.setText("") }
                     )
                 }
                 ERROR -> {

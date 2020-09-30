@@ -32,6 +32,7 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
 
+        // subscribe to "playmi" topic
         FirebaseMessaging.getInstance().subscribeToTopic("playmi")
 
         setupTabLayout()
@@ -60,6 +61,7 @@ class MainActivity : BaseActivity() {
             R.drawable.ic_following
         )
 
+        // setup each tab on first load
         for (tabPosition in 0 until viewPagerAdapter.count) {
             val tabItem: ImageView =
                 LayoutInflater.from(this).inflate(R.layout.main_tab_item, null) as ImageView
@@ -128,13 +130,6 @@ class MainActivity : BaseActivity() {
             context?.startActivity(
                 Intent(context, MainActivity::class.java)
                     .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
-            )
-        }
-
-        fun startActivityClearTop(context: Context?) {
-            context?.startActivity(
-                Intent(context, MainActivity::class.java)
-                    .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             )
         }
     }

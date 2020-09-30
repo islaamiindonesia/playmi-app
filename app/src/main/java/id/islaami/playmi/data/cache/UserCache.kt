@@ -9,14 +9,12 @@ class UserCache(
     private val profileCache: Cache<Profile>,
     private val notifSettingCache: Cache<NotificationSetting>
 ) : KotprefModel() {
-    /* SETTINGS */
-    var darkMode: Int by intPref(0)
+    private var token: String by stringPref("")
 
+    /* SETTINGS */
     var hasSeenIntro: Boolean by booleanPref(false)
 
     var selectedLocale: String by stringPref("id")
-
-    private var token: String by stringPref("")
 
     var headerToken: String
         get() = if (token.isNotEmpty()) "Bearer $token" else ""
@@ -25,9 +23,9 @@ class UserCache(
         }
 
     var profile: Profile?
-        get() = profileCache.load("PROFILE")
+        get() = profileCache.load(PROFILE)
         set(value) {
-            value?.let { profileCache.save("PROFILE", it) }
+            value?.let { profileCache.save(PROFILE, it) }
         }
 
     var notificationSetting: NotificationSetting?

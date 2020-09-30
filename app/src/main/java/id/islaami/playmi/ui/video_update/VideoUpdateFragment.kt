@@ -15,6 +15,7 @@ import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import id.islaami.playmi.R
 import id.islaami.playmi.ui.adapter.VideoPagedAdapter
+import id.islaami.playmi.ui.adapter.VideoPagedAdapterOld
 import id.islaami.playmi.ui.base.BaseFragment
 import id.islaami.playmi.ui.setting.SettingActivity
 import id.islaami.playmi.util.*
@@ -26,7 +27,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class VideoUpdateFragment : BaseFragment() {
     private val viewModel: VideoUpdateViewModel by viewModel()
 
-    private var videoPagedAdapter = VideoPagedAdapter(context,
+    private var videoPagedAdapter = VideoPagedAdapterOld(context,
         popMenu = { context, menuView, video ->
             PopupMenu(context, menuView, Gravity.END).apply {
                 inflate(R.menu.menu_popup_video_update)
@@ -37,15 +38,11 @@ class VideoUpdateFragment : BaseFragment() {
                 setOnMenuItemClickListener { item ->
                     when (item.itemId) {
                         R.id.popWatchLater -> {
-                            context.showAlertDialogWith2Buttons(
-                                "Simpan ke Daftar Nanti?",
-                                "Iya",
-                                "Batal",
-                                positiveCallback = {
-                                    viewModel.watchLater(video.ID.value())
-                                    it.dismiss()
-                                },
-                                negativeCallback = { it.dismiss() })
+                            PlaymiDialogFragment.show(
+                                fragmentManager = childFragmentManager,
+                                text = "Simpan ke daftar Tonton Nanti?",
+                                okCallback = { viewModel.watchLater(video.ID.value()) }
+                            )
 
                             true
                         }

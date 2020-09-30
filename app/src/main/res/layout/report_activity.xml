@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?android:attr/colorBackground"
-    android:orientation="vertical"
-    tools:context=".ui.setting.report.ReportActivity">
+    android:background="@color/layout_background_color"
+    android:orientation="vertical">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBar"
@@ -16,7 +14,7 @@
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
-            style="@style/ToolbarWhiteBackArrow"
+            style="@style/ToolbarRegister"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
             android:elevation="4dp"
@@ -33,19 +31,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/appBar">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/layoutEtReport"
-            style="@style/TextInputLayout"
+        <EditText
+            android:id="@+id/etReport"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Apa ada yang salah ?">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etReport"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:inputType="textMultiLine" />
-        </com.google.android.material.textfield.TextInputLayout>
+            android:layout_height="match_parent"
+            android:inputType="textMultiLine"
+            android:hint="Apa ada yang salah ?"
+            android:textCursorDrawable="@drawable/accent_cursor"
+            android:backgroundTint="@color/accent"/>
 
         <androidx.appcompat.widget.AppCompatTextView
             style="@style/LabelText"
@@ -69,7 +62,7 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:padding="8dp"
-                android:src="@drawable/ic_add_photo" />
+                app:srcCompat="@drawable/ic_add_photo" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/uploadedImage"
@@ -95,6 +88,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
+            android:indeterminateTint="@color/accent"
             android:visibility="gone" />
     </LinearLayout>
 </LinearLayout>

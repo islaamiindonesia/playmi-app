@@ -2,7 +2,7 @@
 <resources>
     <color name="main_tab">#ffffff</color>
     <color name="cards">#ffffff</color>
-    <color name="stroke">@color/white_50</color>
+    <color name="stroke">@color/grey_46</color>
     <color name="disabled_button">#1FFFFFFF</color>
     <color name="disabled_text">@color/white_50</color>
     <color name="status_bar">#000000</color>

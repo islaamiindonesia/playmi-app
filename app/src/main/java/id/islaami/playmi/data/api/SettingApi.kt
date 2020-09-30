@@ -1,7 +1,7 @@
 package id.islaami.playmi.data.api
 
 import id.islaami.playmi.data.model.ApiResponse
-import id.islaami.playmi.data.model.setting.Policy
+import id.islaami.playmi.data.model.setting.LegalityContent
 import io.reactivex.Single
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
@@ -30,14 +30,14 @@ interface SettingApi {
     ): Single<ApiResponse<Any>>
 
     @GET("about")
-    fun aboutApp(): Single<ApiResponse<Policy>>
+    fun aboutApp(): Single<ApiResponse<LegalityContent>>
 
     @GET("cooperation")
-    fun cooperation(): Single<ApiResponse<Policy>>
+    fun cooperation(): Single<ApiResponse<LegalityContent>>
 
     @GET("tnc")
-    fun userTNC(): Single<ApiResponse<Policy>>
+    fun userTNC(): Single<ApiResponse<LegalityContent>>
 
     @GET("privacy")
-    fun privacyPolicy(): Single<ApiResponse<Policy>>
+    fun privacyPolicy(): Single<ApiResponse<LegalityContent>>
 }

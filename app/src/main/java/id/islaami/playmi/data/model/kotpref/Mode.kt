@@ -1,9 +1,9 @@
 package id.islaami.playmi.data.model.kotpref
 
-import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
 import com.chibatching.kotpref.KotprefModel
 
 object Mode : KotprefModel() {
-    // app them follow system preference by default
-    var appMode by intPref(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+    // default: AppCompatDelegate.MODE_NIGHT_NO
+    var appMode: Int by intPref(default = MODE_NIGHT_NO)
 }

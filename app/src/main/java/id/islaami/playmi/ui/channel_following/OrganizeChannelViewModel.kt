@@ -72,7 +72,6 @@ class OrganizeChannelViewModel(private val repository: ChannelRepository) : Base
 
     fun initFollowingFragment() {
         followingResultLd = MutableLiveData()
-        channelStatusResultLd = MutableLiveData()
         channelFollowingLd = MutableLiveData()
 
         getChannelFollow()

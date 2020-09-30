@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?android:attr/colorBackground"
-    android:orientation="vertical"
-    tools:context=".ui.setting.recommendation.RecommendationActivity">
+    android:background="@color/layout_background_color"
+    android:orientation="vertical">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBar"
@@ -16,7 +14,7 @@
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
-            style="@style/ToolbarWhiteBackArrow"
+            style="@style/ToolbarRegister"
             android:layout_width="match_parent"
             android:layout_height="?android:attr/actionBarSize"
             android:elevation="4dp"
@@ -38,22 +36,15 @@
             android:text="Bantu kami memberikan layanan terbaik sesuai kebutuhan Anda"
             android:textSize="16sp" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/layoutInsight"
-            style="@style/TextInputLayout"
+        <EditText
+            android:id="@+id/userInsight"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginTop="16dp"
-            android:hint="Silahkan masukkan saran Anda">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/userInsight"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:ems="10"
-                android:inputType="textMultiLine" />
-        </com.google.android.material.textfield.TextInputLayout>
+            android:backgroundTint="@color/accent"
+            android:hint="Silahkan masukkan saran Anda"
+            android:inputType="textMultiLine"
+            android:textCursorDrawable="@drawable/accent_cursor" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSend"
@@ -69,6 +60,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
+            android:indeterminateTint="@color/accent"
             android:visibility="gone" />
     </LinearLayout>
 </LinearLayout>

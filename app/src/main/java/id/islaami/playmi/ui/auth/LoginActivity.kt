@@ -12,7 +12,7 @@ import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.*
 import com.google.firebase.iid.FirebaseInstanceId
 import id.islaami.playmi.R
-import id.islaami.playmi.VerificationActivity
+import id.islaami.playmi.data.model.kotpref.Default
 import id.islaami.playmi.ui.MainActivity
 import id.islaami.playmi.ui.base.BaseActivity
 import id.islaami.playmi.util.ResourceStatus.*
@@ -235,6 +235,7 @@ class LoginActivity(
                     progressBar.setVisibilityToGone()
 
                     MainActivity.startActivityClearTask(this)
+                    Default.hasLoggedIn = true
                 }
                 ERROR -> {
                     btnLogin.setVisibilityToVisible()

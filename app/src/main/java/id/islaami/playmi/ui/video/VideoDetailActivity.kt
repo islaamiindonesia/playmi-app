@@ -38,6 +38,7 @@ import id.islaami.playmi.ui.MainActivity
 import id.islaami.playmi.ui.adapter.LabelAdapter
 import id.islaami.playmi.ui.adapter.PlaylistSelectAdapter
 import id.islaami.playmi.ui.base.BaseActivity
+import id.islaami.playmi.ui.base.BaseVideoActivity
 import id.islaami.playmi.ui.channel.ChannelDetailActivity
 import id.islaami.playmi.util.*
 import id.islaami.playmi.util.ResourceStatus.*
@@ -52,7 +53,7 @@ import java.util.*
 class VideoDetailActivity(
     var videoId: Int = 0,
     var channelId: Int = 0
-) : BaseActivity() {
+) : BaseVideoActivity() {
     private val viewModel: VideoViewModel by viewModel()
 
     private val fullScreenHelper = FullScreenHelper(this)
@@ -72,12 +73,11 @@ class VideoDetailActivity(
 
         FirebaseApp.initializeApp(this)
 
+        // videoId will have 0 value if user opens video from external/shared url
         if (videoId == 0) {
-            setupToolbar(toolbar, backClickHandler = { handleBackPressed() })
             val uri = Uri.parse(intent.data.toString())
             viewModel.initVideoDetailActivity(uri.lastPathSegment.toString().toInt())
         } else {
-            setupToolbar(toolbar)
             viewModel.initVideoDetailActivity(videoId)
         }
 
@@ -135,7 +135,7 @@ class VideoDetailActivity(
         }
         dialogView.btnCancel.setOnClickListener { dialog.dismiss() }
         dialogView.btnSave.setOnClickListener {
-            viewModel.addToPlaylist(this.videoId, playlistSelectAdapter.getSelectedId())
+            viewModel.addToManyPlaylists(videoId, playlistSelectAdapter.selectedIds)
             dialog.dismiss()
         }
 
@@ -188,18 +188,7 @@ class VideoDetailActivity(
 
         videoViews.text = "${views}x"
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            val locale = Locale.forLanguageTag("id")
-            val message = TimeAgoMessages.Builder().withLocale(locale).build()
-
-            val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale("id"))
-            val videoDate = dateFormat.parse(publishedAt.toString())
-
-            videoPublishedDate.text = TimeAgo.using(videoDate?.time.value(), message)
-        } else {
-            videoPublishedDate.text =
-                publishedAt.fromDbFormatDateTimeToCustomFormat("dd MM yyyy")
-        }
+        videoPublishedDate.text = publishedAt.fromDbFormatDateTimeToCustomFormat("dd MMMM yyyy")
 
         channelName.text = channel?.name.toString()
         channelPhoto.loadImage(channel?.thumbnail)
@@ -307,14 +296,12 @@ class VideoDetailActivity(
 
     private fun enterFullScreen() {
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
-        toolbar.setVisibilityToGone()
         adView.setVisibilityToGone()
         fullScreenHelper.enterFullScreen()
     }
 
     private fun exitFullScreen() {
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-        toolbar.setVisibilityToVisible()
         adView.setVisibilityToVisible()
         fullScreenHelper.exitFullScreen()
 
@@ -456,28 +443,11 @@ class VideoDetailActivity(
                 }
                 SUCCESS -> {
                     showLongToast("Berhasil membuat daftar putar")
+                    refresh()
                 }
                 ERROR -> {
-                    when (result.message) {
-                        ERROR_CONNECTION -> {
-                            showMaterialAlertDialog(
-                                getString(R.string.error_connection),
-                                "Coba Lagi",
-                                positiveCallback = { refresh() },
-                                dismissCallback = { refresh() }
-                            )
-                        }
-                        ERROR_CONNECTION_TIMEOUT -> {
-                            showMaterialAlertDialog(
-                                getString(R.string.error_connection_timeout),
-                                "Coba Lagi",
-                                positiveCallback = { refresh() },
-                                dismissCallback = { refresh() }
-                            )
-                        }
-                        else -> {
-                            handleApiError(errorMessage = result.message) { showLongToast(it) }
-                        }
+                    handleApiError(errorMessage = result.message) {
+                        showLongToast(it)
                     }
                 }
             }
@@ -490,10 +460,12 @@ class VideoDetailActivity(
                 LOADING -> {
                 }
                 SUCCESS -> {
-                    showSnackbar("Berhasil disimpan")
+                    showLongToast("Berhasil disimpan")
                 }
                 ERROR -> {
-                    showSnackbar(result.message)
+                    handleApiError(errorMessage = result.message) { message ->
+                        showLongToast(message)
+                    }
                 }
             }
         })
@@ -505,10 +477,12 @@ class VideoDetailActivity(
                 LOADING -> {
                 }
                 SUCCESS -> {
-                    showSnackbar("Berhasil disimpan")
+                    showLongToast("Berhasil disimpan")
                 }
                 ERROR -> {
-                    showSnackbar(result.message)
+                    handleApiError(errorMessage = result.message) { message ->
+                        showLongToast(message)
+                    }
                 }
             }
         })
@@ -520,14 +494,13 @@ class VideoDetailActivity(
                 LOADING -> {
                 }
                 SUCCESS -> {
-                    showSnackbarWithUndo("Berhasil mengikuti")
-                    { viewModel.unfollowChannel(channelId) }
-
-                    btnFollow.setVisibilityToGone()
-                    btnUnfollow.setVisibilityToVisible()
+                    showLongToast("Berhasil mengikuti")
+                    refresh()
                 }
                 ERROR -> {
-                    showSnackbar(result.message)
+                    handleApiError(errorMessage = result.message) { message ->
+                        showLongToast(message)
+                    }
                 }
             }
         })
@@ -539,14 +512,13 @@ class VideoDetailActivity(
                 LOADING -> {
                 }
                 SUCCESS -> {
-                    showSnackbarWithUndo("Anda berhenti mengikuti kanal ini")
-                    { viewModel.followChannel(channelId) }
-
-                    btnUnfollow.setVisibilityToGone()
-                    btnFollow.setVisibilityToVisible()
+                    showLongToast("Berhenti mengikuti")
+                    refresh()
                 }
                 ERROR -> {
-                    showSnackbar(result.message)
+                    handleApiError(errorMessage = result.message) { message ->
+                        showLongToast(message)
+                    }
                 }
             }
         })

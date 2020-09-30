@@ -20,14 +20,6 @@ interface UserApi {
         @Query("token") token: String
     ): Single<ApiResponse<Any>>
 
-    @FormUrlEncoded
-    @POST("login/google")
-    fun loginByGoogle(
-        @Field("email") email: String,
-        @Field("password") password: String,
-        @Field("fullname") fullname: String
-    ): Single<ApiResponse<LoginResult>>
-
     @POST("user/logout")
     fun logout(): Single<ApiResponse<Any>>
 
@@ -52,20 +44,4 @@ interface UserApi {
 
     @GET("user/profile")
     fun getProfile(): Single<ApiResponse<Profile>>
-
-    @GET("tnc")
-    fun getTnc(): Single<ApiResponse<LegalContent>>
-
-    /*@FormUrlEncoded
-    @PUT("users/profile/update")
-    fun updateProfile(
-        @Field("fullname") fullname: String,
-        @Field("email") email: String,
-        @Field("birthdate") birthdate: String,
-        @Field("gender") gender: String
-    ): Single<ApiMessageResult>
-
-    @FormUrlEncoded
-    @PATCH("user/password/update")
-    fun updatePassword(@Field("password") password: String): Single<ApiMessageResult>*/
 }

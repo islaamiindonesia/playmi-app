@@ -1,83 +1,61 @@
-package id.islaami.playmi.ui.setting.policy
+package id.islaami.playmi.ui.setting
 
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.lifecycle.Observer
 import id.islaami.playmi.R
-import id.islaami.playmi.data.model.setting.Policy
+import id.islaami.playmi.data.model.setting.LegalityContent
 import id.islaami.playmi.ui.base.BaseActivity
-import id.islaami.playmi.ui.setting.SettingViewModel
+import id.islaami.playmi.ui.base.BaseSpecialActivity
 import id.islaami.playmi.util.ResourceStatus.*
-import id.islaami.playmi.util.fromHtmlToSpanned
+import id.islaami.playmi.util.handleApiError
 import id.islaami.playmi.util.ui.setupToolbar
+import id.islaami.playmi.util.ui.showAlertDialog
 import id.islaami.playmi.util.ui.showSnackbar
-import kotlinx.android.synthetic.main.policy_activiy.*
+import kotlinx.android.synthetic.main.legal_activity.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class PolicyActiviy : BaseActivity() {
-    private val viewModel: SettingViewModel by viewModel()
-
+class LegalActivity : BaseSpecialActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.policy_activiy)
+        setContentView(R.layout.legal_activity)
 
         setupToolbar(toolbar)
 
-        viewModel.initPolicyActivity()
-
         when (intent.getStringExtra(TYPE)) {
             "ABOUT_PLAYMI" -> {
-//                viewModel.aboutApp()
                 supportActionBar?.title = "Tentang Aplikasi"
                 content.loadUrl("https://islaami.id/about")
             }
             "COOP_PLAYMI" -> {
-//                viewModel.cooperation()
                 supportActionBar?.title = "Kerjasama"
                 content.loadUrl("https://islaami.id/cooperation")
             }
             "TNC_PLAYMI" -> {
-//                viewModel.userTNC()
                 supportActionBar?.title = "Ketentuan Pengguna"
                 content.loadUrl("https://islaami.id/terms-and-condition")
             }
             "PRIVACY_PLAYMI" -> {
-//                viewModel.privacyPolicy()
                 supportActionBar?.title = "Kebijakan Privasi"
                 content.loadUrl("https://islaami.id/privacy-policy")
             }
+            else -> {
+                supportActionBar?.title = "Bantuan"
+                content.loadUrl("https://www.google.com")
+            }
         }
-
-//        observePolicy()
     }
 
     companion object {
         const val TYPE = "TYPE"
 
-        fun startActivity(context: Context?, type: String) {
+        fun startActivity(context: Context?, type: String? = null) {
             context?.startActivity(
-                Intent(context, PolicyActiviy::class.java).apply {
+                Intent(context, LegalActivity::class.java).apply {
                     putExtra(TYPE, type)
                 }
             )
         }
-    }
-
-    private fun observePolicy() {
-        viewModel.policyResultLd.observe(this, Observer { result ->
-            when (result?.status) {
-                LOADING -> {
-                }
-                SUCCESS -> {
-                    val policy = result.data ?: Policy()
-
-//                    content.text = policy.content.fromHtmlToSpanned()
-                }
-                ERROR -> {
-                    showSnackbar(getString(R.string.error_message_default))
-                }
-            }
-        })
     }
 }

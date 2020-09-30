@@ -1,7 +1,7 @@
 package id.islaami.playmi.ui.setting
 
 import androidx.lifecycle.MutableLiveData
-import id.islaami.playmi.data.model.setting.Policy
+import id.islaami.playmi.data.model.setting.LegalityContent
 import id.islaami.playmi.data.repository.SettingRepository
 import id.islaami.playmi.data.repository.UserRepository
 import id.islaami.playmi.ui.base.BaseViewModel
@@ -126,45 +126,45 @@ class SettingViewModel(
     }
 
     // APP POLICY
-    lateinit var policyResultLd: MutableLiveData<Resource<Policy>>
+    lateinit var legalityContentResultLd: MutableLiveData<Resource<LegalityContent>>
 
     fun aboutApp() {
         disposable.add(repository.aboutApp().execute()
-            .doOnSubscribe { policyResultLd.setLoading() }
+            .doOnSubscribe { legalityContentResultLd.setLoading() }
             .subscribe(
-                { result -> policyResultLd.setSuccess(result) },
-                { throwable -> policyResultLd.setError(throwable.getErrorMessage()) }
+                { result -> legalityContentResultLd.setSuccess(result) },
+                { throwable -> legalityContentResultLd.setError(throwable.getErrorMessage()) }
             ))
     }
 
     fun cooperation() {
         disposable.add(repository.cooperation().execute()
-            .doOnSubscribe { policyResultLd.setLoading() }
+            .doOnSubscribe { legalityContentResultLd.setLoading() }
             .subscribe(
-                { result -> policyResultLd.setSuccess(result) },
-                { throwable -> policyResultLd.setError(throwable.getErrorMessage()) }
+                { result -> legalityContentResultLd.setSuccess(result) },
+                { throwable -> legalityContentResultLd.setError(throwable.getErrorMessage()) }
             ))
     }
 
     fun userTNC() {
         disposable.add(repository.userTNC().execute()
-            .doOnSubscribe { policyResultLd.setLoading() }
+            .doOnSubscribe { legalityContentResultLd.setLoading() }
             .subscribe(
-                { result -> policyResultLd.setSuccess(result) },
-                { throwable -> policyResultLd.setError(throwable.getErrorMessage()) }
+                { result -> legalityContentResultLd.setSuccess(result) },
+                { throwable -> legalityContentResultLd.setError(throwable.getErrorMessage()) }
             ))
     }
 
     fun privacyPolicy() {
         disposable.add(repository.privacyPolicy().execute()
-            .doOnSubscribe { policyResultLd.setLoading() }
+            .doOnSubscribe { legalityContentResultLd.setLoading() }
             .subscribe(
-                { result -> policyResultLd.setSuccess(result) },
-                { throwable -> policyResultLd.setError(throwable.getErrorMessage()) }
+                { result -> legalityContentResultLd.setSuccess(result) },
+                { throwable -> legalityContentResultLd.setError(throwable.getErrorMessage()) }
             ))
     }
 
-    fun initPolicyActivity() {
-        policyResultLd = MutableLiveData()
+    fun initLegalActivity() {
+        legalityContentResultLd = MutableLiveData()
     }
 }

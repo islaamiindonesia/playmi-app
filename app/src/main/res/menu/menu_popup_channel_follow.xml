@@ -4,7 +4,7 @@
         android:id="@+id/popUnfollow"
         android:title="Berhenti Mengikuti" />
 
-    <item
+    <!--<item
         android:id="@+id/popNotif"
-        android:title="Aktifkan notifikasi / Matikan notifikasi" />
+        android:title="Aktifkan notifikasi / Matikan notifikasi" />-->
 </menu>

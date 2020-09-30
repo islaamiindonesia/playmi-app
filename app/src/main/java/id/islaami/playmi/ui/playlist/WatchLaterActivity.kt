@@ -138,7 +138,7 @@ class WatchLaterActivity : BaseActivity() {
         }
         dialogView.btnCancel.setOnClickListener { dialog.dismiss() }
         dialogView.btnSave.setOnClickListener {
-            viewModel.addToPlaylist(videoId, playlistSelectAdapter.getSelectedId())
+            viewModel.addToManyPlaylists(videoId, playlistSelectAdapter.selectedIds)
             dialog.dismiss()
         }
 

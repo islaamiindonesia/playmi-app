@@ -1,7 +1,6 @@
 package id.islaami.playmi.ui.channel_following
 
 import android.os.Bundle
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -36,11 +35,6 @@ class ChannelFollowingFragment : BaseFragment() {
 
                         true
                     }
-                    R.id.popHide -> {
-                        viewModel.hideChannel(channel.ID.value())
-
-                        true
-                    }
                     else -> false
                 }
             }
@@ -58,6 +52,7 @@ class ChannelFollowingFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.initFollowingFragment()
+        observeUnfollow()
 
         swipeRefreshLayout.apply {
             setColorSchemeResources(R.color.accent)
@@ -86,8 +81,6 @@ class ChannelFollowingFragment : BaseFragment() {
         refresh()
 
         observeChannel()
-        observeUnfollow()
-        observeHide()
     }
 
     private fun refresh() {
@@ -102,7 +95,7 @@ class ChannelFollowingFragment : BaseFragment() {
         viewModel.channelFollowingLd.observe(viewLifecycleOwner, Observer { result ->
             when (result?.status) {
                 LOADING -> {
-
+                    swipeRefreshLayout.startRefreshing()
                 }
                 SUCCESS -> {
                     swipeRefreshLayout.stopRefreshing()
@@ -117,7 +110,7 @@ class ChannelFollowingFragment : BaseFragment() {
                 }
                 ERROR -> {
                     swipeRefreshLayout.stopRefreshing()
-                    Log.d("HEIKAMU", "observeChannel: ")
+
                     when (result.message) {
                         ERROR_EMPTY_LIST -> {
                             emptyText.setVisibilityToVisible()
@@ -159,24 +152,6 @@ class ChannelFollowingFragment : BaseFragment() {
                 }
                 SUCCESS -> {
                     showLongToast(context, "Berhenti mengikuti")
-                    refresh()
-                }
-                ERROR -> {
-                    handleApiError(errorMessage = result.message) { message ->
-                        showLongToast(context, message)
-                    }
-                }
-            }
-        })
-    }
-
-    private fun observeHide() {
-        viewModel.channelStatusResultLd.observe(viewLifecycleOwner, Observer { result ->
-            when (result?.status) {
-                LOADING -> {
-                }
-                SUCCESS -> {
-                    showLongToast(context, getString(R.string.message_channel_hide))
                     refresh()
                 }
                 ERROR -> {

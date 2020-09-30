@@ -36,6 +36,7 @@ class ChannelHiddenFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.initHiddenFragment()
+        observeShow()
 
         swipeRefreshLayout.apply {
             setColorSchemeResources(R.color.accent)
@@ -65,7 +66,6 @@ class ChannelHiddenFragment : BaseFragment() {
         refresh()
 
         observeChannel()
-        observeShow()
     }
 
     private fun refresh() {

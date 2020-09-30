@@ -17,13 +17,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="n">
-        <activity android:name=".ui.setting.policy.PolicyActiviy" />
-        <activity android:name=".ui.setting.tnc.TermsConditionActivity" />
-        <activity android:name="id.islaami.playmi.VerificationActivity" />
+        <activity
+            android:name=".ui.setting.LegalActivity"
+            android:theme="@style/SpecialTheme" />
+        <activity android:name="id.islaami.playmi.ui.auth.VerificationActivity" />
         <activity
             android:name=".ui.video.VideoDetailActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
-            android:parentActivityName=".ui.MainActivity">
+            android:parentActivityName=".ui.MainActivity"
+            android:theme="@style/VideoTheme">
 
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -39,21 +41,16 @@
         </activity>
         <activity
             android:name=".ui.auth.RegisterActivity"
-            android:theme="@style/RegisterTheme">
-
-            <!--            <intent-filter>-->
-            <!--                <action android:name="android.intent.action.MAIN" />-->
-
-            <!--                <category android:name="android.intent.category.LAUNCHER" />-->
-            <!--            </intent-filter>-->
-        </activity>
+            android:theme="@style/SpecialTheme" />
         <activity
             android:name=".ui.channel.ChannelDetailActivity"
             android:launchMode="singleTop" />
-        <activity android:name=".ui.setting.recommendation.RecommendationActivity" />
+        <activity
+            android:name=".ui.setting.recommendation.RecommendationActivity"
+            android:theme="@style/SpecialTheme" />
         <activity
             android:name=".ui.setting.SettingActivity"
-            android:theme="@style/RegisterTheme" />
+            android:theme="@style/SpecialTheme" />
         <activity
             android:name=".ui.MainActivity"
             android:windowSoftInputMode="adjustPan">
@@ -100,8 +97,12 @@
                 android:name="android.app.default_searchable"
                 android:value=".ui.search.VideoSearchActivity" />
         </activity>
-        <activity android:name=".ui.setting.report.ReportActivity" />
-        <activity android:name=".ui.setting.insight.InsightActivity" />
+        <activity
+            android:name=".ui.setting.report.ReportActivity"
+            android:theme="@style/SpecialTheme" />
+        <activity
+            android:name=".ui.setting.insight.InsightActivity"
+            android:theme="@style/SpecialTheme" />
         <activity android:name=".ui.setting.collaborate.CollaborateActivity" />
         <activity android:name=".ui.auth.ResetPasswordActivity" />
         <activity
@@ -116,7 +117,6 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-        <activity android:name=".ui.channel.ChannelVideoActivity" />
         <activity
             android:name=".ui.video.VideoSubcategoryActivity"
             android:launchMode="singleTop" />

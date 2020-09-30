@@ -65,7 +65,7 @@
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/videoThumbnail"
         android:layout_width="match_parent"
-        android:layout_height="203dp"
+        android:layout_height="200dp"
         android:scaleType="centerCrop"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

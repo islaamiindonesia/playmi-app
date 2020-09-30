@@ -29,6 +29,7 @@ private val loadFeature by lazy {
     )
 }
 
+//
 val cacheModule: Module = module {
     single { Cache<Profile>() }
     single { UserCache(profileCache = get(), notifSettingCache = get()) }

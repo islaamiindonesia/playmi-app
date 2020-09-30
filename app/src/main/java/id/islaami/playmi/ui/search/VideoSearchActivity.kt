@@ -17,9 +17,6 @@ import id.islaami.playmi.util.handleApiError
 import id.islaami.playmi.util.ui.*
 import id.islaami.playmi.util.value
 import kotlinx.android.synthetic.main.video_search_activity.*
-import kotlinx.android.synthetic.main.video_search_activity.recyclerView
-import kotlinx.android.synthetic.main.video_search_activity.swipeRefreshLayout
-import kotlinx.android.synthetic.main.video_search_activity.toolbar
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class VideoSearchActivity(var searchQuery: String = "") : BaseActivity() {
@@ -33,59 +30,45 @@ class VideoSearchActivity(var searchQuery: String = "") : BaseActivity() {
                 if (video.channel?.isFollowed != true) menu.getItem(1).title = "Mulai Mengikuti"
                 else menu.getItem(1).title = "Berhenti Mengikuti"
 
-                menu.getItem(0).title = "Simpan ke ic_watch Nanti"
+                menu.getItem(0).title = "Simpan ke Tonton Nanti"
 
                 setOnMenuItemClickListener { item ->
                     when (item.itemId) {
                         R.id.popWatchLater -> {
-                            context.showAlertDialogWith2Buttons(
-                                "Simpan ke daftar ic_watch Nanti?",
-                                "Iya",
-                                "Batal",
-                                positiveCallback = {
-                                    viewModel.watchLater(video.ID.value())
-                                    it.dismiss()
-                                },
-                                negativeCallback = { it.dismiss() })
+                            PlaymiDialogFragment.show(
+                                fragmentManager = supportFragmentManager,
+                                text = "Simpan ke daftar Tonton Nanti?",
+                                okCallback = { viewModel.watchLater(video.ID.value()) }
+                            )
 
                             true
                         }
                         R.id.popFollow -> {
                             if (video.channel?.isFollowed != true) {
-                                context.showAlertDialogWith2Buttons(
-                                    "Apakah ingin mulai mengikuti ${video.channel?.name}?",
-                                    "Iya",
-                                    "Batal",
-                                    positiveCallback = {
-                                        viewModel.followChannel(video.channel?.ID.value())
-                                        it.dismiss()
-                                    },
-                                    negativeCallback = { it.dismiss() })
+                                PlaymiDialogFragment.show(
+                                    fragmentManager = supportFragmentManager,
+                                    text = getString(R.string.channel_follow, video.channel?.name),
+                                    okCallback = { viewModel.followChannel(video.channel?.ID.value()) }
+                                )
                             } else {
-                                context.showAlertDialogWith2Buttons(
-                                    "Apakah ingin berhenti mengikuti ${video.channel?.name}?",
-                                    "Iya",
-                                    "Batal",
-                                    positiveCallback = {
-                                        viewModel.unfollowChannel(video.channel?.ID.value())
-                                        it.dismiss()
-                                    },
-                                    negativeCallback = { it.dismiss() })
+                                PlaymiDialogFragment.show(
+                                    fragmentManager = supportFragmentManager,
+                                    text = getString(
+                                        R.string.channel_unfollow,
+                                        video.channel?.name
+                                    ),
+                                    okCallback = { viewModel.unfollowChannel(video.channel?.ID.value()) }
+                                )
                             }
 
                             true
                         }
                         R.id.popHide -> {
-                            context.showAlertDialogWith2Buttons(
-                                "Anda tidak akan melihat seluruh video dari kanal ini" +
-                                        "\nApakah ingin berhenti mengikuti ${video.channel?.name}?",
-                                "Iya",
-                                "Batal",
-                                positiveCallback = {
-                                    viewModel.hideChannel(video.channel?.ID.value())
-                                    it.dismiss()
-                                },
-                                negativeCallback = { it.dismiss() })
+                            PlaymiDialogFragment.show(
+                                fragmentManager = supportFragmentManager,
+                                text = getString(R.string.channel_hide, video.channel?.name),
+                                okCallback = { viewModel.hideChannel(video.channel?.ID.value()) }
+                            )
 
                             true
                         }
@@ -104,6 +87,11 @@ class VideoSearchActivity(var searchQuery: String = "") : BaseActivity() {
         setupToolbar(toolbar)
 
         viewModel.initVideoSearchActivity()
+        observeWatchLaterResult()
+        observeFollowResult()
+        observeUnfollowResult()
+        observeHideResult()
+
         handleIntent()
 
         // Get the SearchView and set the searchable configuration
@@ -132,10 +120,6 @@ class VideoSearchActivity(var searchQuery: String = "") : BaseActivity() {
         super.onResume()
 
         observeGetAllVideoResult()
-        observeWatchLaterResult()
-        observeFollowResult()
-        observeUnfollowResult()
-        observeHideResult()
     }
 
     private fun handleIntent() {
@@ -197,11 +181,12 @@ class VideoSearchActivity(var searchQuery: String = "") : BaseActivity() {
                 LOADING -> {
                 }
                 SUCCESS -> {
-                    showSnackbar("Berhasil disimpan")
-                    refresh()
+                    showLongToast("Berhasil disimpan")
                 }
                 ERROR -> {
-                    showSnackbar(result.message)
+                    handleApiError(errorMessage = result.message) { message ->
+                        showLongToast(message)
+                    }
                 }
             }
         })
@@ -213,11 +198,13 @@ class VideoSearchActivity(var searchQuery: String = "") : BaseActivity() {
                 LOADING -> {
                 }
                 SUCCESS -> {
-                    showSnackbar("Berhasil Mengikuti")
+                    showLongToast("Berhasil mengikuti")
                     refresh()
                 }
                 ERROR -> {
-                    showSnackbar(result.message)
+                    handleApiError(errorMessage = result.message) { message ->
+                        showLongToast(message)
+                    }
                 }
             }
         })
@@ -229,11 +216,13 @@ class VideoSearchActivity(var searchQuery: String = "") : BaseActivity() {
                 LOADING -> {
                 }
                 SUCCESS -> {
-                    showSnackbar("Anda berhenti mengikuti kanal ini")
+                    showLongToast("Berhenti mengikuti")
                     refresh()
                 }
                 ERROR -> {
-                    showSnackbar(result.message)
+                    handleApiError(errorMessage = result.message) { message ->
+                        showLongToast(message)
+                    }
                 }
             }
         })
@@ -245,11 +234,13 @@ class VideoSearchActivity(var searchQuery: String = "") : BaseActivity() {
                 LOADING -> {
                 }
                 SUCCESS -> {
-                    showSnackbar(getString(R.string.message_channel_hide))
+                    showLongToast(getString(R.string.message_channel_hide))
                     refresh()
                 }
                 ERROR -> {
-                    showSnackbar(result.message)
+                    handleApiError(errorMessage = result.message) { message ->
+                        showLongToast(message)
+                    }
                 }
             }
         })

@@ -77,6 +77,15 @@ class PlaylistViewModel(private val repository: PlaylistRepository) : BaseViewMo
             ))
     }
 
+    fun addToManyPlaylists(videoId: Int, playlistId: List<Int>) {
+        disposable.add(repository.addVideo(videoId, playlistId).execute()
+            .doOnSubscribe { addToPlaylistResultLd.setLoading() }
+            .subscribe(
+                { result -> addToPlaylistResultLd.setSuccess(result) },
+                { throwable -> addToPlaylistResultLd.setError(throwable.getErrorMessage()) }
+            ))
+    }
+
     fun removeFromPlaylist(videoId: Int, playlistId: Int) {
         disposable.add(repository.removeVideo(videoId, playlistId).execute()
             .doOnSubscribe { removeFromPlaylistResultLd.setLoading() }

@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     android:fillViewport="true"
     android:padding="12dp"
+    android:background="@color/layout_background_color"
     tools:context=".ui.video_update.VideoUpdateFragment"
     tools:targetApi="lollipop">
 

@@ -3,6 +3,7 @@ package id.islaami.playmi.data.repository
 import id.islaami.playmi.data.api.ChannelApi
 import id.islaami.playmi.data.api.PlaylistApi
 import id.islaami.playmi.data.api.VideoApi
+import id.islaami.playmi.data.model.playlist.AddVideoBody
 
 class PlaylistRepository(
     private val playlist: PlaylistApi,
@@ -23,6 +24,9 @@ class PlaylistRepository(
 
     fun addVideo(videoId: Int, id: Int) =
         playlist.addVideo(id = id, videoId = videoId)
+
+    fun addVideo(videoId: Int, listIds: List<Int>) =
+        playlist.addVideo(AddVideoBody(videoID = videoId, playlistIDs = listIds))
 
     fun removeVideo(videoId: Int, id: Int) =
         playlist.removeVideo(id = id, videoId = videoId)

@@ -6,14 +6,11 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.LocationManager
-import android.os.Build
 import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
-import android.view.WindowManager
 import androidx.appcompat.app.AppCompatDelegate.*
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
@@ -22,10 +19,8 @@ import com.google.firebase.iid.FirebaseInstanceId
 import id.islaami.playmi.R
 import id.islaami.playmi.data.model.kotpref.Mode
 import id.islaami.playmi.ui.auth.LoginActivity
-import id.islaami.playmi.ui.base.BaseActivity
-import id.islaami.playmi.ui.setting.help.WebHelpActivity
+import id.islaami.playmi.ui.base.BaseSpecialActivity
 import id.islaami.playmi.ui.setting.insight.InsightActivity
-import id.islaami.playmi.ui.setting.policy.PolicyActiviy
 import id.islaami.playmi.ui.setting.recommendation.RecommendationActivity
 import id.islaami.playmi.ui.setting.report.ReportActivity
 import id.islaami.playmi.util.ResourceStatus.*
@@ -35,7 +30,7 @@ import kotlinx.android.synthetic.main.setting_activity.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 
-class SettingActivity : BaseActivity() {
+class SettingActivity : BaseSpecialActivity() {
     private val viewModel: SettingViewModel by viewModel()
 
     private var profileName = String()
@@ -43,16 +38,6 @@ class SettingActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.setting_activity)
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-            window.statusBarColor = ContextCompat.getColor(this, R.color.accent_dark)
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            window.decorView.systemUiVisibility = 0
-        }
 
         setupToolbar(toolbar)
 
@@ -136,11 +121,10 @@ class SettingActivity : BaseActivity() {
             setOnCheckedChangeListener { _, isChecked ->
                 if (isChecked) {
                     Mode.appMode = MODE_NIGHT_YES
-                    setDefaultNightMode(MODE_NIGHT_YES)
                 } else {
                     Mode.appMode = MODE_NIGHT_NO
-                    setDefaultNightMode(MODE_NIGHT_NO)
                 }
+                setDefaultNightMode(Mode.appMode)
             }
         }
 
@@ -166,27 +150,27 @@ class SettingActivity : BaseActivity() {
 
         btnHelp.setOnClickListener()
         {
-            WebHelpActivity.startActivity(this, "https://www.google.com")
+            LegalActivity.startActivity(this)
         }
 
         btnCollaborate.setOnClickListener()
         {
-            PolicyActiviy.startActivity(this, "COOP_PLAYMI")
+            LegalActivity.startActivity(this, "COOP_PLAYMI")
         }
 
         btnAbout.setOnClickListener()
         {
-            PolicyActiviy.startActivity(this, "ABOUT_PLAYMI")
+            LegalActivity.startActivity(this, "ABOUT_PLAYMI")
         }
 
         btnTNC.setOnClickListener()
         {
-            PolicyActiviy.startActivity(this, "TNC_PLAYMI")
+            LegalActivity.startActivity(this, "TNC_PLAYMI")
         }
 
         btnPrivacy.setOnClickListener()
         {
-            PolicyActiviy.startActivity(this, "PRIVACY_PLAYMI")
+            LegalActivity.startActivity(this, "PRIVACY_PLAYMI")
         }
 
         btnLogout.setOnClickListener()

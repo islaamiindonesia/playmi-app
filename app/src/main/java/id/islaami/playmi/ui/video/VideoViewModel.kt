@@ -130,6 +130,15 @@ class VideoViewModel(
             ))
     }
 
+    fun addToManyPlaylists(videoId: Int, playlistId: List<Int>) {
+        disposable.add(playlist.addVideo(videoId, playlistId).execute()
+            .doOnSubscribe { addToPlaylistResultLd.setLoading() }
+            .subscribe(
+                { result -> addToPlaylistResultLd.setSuccess(result) },
+                { throwable -> addToPlaylistResultLd.setError(throwable.getErrorMessage()) }
+            ))
+    }
+
     /* VIDEO */
     lateinit var getVideoResultLd: MutableLiveData<Resource<Video>>
 

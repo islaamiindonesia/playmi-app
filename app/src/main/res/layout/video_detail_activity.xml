@@ -10,24 +10,6 @@
     tools:context=".ui.video.VideoDetailActivity"
     tools:targetApi="lollipop">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appBar"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:focusable="true"
-        ads:layout_constraintEnd_toEndOf="parent"
-        ads:layout_constraintStart_toStartOf="parent"
-        ads:layout_constraintTop_toTopOf="parent">
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            style="@style/ToolbarWhiteBackArrow"
-            android:layout_width="match_parent"
-            android:layout_height="?android:attr/actionBarSize"
-            android:elevation="4dp"
-            app:title="Video" />
-    </com.google.android.material.appbar.AppBarLayout>
-
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefreshLayout"
         android:layout_width="0dp"
@@ -35,7 +17,7 @@
         app:layout_constraintBottom_toTopOf="@id/adView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/appBar">
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:id="@+id/successLayout"
@@ -52,13 +34,14 @@
 
             <androidx.core.widget.NestedScrollView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:fillViewport="true">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:background="@color/layout_background_color">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
@@ -117,7 +100,7 @@
                                 app:layout_constraintStart_toStartOf="@+id/videoTitle"
                                 app:layout_constraintTop_toBottomOf="@+id/videoTitle"
                                 app:srcCompat="@drawable/ic_watch"
-                                app:tint="?colorControlNormal" />
+                                app:tint="@color/icon_color" />
 
                             <TextView
                                 android:id="@+id/videoViews"
@@ -138,7 +121,8 @@
                                     android:layout_width="10dp"
                                     android:layout_height="20dp"
                                     android:layout_marginStart="16dp"
-                                    app:srcCompat="@drawable/ic_time" />
+                                    app:srcCompat="@drawable/ic_time"
+                                    app:tint="@color/icon_color"/>
 
                                 <TextView
                                     android:id="@+id/videoPublishedDate"
@@ -181,32 +165,36 @@
                         android:orientation="horizontal"
                         android:paddingVertical="8dp">
 
-                        <com.google.android.material.card.MaterialCardView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_marginStart="12dp"
-                            app:cardCornerRadius="25dp"
-                            app:cardPreventCornerOverlap="false">
-
-                            <ImageView
-                                android:id="@+id/channelPhoto"
-                                android:layout_width="30dp"
-                                android:layout_height="30dp"
-                                android:scaleType="centerCrop"
-                                app:srcCompat="@drawable/dummy_thumbnail" />
-                        </com.google.android.material.card.MaterialCardView>
-
                         <androidx.constraintlayout.widget.ConstraintLayout
                             android:id="@+id/btnChannel"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
-                            android:layout_marginHorizontal="8dp"
+                            android:layout_marginStart="12dp"
+                            android:layout_marginEnd="@dimen/margin_8_dp"
                             android:layout_weight="5"
                             android:background="?selectableItemBackground"
                             android:clickable="true"
                             android:focusable="true">
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/layoutPhoto"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_vertical"
+                                app:cardCornerRadius="25dp"
+                                app:cardPreventCornerOverlap="false"
+                                ads:layout_constraintStart_toStartOf="parent"
+                                ads:layout_constraintTop_toTopOf="parent"
+                                ads:layout_constraintBottom_toBottomOf="parent">
+
+                                <ImageView
+                                    android:id="@+id/channelPhoto"
+                                    android:layout_width="30dp"
+                                    android:layout_height="30dp"
+                                    android:scaleType="centerCrop"
+                                    app:srcCompat="@drawable/dummy_thumbnail" />
+                            </com.google.android.material.card.MaterialCardView>
 
                             <TextView
                                 android:id="@+id/channelName"
@@ -214,8 +202,9 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:textSize="14sp"
+                                android:layout_marginStart="@dimen/margin_8_dp"
                                 app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintStart_toEndOf="@id/layoutPhoto"
                                 app:layout_constraintTop_toTopOf="parent"
                                 tools:text="Ini Channel Video" />
 

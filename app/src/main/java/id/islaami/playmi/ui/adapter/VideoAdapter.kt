@@ -48,7 +48,7 @@ class VideoAdapter(
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(video: Video) = with(itemView) {
             videoTitle.text = video.title
-            videoThumbnail.loadExternalImage(video.thumbnail)
+            videoThumbnail.loadExternalImage("https://img.youtube.com/vi/${video.videoID}/sddefault.jpg")
             channelName.text = video.channel?.name
             channelIcon.loadImage(video.channel?.thumbnail)
             views.text = "${video.views ?: 0}x"

@@ -19,7 +19,6 @@ import id.islaami.playmi.ui.video.VideoDetailActivity
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
 
-    private lateinit var channelID: String
     private lateinit var intent: Intent
 
     private var pendingIntent: PendingIntent? = null
@@ -31,24 +30,22 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
 
-        channelID = resources.getString(R.string.default_notification_channel_id)
-
-        Log.d("HEIKAMU", remoteMessage.notification?.title.toString())
-        Log.d("HEIKAMU", remoteMessage.data.toString())
-
-        sendNotification(
+        // upon receiving notification
+        handleNotification(
             remoteMessage.notification?.title.toString(),
             remoteMessage.notification?.body.toString(),
             remoteMessage.data
         )
     }
 
-    private fun sendNotification(
+    private fun handleNotification(
         title: String,
         body: String,
         data: MutableMap<String, String>? = null
     ) {
         if (data != null) {
+            // initialize intent with Extras or just an Intent to MainActivity class
+            // INFO: For the data schema of the push notif, you can review them in the Core API's source code, inside "App/Notification" folder
             intent = when (data["type"]) {
                 "VERIFICATION" -> Intent("SEND_INQUIRY_DATA").apply {
                     putExtra("VERIFICATION_CODE", data["code"])
@@ -61,6 +58,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 }
             }
 
+            // when intent action is SEND_INQUIRY_DATA, system will broadcast the intent across activities inside the app
+            // otherwise, it will just initialize pendingIntent with TaskStackBuilder
             if (intent.action == "SEND_INQUIRY_DATA") {
                 LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
             } else {
@@ -77,6 +76,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     }
 
     fun displayNotification(title: String, body: String) {
+        val channelID = resources.getString(R.string.default_notification_channel_id)
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val notificationManager =
             getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

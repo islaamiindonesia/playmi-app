@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.auth.LoginActivity">
+    tools:context=".ui.auth.LoginActivity"
+    tools:targetApi="lollipop">
 
     <ImageView
         android:id="@+id/appLogo"
@@ -149,7 +150,8 @@
                 android:ems="10"
                 android:hint="email"
                 android:inputType="textEmailAddress"
-                android:textColorHint="@color/grey_85" />
+                android:textColorHint="@color/grey_85"
+                android:textCursorDrawable="@drawable/accent_cursor" />
 
             <EditText
                 android:id="@+id/password"
@@ -161,7 +163,8 @@
                 android:ems="10"
                 android:hint="kata sandi"
                 android:inputType="textPassword"
-                android:textColorHint="@color/grey_85" />
+                android:textColorHint="@color/grey_85"
+                android:textCursorDrawable="@drawable/accent_cursor" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/btnForgot"
@@ -201,6 +204,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="25dp"
+                android:indeterminateTint="@color/accent"
                 android:visibility="gone" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>

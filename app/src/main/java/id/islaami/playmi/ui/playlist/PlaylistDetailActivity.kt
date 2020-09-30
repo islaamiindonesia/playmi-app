@@ -113,6 +113,8 @@ class PlaylistDetailActivity(var playlistId: Int = 0) : BaseActivity() {
         observeRemoveFromPlaylistResult()
         observePlaylistChange()
         observePlaylistDelete()
+        observeFollowResult()
+        observeUnfollowResult()
 
         btnEdit.setOnClickListener {
             editPlaylistDialog(
@@ -174,7 +176,7 @@ class PlaylistDetailActivity(var playlistId: Int = 0) : BaseActivity() {
         }
         dialogView.btnCancel.setOnClickListener { dialog.dismiss() }
         dialogView.btnSave.setOnClickListener {
-            viewModel.addToPlaylist(videoId, playlistSelectAdapter.getSelectedId())
+            viewModel.addToManyPlaylists(videoId, playlistSelectAdapter.selectedIds)
             dialog.dismiss()
         }
 
@@ -542,6 +544,42 @@ class PlaylistDetailActivity(var playlistId: Int = 0) : BaseActivity() {
                         else -> {
                             handleApiError(errorMessage = result.message) { showLongToast(it) }
                         }
+                    }
+                }
+            }
+        })
+    }
+
+    private fun observeFollowResult() {
+        viewModel.followChannelResultLd.observe(this, Observer { result ->
+            when (result?.status) {
+                LOADING -> {
+                }
+                SUCCESS -> {
+                    showLongToast("Berhasil mengikuti")
+                    refresh()
+                }
+                ERROR -> {
+                    handleApiError(errorMessage = result.message) {
+                        showLongToast(it)
+                    }
+                }
+            }
+        })
+    }
+
+    private fun observeUnfollowResult() {
+        viewModel.unfollowChannelResultLd.observe(this, Observer { result ->
+            when (result?.status) {
+                LOADING -> {
+                }
+                SUCCESS -> {
+                    showLongToast("Berhenti mengikuti")
+                    refresh()
+                }
+                ERROR -> {
+                    handleApiError(errorMessage = result.message) { message ->
+                        showLongToast(message)
                     }
                 }
             }

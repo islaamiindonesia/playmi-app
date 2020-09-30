@@ -1,4 +1,4 @@
-package id.islaami.playmi
+package id.islaami.playmi.ui.auth
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -9,8 +9,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.Observer
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.firebase.auth.FirebaseUser
-import id.islaami.playmi.ui.auth.LoginActivity
-import id.islaami.playmi.ui.auth.UserAuthViewModel
+import id.islaami.playmi.R
 import id.islaami.playmi.ui.base.BaseActivity
 import id.islaami.playmi.util.ResourceStatus.*
 import id.islaami.playmi.util.createClickableString
@@ -26,6 +25,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class VerificationActivity(var email: String = "") : BaseActivity() {
     private val viewModel: UserAuthViewModel by viewModel()
 
+    // this activity will receive broadcast from MyFirebaseMessagingService class
     private val receiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             onReceiveBroadcast(intent)
@@ -53,7 +53,6 @@ class VerificationActivity(var email: String = "") : BaseActivity() {
         btnResend.apply {
             text = createClickableString(
                 context = this@VerificationActivity,
-                backgroundColor = R.color.white,
                 foregroundColor = R.color.accent,
                 isUnderLine = true,
                 stringRes = R.string.link_resend_verification,
@@ -133,8 +132,7 @@ class VerificationActivity(var email: String = "") : BaseActivity() {
     }
 
     private fun unregisterReceiver() {
-        LocalBroadcastManager.getInstance(this)
-            .unregisterReceiver(receiver)
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver)
     }
 
     private fun onReceiveBroadcast(intent: Intent) {

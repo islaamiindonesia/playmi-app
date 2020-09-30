@@ -2,17 +2,12 @@ package id.islaami.playmi.data.repository
 
 import id.islaami.playmi.data.api.UserApi
 import id.islaami.playmi.data.cache.UserCache
+import id.islaami.playmi.data.model.kotpref.Default
 import id.islaami.playmi.data.model.profile.LoginBody
 import id.islaami.playmi.data.model.profile.Profile
 import id.islaami.playmi.data.model.profile.RegisterBody
 
 class UserRepository(private val userCache: UserCache, private val userApi: UserApi) {
-    var darkMode: Int
-        get() = userCache.darkMode
-        set(value) {
-            userCache.darkMode = value
-        }
-
     var hasSeenIntro: Boolean
         get() = userCache.hasSeenIntro
         set(value) {
@@ -34,19 +29,24 @@ class UserRepository(private val userCache: UserCache, private val userApi: User
     // Login
     fun login(email: String, fcm: String) =
         userApi.login(LoginBody(email, fcm)).map {
+            // save header token and profile data to cache
             userCache.headerToken = it.data?.token.toString()
             userCache.profile = it.data?.user
+
             it.data
         }
 
     fun clearCache() {
         userCache.headerToken = ""
+        Default.hasLoggedIn = false
     }
 
     fun isLoggedIn(): Boolean = userCache.headerToken.isNotEmpty()
 
     fun getProfileName() = userApi.getProfile().map {
+        // save profile data to cache
         userCache.profile = it.data
+
         it.data?.fullname
     }
 
@@ -56,7 +56,8 @@ class UserRepository(private val userCache: UserCache, private val userApi: User
         birthdate: String,
         gender: String,
         notifToken: String
-    ) = userApi.register(RegisterBody(email, fullname, birthdate, gender, notifToken)).map { it }
+    ) = userApi.register(RegisterBody(email, fullname, birthdate, gender, notifToken))
+        .map { it.data }
 
     fun registerFromGoogle(
         fullname: String,
@@ -66,7 +67,9 @@ class UserRepository(private val userCache: UserCache, private val userApi: User
         notifToken: String
     ) = userApi.registerFromGoogle(RegisterBody(email, fullname, birthdate, gender, notifToken))
         .map {
+            // save header token to cache
             userCache.headerToken = it.data?.token.toString()
+
             it.data
         }
 

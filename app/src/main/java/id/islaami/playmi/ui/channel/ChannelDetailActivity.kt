@@ -3,6 +3,7 @@ package id.islaami.playmi.ui.channel
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.Menu
@@ -143,7 +144,7 @@ class ChannelDetailActivity : BaseActivity() {
         })
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+    /*override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_channel, menu)
 
         notif = menu.findItem(R.id.channelNotif)
@@ -189,7 +190,7 @@ class ChannelDetailActivity : BaseActivity() {
             }
             else -> super.onOptionsItemSelected(item)
         }
-    }
+    }*/
 
     private fun Channel.showData() {
         notif?.isVisible = isFollowed == true
@@ -245,7 +246,6 @@ class ChannelDetailActivity : BaseActivity() {
             when (result?.status) {
                 LOADING -> {
                     swipeRefreshLayout.startRefreshing()
-                    successLayout.setVisibilityToGone()
                 }
                 SUCCESS -> {
                     swipeRefreshLayout.stopRefreshing()

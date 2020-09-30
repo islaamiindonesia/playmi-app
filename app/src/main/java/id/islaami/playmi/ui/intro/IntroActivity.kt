@@ -14,23 +14,22 @@ import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
 import androidx.core.content.ContextCompat
 import id.islaami.playmi.R
+import id.islaami.playmi.data.model.kotpref.Default
 import id.islaami.playmi.ui.auth.LoginActivity
 import id.islaami.playmi.ui.base.BaseActivity
-import id.islaami.playmi.ui.setting.policy.PolicyActiviy
+import id.islaami.playmi.ui.setting.LegalActivity
 import id.islaami.playmi.util.Clickable
 import kotlinx.android.synthetic.main.intro_activity.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class IntroActivity : BaseActivity() {
-    private val viewModel: IntroViewModel by viewModel()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.intro_activity)
 
         btnNext.setOnClickListener {
             LoginActivity.startActivityClearTask(this)
-            viewModel.hasSeenIntro = true
+            Default.hasSeenIntro = true
         }
 
         introHtmlText.text = createTextAgreement()
@@ -47,7 +46,7 @@ class IntroActivity : BaseActivity() {
             spannableString.apply {
                 setSpan(
                     Clickable(1) {
-                        PolicyActiviy.startActivity(this@IntroActivity, "TNC_PLAYMI")
+                        LegalActivity.startActivity(this@IntroActivity, "TNC_PLAYMI")
                     },
                     fulltext.getSpanStart(annotation),
                     fulltext.getSpanEnd(annotation),
@@ -89,7 +88,7 @@ class IntroActivity : BaseActivity() {
             spannableString.apply {
                 setSpan(
                     Clickable(2) {
-                        PolicyActiviy.startActivity(this@IntroActivity, "PRIVACY_PLAYMI")
+                        LegalActivity.startActivity(this@IntroActivity, "PRIVACY_PLAYMI")
                     },
                     fulltext.getSpanStart(annotation),
                     fulltext.getSpanEnd(annotation),

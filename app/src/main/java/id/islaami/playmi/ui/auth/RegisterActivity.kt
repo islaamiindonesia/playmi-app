@@ -11,9 +11,8 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.jakewharton.rxbinding3.widget.textChanges
 import id.islaami.playmi.R
-import id.islaami.playmi.VerificationActivity
 import id.islaami.playmi.ui.MainActivity
-import id.islaami.playmi.ui.base.BaseRegisterActivity
+import id.islaami.playmi.ui.base.BaseSpecialActivity
 import id.islaami.playmi.util.*
 import id.islaami.playmi.util.ResourceStatus.*
 import id.islaami.playmi.util.ui.*
@@ -30,8 +29,8 @@ import java.util.*
 
 class RegisterActivity(
     var firebaseAuth: FirebaseAuth? = null,
-    var gender: String = "L"
-) : BaseRegisterActivity() {
+    var gender: String = "L" // default gender choice
+) : BaseSpecialActivity() {
     private val viewModel: UserAuthViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,6 +38,7 @@ class RegisterActivity(
         setContentView(R.layout.register_activity)
         setupToolbar(toolbar)
 
+        // initiate firebase auth instance
         firebaseAuth = FirebaseAuth.getInstance()
 
         viewModel.initRegisterAcitivity()

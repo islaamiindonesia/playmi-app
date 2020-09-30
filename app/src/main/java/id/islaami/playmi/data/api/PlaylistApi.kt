@@ -1,6 +1,7 @@
 package id.islaami.playmi.data.api
 
 import id.islaami.playmi.data.model.ApiResponse
+import id.islaami.playmi.data.model.playlist.AddVideoBody
 import id.islaami.playmi.data.model.playlist.Playlist
 import id.islaami.playmi.data.model.video.Video
 import io.reactivex.Single
@@ -20,6 +21,9 @@ interface PlaylistApi {
         @Path("id") id: Int,
         @Field("video_id") videoId: Int
     ): Single<ApiResponse<Any>>
+
+    @PUT("user/playlists/addvideo")
+    fun addVideo(@Body addVideoBody: AddVideoBody): Single<ApiResponse<Any>>
 
     @FormUrlEncoded
     @PUT("user/playlists/{id}/removevideo")

@@ -5,26 +5,22 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.Observer
-import id.islaami.playmi.R
-import id.islaami.playmi.ui.base.BaseActivity
-import id.islaami.playmi.ui.setting.SettingViewModel
-import id.islaami.playmi.util.ResourceStatus.*
-import id.islaami.playmi.util.handleApiError
-import id.islaami.playmi.util.ui.setTextChangedListener
-import id.islaami.playmi.util.ui.setupToolbar
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
-import id.islaami.playmi.util.ui.setVisibilityToGone
-import id.islaami.playmi.util.ui.setVisibilityToVisible
-import id.islaami.playmi.util.ui.showAlertDialog
-import id.islaami.playmi.util.ui.showSnackbar
+import id.islaami.playmi.R
+import id.islaami.playmi.ui.base.BaseSpecialActivity
+import id.islaami.playmi.ui.setting.SettingViewModel
+import id.islaami.playmi.util.ResourceStatus.*
+import id.islaami.playmi.util.handleApiError
+import id.islaami.playmi.util.ui.*
 import kotlinx.android.synthetic.main.report_activity.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class ReportActivity : BaseActivity() {
+class ReportActivity : BaseSpecialActivity() {
     private val viewModel: SettingViewModel by viewModel()
 
     lateinit var storage: FirebaseStorage
@@ -84,11 +80,8 @@ class ReportActivity : BaseActivity() {
             startActivityForResult(pickPhoto, GALLERY_CODE)
         }
 
-        etReport.setTextChangedListener(
-            layoutEtReport,
-            errorMessage = "Anda belum memberikan penjelasan masalah"
-        ) {
-            viewModel.report = it
+        etReport.addTextChangedListener {
+            viewModel.report = it.toString()
             viewModel.updateReport()
         }
     }
@@ -127,12 +120,19 @@ class ReportActivity : BaseActivity() {
                     btnSend.setVisibilityToVisible()
                     progressBar.setVisibilityToGone()
 
-                    showAlertDialog(
-                        message = "Terima kasih atas laporan Anda untuk membantu Playmi menjadi lebih baik.",
-                        btnText = "OK",
-                        btnCallback = { dialog ->
-                            dialog.dismiss()
-                            onBackPressed()
+                    ReportDialogFragment.show(
+                        fragmentManager = supportFragmentManager,
+                        title = "Terima kasih atas laporan Anda untuk membantu islaami menjadi lebih baik.",
+                        text = "Kami tidak dapat melihat dan menanggapi setiap laporan, namun beberapa laporan membantu kami meningkatkan layanan untuk semua orang.",
+                        okCallback = {
+                            uploadedImage.setVisibilityToGone()
+                            btnUpload.setVisibilityToVisible()
+                            etReport.setText("")
+                        },
+                        outsideTouchCallback = {
+                            uploadedImage.setVisibilityToGone()
+                            btnUpload.setVisibilityToVisible()
+                            etReport.setText("")
                         }
                     )
                 }

@@ -4,21 +4,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.auth.LoginActivity">
+    tools:context=".ui.auth.LoginActivity"
+    tools:targetApi="lollipop">
 
     <ImageView
         android:id="@+id/appLogo"
         android:layout_width="200dp"
         android:layout_height="50dp"
-        app:layout_constraintBottom_toTopOf="@+id/loginCard"
+        app:layout_constraintBottom_toTopOf="@+id/cardView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.8"
         app:srcCompat="@drawable/app_logo" />
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/loginCard"
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -34,7 +35,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="24dp">
+            android:paddingHorizontal="25dp"
+            android:paddingVertical="30dp">
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:layout_width="match_parent"
@@ -42,42 +44,57 @@
                 android:fontFamily="sans-serif"
                 android:gravity="center"
                 android:text="Verifikasi Akun"
-                android:textColor="@color/black"
-                android:textSize="24sp"
+                android:textColor="@color/text_color"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
                 android:fontFamily="sans-serif"
                 android:gravity="center"
                 android:text="Kami telah mengirimkan kode verifikasi ke perangkat Anda, silahkan masukkan pada kolom di bawah ini."
-                android:textColor="@color/black_50"
-                android:textSize="16sp" />
+                android:textColor="@color/text_color"
+                android:textSize="14sp" />
 
             <EditText
                 android:id="@+id/inputNumber"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_height="45dp"
+                android:layout_marginTop="20dp"
                 android:background="@drawable/edit_capsule_outline"
                 android:ems="10"
-                android:inputType="numberDecimal" />
+                android:inputType="numberDecimal"
+                android:textColorHint="@color/grey_85"
+                android:textCursorDrawable="@drawable/accent_cursor" />
 
-            <com.google.android.material.button.MaterialButton
+            <LinearLayout
                 android:id="@+id/btnVerify"
-                style="@style/ButtonPrimaryCapsule"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:enabled="true"
-                android:text="Verifikasi" />
+                android:layout_height="45dp"
+                android:layout_marginTop="25dp"
+                android:background="?selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/btn_capsule"
+                    android:fontFamily="sans-serif-medium"
+                    android:gravity="center"
+                    android:text="VERIFIKASI"
+                    android:textColor="@color/white"
+                    android:textSize="14sp" />
+            </LinearLayout>
 
             <ProgressBar
                 android:id="@+id/progressBar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="25dp"
+                android:indeterminateTint="@color/accent"
                 android:visibility="gone" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -88,8 +105,8 @@
                 android:fontFamily="sans-serif"
                 android:gravity="center"
                 android:text="Belum terima kode? Kirim Ulang"
-                android:textColor="@color/black"
+                android:textColor="@color/text_color"
                 android:textSize="16sp" />
         </LinearLayout>
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

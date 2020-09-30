@@ -8,28 +8,13 @@ import id.islaami.playmi.ui.base.BaseViewModel
 import id.islaami.playmi.util.*
 
 class UserAuthViewModel(private val repository: UserRepository) : BaseViewModel() {
-
+    /* LOGOUT */
     fun afterLogout() {
         repository.clearCache()
     }
 
-    // Login
+    /* LOGIN */
     lateinit var loginResultLd: MutableLiveData<Resource<LoginResult>>
-    lateinit var loginByGoogleResultLd: MutableLiveData<Resource<LoginResult>>
-
-    fun initLoginActivity() {
-        loginResultLd = MutableLiveData()
-        resendCodeResultLd = MutableLiveData()
-        loginByGoogleResultLd = MutableLiveData()
-    }
-
-    fun initCompletePasswordActvitiy() {
-        loginByGoogleResultLd = MutableLiveData()
-    }
-
-    fun initCompleteProfileActvitiy() {
-        loginResultLd = MutableLiveData()
-    }
 
     fun login(email: String, fcm: String) {
         disposable.add(repository.login(email, fcm)
@@ -41,13 +26,8 @@ class UserAuthViewModel(private val repository: UserRepository) : BaseViewModel(
             ))
     }
 
-    // Register
+    /* REGISTER */
     lateinit var registerResultLd: MutableLiveData<Resource<Profile>>
-
-    fun initRegisterAcitivity() {
-        registerResultLd = MutableLiveData()
-        loginResultLd = MutableLiveData()
-    }
 
     fun register(
         fullname: String,
@@ -60,7 +40,7 @@ class UserAuthViewModel(private val repository: UserRepository) : BaseViewModel(
             .execute()
             .doOnSubscribe { registerResultLd.setLoading() }
             .subscribe(
-                { registerResult -> registerResultLd.setSuccess(registerResult.data) },
+                { result -> registerResultLd.setSuccess(result) },
                 { throwable -> registerResultLd.setError(throwable.getErrorMessage()) }
             )
         )
@@ -83,14 +63,9 @@ class UserAuthViewModel(private val repository: UserRepository) : BaseViewModel(
         )
     }
 
-    // Verification
+    /* VERIFICATION */
     lateinit var verificationResultLd: MutableLiveData<Resource<LoginResult>>
     lateinit var resendCodeResultLd: MutableLiveData<Resource<Any>>
-
-    fun initVerificationActivity() {
-        verificationResultLd = MutableLiveData()
-        resendCodeResultLd = MutableLiveData()
-    }
 
     fun verifyUser(email: String, code: String) {
         disposable.add(repository.verify(email, code)
@@ -112,5 +87,23 @@ class UserAuthViewModel(private val repository: UserRepository) : BaseViewModel(
                 { throwable -> resendCodeResultLd.setError(throwable.getErrorMessage()) }
             )
         )
+    }
+
+    /* INIT LOGIN */
+    fun initLoginActivity() {
+        loginResultLd = MutableLiveData()
+        resendCodeResultLd = MutableLiveData()
+    }
+
+    /* INIT VERIFICATION */
+    fun initVerificationActivity() {
+        verificationResultLd = MutableLiveData()
+        resendCodeResultLd = MutableLiveData()
+    }
+
+    /* INIT REGISTER */
+    fun initRegisterAcitivity() {
+        registerResultLd = MutableLiveData()
+        loginResultLd = MutableLiveData()
     }
 }

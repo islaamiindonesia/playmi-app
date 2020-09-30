@@ -9,12 +9,15 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import id.islaami.playmi.R
+import id.islaami.playmi.ui.adapter.VideoAdapter
 import id.islaami.playmi.ui.adapter.VideoPagedAdapter
+import id.islaami.playmi.ui.adapter.VideoPagedAdapterOld
 import id.islaami.playmi.ui.base.BaseFragment
 import id.islaami.playmi.util.ERROR_EMPTY_LIST
 import id.islaami.playmi.util.ResourceStatus.*
 import id.islaami.playmi.util.handleApiError
 import id.islaami.playmi.util.ui.PlaymiDialogFragment
+import id.islaami.playmi.util.ui.showLongToast
 import id.islaami.playmi.util.ui.showSnackbar
 import id.islaami.playmi.util.value
 import kotlinx.android.synthetic.main.channel_video_fragment.*
@@ -23,7 +26,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class ChannelVideoFragment(var channelID: Int) : BaseFragment() {
     val viewModel: ChannelViewModel by viewModel()
 
-    private var videoPagedAdapter = VideoPagedAdapter(context,
+    private var videoPagedAdapter = VideoPagedAdapterOld(context,
         popMenu = { context, menuView, video ->
             PopupMenu(context, menuView).apply {
                 inflate(R.menu.menu_popup_channel_detail)
@@ -105,11 +108,12 @@ class ChannelVideoFragment(var channelID: Int) : BaseFragment() {
                 LOADING -> {
                 }
                 SUCCESS -> {
-                    showSnackbar("Berhasil simpan ke Tonton Nanti")
+                    showLongToast(context, "Berhasil disimpan")
                 }
                 ERROR -> {
-                    handleApiError(result.message)
-                    { showSnackbar(it) }
+                    handleApiError(errorMessage = result.message) { message ->
+                        showLongToast(context, message)
+                    }
                 }
             }
         })

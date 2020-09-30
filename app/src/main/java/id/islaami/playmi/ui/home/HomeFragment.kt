@@ -69,6 +69,11 @@ class HomeFragment(var list: List<Category> = emptyList()) : BaseFragment() {
         }
 
         viewModel.initHome()
+    }
+
+    override fun onResume() {
+        super.onResume()
+
         observeGetAllCategory()
     }
 
@@ -77,12 +82,15 @@ class HomeFragment(var list: List<Category> = emptyList()) : BaseFragment() {
     }
 
     private fun observeGetAllCategory() {
+        // init error dialog
         val dialog = context?.createMaterialAlertDialog(
             "Coba Lagi",
             positiveCallback = { refresh() },
             dismissCallback = { refresh() }
         )
 
+        // observe all category data that are received from the API.
+        // observe will consist of 3 statuses, loading, success, and error.
         viewModel.getCategoryListResultLd.observe(viewLifecycleOwner, Observer { result ->
             when (result?.status) {
                 LOADING -> {

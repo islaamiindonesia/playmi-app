@@ -99,22 +99,26 @@ class HomeViewModel(
     }
 
     /* CATEGORY */
+    // declare live data object using lateinit, so that the initial value does not need to be assigned
+    // or can be assigend later in some methods
     lateinit var getCategoryListResultLd: MutableLiveData<Resource<List<Category>>>
 
     fun getAllCategory() {
         disposable.add(category.getAllCategory().execute()
-            .doOnSubscribe { getCategoryListResultLd.setLoading() }
+            .doOnSubscribe { getCategoryListResultLd.setLoading() } // do some process while subscribing
             .subscribe(
+                // when subscribed, there will be 2 option, either data is successfully retreived or failed with a throwable error message.
                 { result -> getCategoryListResultLd.setSuccess(result) },
                 { throwable -> getCategoryListResultLd.setError(throwable.getErrorMessage()) }
             ))
     }
 
     fun initHome() {
+        // assign the lateinit object
         getCategoryListResultLd = MutableLiveData()
 
-        getAllVideo()
         getAllCategory()
+        getAllVideo()
     }
 
     /* WATCH LATER */
