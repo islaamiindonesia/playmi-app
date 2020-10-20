@@ -152,6 +152,7 @@ class PlaylistViewModel(private val repository: PlaylistRepository) : BaseViewMo
         deletePlaylistResultLd = MutableLiveData()
         watchLaterResultLd = MutableLiveData()
         followChannelResultLd = MutableLiveData()
+        unfollowChannelResultLd = MutableLiveData()
         addToPlaylistResultLd = MutableLiveData()
         removeFromPlaylistResultLd = MutableLiveData()
         getPlaylistDetailResultLd = MutableLiveData()

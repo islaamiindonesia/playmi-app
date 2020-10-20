@@ -47,13 +47,12 @@ class ChannelHiddenFragment : BaseFragment() {
             setIconifiedByDefault(false)
             setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean {
-                    hideKeyboard()
-                    showLongToast(context, query)
-
                     return true
                 }
 
                 override fun onQueryTextChange(newText: String?): Boolean {
+                    viewModel.getChannelHidden(newText)
+
                     return true
                 }
             })
@@ -87,7 +86,10 @@ class ChannelHiddenFragment : BaseFragment() {
 
                     val list = result.data ?: emptyList()
 
-                    recyclerView.adapter = adapter.apply { add(list) }
+                    recyclerView.adapter = adapter.apply {
+                        add(list)
+                        notifyDataSetChanged()
+                    }
                     recyclerView.layoutManager = LinearLayoutManager(context)
                 }
                 ERROR -> {

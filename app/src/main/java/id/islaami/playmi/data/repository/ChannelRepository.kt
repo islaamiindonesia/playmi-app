@@ -11,7 +11,12 @@ class ChannelRepository(private val api: ChannelApi) {
             api.getChannelFollow(query).map { it.data }
         }
 
-    fun getChannelHidden() = api.getChannelHidden().map { it.data }
+    fun getChannelHidden(query: String? = null) =
+        if (query.isNullOrEmpty()) {
+            api.getChannelHidden().map { it.data }
+        } else {
+            api.getChannelHidden(query).map { it.data }
+        }
 
     fun getDetailChannel(channelID: Int) = api.getChannelDetail(channelID).map { it.data }
 

@@ -17,8 +17,6 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.github.marlonlom.utilities.timeago.TimeAgo
-import com.github.marlonlom.utilities.timeago.TimeAgoMessages
 import com.google.android.gms.ads.AdRequest
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -37,7 +35,6 @@ import id.islaami.playmi.data.model.video.Video
 import id.islaami.playmi.ui.MainActivity
 import id.islaami.playmi.ui.adapter.LabelAdapter
 import id.islaami.playmi.ui.adapter.PlaylistSelectAdapter
-import id.islaami.playmi.ui.base.BaseActivity
 import id.islaami.playmi.ui.base.BaseVideoActivity
 import id.islaami.playmi.ui.channel.ChannelDetailActivity
 import id.islaami.playmi.util.*
@@ -47,8 +44,6 @@ import kotlinx.android.synthetic.main.add_new_playlist_dialog.view.*
 import kotlinx.android.synthetic.main.playlist_bottom_sheet.view.*
 import kotlinx.android.synthetic.main.video_detail_activity.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.text.SimpleDateFormat
-import java.util.*
 
 class VideoDetailActivity(
     var videoId: Int = 0,
@@ -443,7 +438,6 @@ class VideoDetailActivity(
                 }
                 SUCCESS -> {
                     showLongToast("Berhasil membuat daftar putar")
-                    refresh()
                 }
                 ERROR -> {
                     handleApiError(errorMessage = result.message) {

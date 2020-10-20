@@ -21,8 +21,8 @@ class OrganizeChannelViewModel(private val repository: ChannelRepository) : Base
             ))
     }
 
-    fun getChannelHidden() {
-        disposable.add(repository.getChannelHidden().execute()
+    fun getChannelHidden(query: String? = null) {
+        disposable.add(repository.getChannelHidden(query).execute()
             .doOnSubscribe { getChannelHiddenResultLd.setLoading() }
             .subscribe(
                 { result -> getChannelHiddenResultLd.setSuccess(result) },

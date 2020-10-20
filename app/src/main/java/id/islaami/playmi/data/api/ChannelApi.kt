@@ -18,6 +18,9 @@ interface ChannelApi {
     @GET("channels/blacklist")
     fun getChannelHidden(): Single<ApiResponse<List<Channel>>>
 
+    @GET("channels/blacklist")
+    fun getChannelHidden(@Query("query") name: String): Single<ApiResponse<List<Channel>>>
+
     @GET("channels/{id}")
     fun getChannelDetail(@Path("id") id: Int): Single<ApiResponse<Channel>>
 

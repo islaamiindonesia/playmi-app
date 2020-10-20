@@ -2,7 +2,6 @@ package id.islaami.playmi.data.api
 
 import id.islaami.playmi.data.model.ApiMessageResult
 import id.islaami.playmi.data.model.ApiResponse
-import id.islaami.playmi.data.model.LegalContent
 import id.islaami.playmi.data.model.profile.LoginBody
 import id.islaami.playmi.data.model.profile.LoginResult
 import id.islaami.playmi.data.model.profile.Profile

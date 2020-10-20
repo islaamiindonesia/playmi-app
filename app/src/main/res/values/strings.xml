@@ -2,19 +2,9 @@
     <string name="app_name">Playmi</string>
     <string name="app_version">Versi %1$s</string>
 
-    <!-- <string name="ad_app_id">ca-app-pub-1757420955153670~4087157585</string>-->
-    <!-- <string name="ad_banner_unit_id">ca-app-pub-1757420955153670/7391746268</string>-->
-    <!-- <string name="ad_native_unit_id">ca-app-pub-1757420955153670/3823265834</string>-->
-    <string name="ad_app_id">ca-app-pub-1728922150690029~7696940936</string>
-    <string name="ad_banner_unit_id">ca-app-pub-1728922150690029/8455488832</string>
-    <string name="ad_native_unit_id">ca-app-pub-1728922150690029/5829325491</string>
-
-    <string name="sample_ad_unit_id_banner">ca-app-pub-3940256099942544/6300978111</string>
-    <string name="sample_ad_unit_id_native">ca-app-pub-3940256099942544/8135179316</string>
-
-    <!-- when the app is ready to publish on play store, please change the sample ad unit id with the real ones -->
-    <string name="active_ad_banner_unit_id">@string/sample_ad_unit_id_banner</string>
-    <string name="active_ad_native_unit_id">@string/sample_ad_unit_id_native</string>
+    <string name="ad_app_id">ca-app-pub-3940256099942544~3347511713</string>
+    <string name="ad_banner_unit_id">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="ad_native_unit_id">ca-app-pub-3940256099942544/8135179316</string>
 
     <!-- TODO: Admobs app id -->
     <string name="ad_label">Ad</string>

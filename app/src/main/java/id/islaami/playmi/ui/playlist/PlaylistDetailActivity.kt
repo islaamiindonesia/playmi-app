@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.util.TypedValue
 import android.view.Menu
 import androidx.appcompat.widget.PopupMenu
@@ -40,12 +41,8 @@ class PlaylistDetailActivity(var playlistId: Int = 0) : BaseActivity() {
     private var videoAdapter = VideoAdapter { context, menuView, video ->
         PopupMenu(context, menuView).apply {
             inflate(R.menu.menu_popup_playlist_video)
-
-            if (video.channel?.isFollowed != true) {
-                menu.getItem(3).title = "Mulai Mengikuti"
-            } else {
-                menu.getItem(3).title = "Berhenti Mengikuti"
-            }
+            if (video.channel?.isFollowed != true) menu.getItem(3).title = "Mulai Mengikuti"
+            else menu.getItem(3).title = "Berhenti Mengikuti"
 
             menu.getItem(2).title = "Hapus dari ${intent.getStringExtra(EXTRA_NAME) ?: ""}"
 

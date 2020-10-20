@@ -1,7 +1,6 @@
 package id.islaami.playmi
 
-import android.util.Log
-import androidx.appcompat.app.AppCompatDelegate.*
+import androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode
 import androidx.multidex.MultiDexApplication
 import com.chibatching.kotpref.Kotpref
 import id.islaami.playmi.config.CacheLibrary
@@ -20,8 +19,6 @@ class PlaymiApp : MultiDexApplication() {
         // initialization of Cache library to allow saving into device
         CacheLibrary.init(this)
 
-        // set default app theme
-        Mode.appMode = MODE_NIGHT_NO
         setDefaultNightMode(Mode.appMode)
 
         // initialization of Dependency Injection library to allow the use of application context

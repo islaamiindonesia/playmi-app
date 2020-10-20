@@ -1,6 +1,5 @@
 package id.islaami.playmi.data.model.kotpref
 
-import androidx.appcompat.app.AppCompatDelegate
 import com.chibatching.kotpref.KotprefModel
 
 object Default : KotprefModel() {

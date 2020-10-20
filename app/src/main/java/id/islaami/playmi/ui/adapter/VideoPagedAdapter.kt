@@ -203,7 +203,7 @@ class VideoPagedAdapter(
 
             val adLoader = AdLoader.Builder(
                 itemView.context,
-                itemView.context.getString(R.string.active_ad_native_unit_id)
+                itemView.context.getString(R.string.ad_native_unit_id)
             ).forUnifiedNativeAd { ad ->
                 currentNativeAd = ad
 
