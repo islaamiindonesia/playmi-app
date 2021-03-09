@@ -15,14 +15,6 @@
       },
       "oauth_client": [
         {
-          "client_id": "140070247727-lm7a1i197uagjdh3r1les5iace0m49tm.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "id.islaami",
-            "certificate_hash": "3a6a40e7279a0ff9596710771f2ba5cd90ff1c99"
-          }
-        },
-        {
           "client_id": "140070247727-v5dhaba182fp7hnnd2q6640he2u3lga4.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -41,22 +33,39 @@
             }
           ]
         }
-      }
+      },
+      "admob_app_id": "ca-app-pub-1757420955153670~4583062517"
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:140070247727:android:a75a3a4689d0a8e56cd5da",
+        "mobilesdk_app_id": "1:140070247727:android:70904b408a7c137e6cd5da",
         "android_client_info": {
-          "package_name": "id.islaami.playmi"
+          "package_name": "id.islaami.playmi2021"
         }
       },
       "oauth_client": [
         {
-          "client_id": "140070247727-ashnjfondibrarbhbltl4msuvc8n3nu5.apps.googleusercontent.com",
+          "client_id": "140070247727-0q129gkqa7ngbgep9u782t7stueq7qr9.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "id.islaami.playmi",
-            "certificate_hash": "8a0b54b064a2556c3f1a3c08593503b0639a0704"
+            "package_name": "id.islaami.playmi2021",
+            "certificate_hash": "c8bc6ec24a511137bb701ec164fcaed46573dcbb"
+          }
+        },
+        {
+          "client_id": "140070247727-1bqe8an5mjbud26u8hk0ltt11303m8t0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "id.islaami.playmi2021",
+            "certificate_hash": "744ed19c64670d5bb39237c7dc7a2fa9e3e4bee2"
+          }
+        },
+        {
+          "client_id": "140070247727-h9ubv73njtdp90hbuerojkn3olkd7ntq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "id.islaami.playmi2021",
+            "certificate_hash": "ea192036a8054327d9986fe9227bfcc8562ae0fb"
           }
         },
         {

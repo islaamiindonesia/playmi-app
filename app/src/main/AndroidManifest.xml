@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="id.islaami.playmi">
+    package="id.islaami.playmi2021">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -9,7 +9,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
-        android:name="id.islaami.playmi.PlaymiApp"
+        android:name=".PlaymiApp"
         android:allowBackup="true"
         android:icon="@drawable/app_icon"
         android:label="@string/app_name"
@@ -20,13 +20,12 @@
         <activity
             android:name=".ui.setting.LegalActivity"
             android:theme="@style/SpecialTheme" />
-        <activity android:name="id.islaami.playmi.ui.auth.VerificationActivity" />
+        <activity android:name=".ui.auth.VerificationActivity" />
         <activity
             android:name=".ui.video.VideoDetailActivity"
             android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
             android:parentActivityName=".ui.MainActivity"
             android:theme="@style/VideoTheme">
-
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -78,7 +77,6 @@
         <activity
             android:name=".ui.intro.LauncherActivity"
             android:theme="@style/AppTheme.Launcher">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -86,13 +84,11 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.playlist.PlaylistDetailActivity">
-
             <meta-data
                 android:name="android.app.default_searchable"
                 android:value=".ui.search.VideoSearchActivity" />
         </activity>
         <activity android:name=".ui.playlist.WatchLaterActivity">
-
             <meta-data
                 android:name="android.app.default_searchable"
                 android:value=".ui.search.VideoSearchActivity" />
@@ -108,7 +104,6 @@
         <activity
             android:name=".ui.search.VideoSearchActivity"
             android:launchMode="singleTop">
-
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
@@ -122,49 +117,43 @@
             android:launchMode="singleTop" />
         <activity
             android:name=".ui.video.VideoLabelActivity"
-            android:launchMode="singleTop" />
-
-        <!-- METAS -->
+            android:launchMode="singleTop" /> <!-- METAS -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="@string/default_notification_channel_id" />
-
-        <!--Set custom default playmi_icon. This is used when no playmi_icon is set for incoming notification messages.
-             See README(https://goo.gl/l4GJaQ) for more.-->
+        <!--
+Set custom default playmi_icon. This is used when no playmi_icon is set for incoming notification messages.
+             See README(https://goo.gl/l4GJaQ) for more.
+        -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/app_icon" />
-
-        <!--Set color used with incoming notification messages. This is used when no color is set for the incoming
-             notification message. See README(https://goo.gl/6BKBk7) for more.-->
+        <!--
+Set color used with incoming notification messages. This is used when no color is set for the incoming
+             notification message. See README(https://goo.gl/6BKBk7) for more.
+        -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
-            android:resource="@color/accent" />
-
-        <!-- Sample AdMob App ID: ca-app-pub-3940256099942544~3347511713 -->
+            android:resource="@color/accent" /> <!-- Sample AdMob App ID: ca-app-pub-3940256099942544~3347511713 -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="@string/ad_app_id" />
-
-        <!-- PROVIDERS -->
+            android:value="@string/ad_app_id" /> <!-- PROVIDERS -->
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="id.islaami.playmi.provider"
+            android:authorities="id.islaami.playmi2021.provider"
             android:exported="false"
             android:grantUriPermissions="true">
-
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
-        </provider>
-
-        <!-- SERVICES -->
+        </provider> <!-- SERVICES -->
         <service
-            android:name="id.islaami.playmi.MyFirebaseMessagingService"
+            android:name=".MyFirebaseMessagingService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
     </application>
+
 </manifest>

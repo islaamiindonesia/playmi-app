@@ -3,10 +3,7 @@
     <color name="accent">#02A1E3</color>
     <color name="accent_dark">#0587BC</color>
     <color name="white">#FFFFFF</color>
-    <color name="white_four">#e7e7e7</color>
-    <color name="white_50">#80FFFFFF</color>
     <color name="black">#000</color>
-    <color name="black_50">#80000000</color>
     <color name="black_10">#1A000000</color>
 
     <color name="pale_grey">#f5f5f7</color>
@@ -18,14 +15,11 @@
     <color name="grey_46">#464646</color>
     <color name="grey_85">#858585</color>
     <color name="grey_bb">#BBBBBB</color>
-    <color name="greyish_brown_two">#565656</color>
 
     <color name="main_tab">#000000</color>
     <color name="buttons">@color/accent</color>
-    <color name="cards">#CC000000</color>
     <color name="stroke">@color/black_10</color>
     <color name="disabled_button">@color/pale_grey</color>
-    <color name="disabled_text">@color/black_10</color>
     <color name="status_bar">@color/white</color>
     <color name="icon_color">@color/grey_67</color>
     <color name="border_color">@color/grey_e1</color>
@@ -33,7 +27,6 @@
     <color name="text_color">@color/black</color>
     <color name="layout_background_color">@color/white</color>
 
-    <color name="colorCardBackground">#FFFFFF</color>
     <color name="colorAdLabelText">#FFFFFF</color>
     <color name="colorAdLabelBackground">#FFCC66</color>
 </resources>

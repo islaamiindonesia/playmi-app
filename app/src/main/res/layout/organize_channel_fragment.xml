@@ -37,7 +37,7 @@
             app:tabTextColor="?android:textColorPrimary" />
     </com.google.android.material.appbar.AppBarLayout>
 
-    <id.islaami.playmi.util.ui.CustomViewPager
+    <id.islaami.playmi2021.util.ui.CustomViewPager
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -10,7 +10,6 @@
     <string name="ad_label">Ad</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="text_agreement">
         Dengan daftar dan masuk ke aplikasi ini, berarti Anda menyetujui <annotation type="tnc">Ketentuan Pengguna</annotation> serta <annotation type="privacy">Kebijakan Privasi</annotation> kami.</string>
     <string name="error_message_default">Terjadi Kesalahan.\nSilakan coba sesaat lagi</string>
@@ -27,11 +26,9 @@
         \nTerima kasih.
     </string>
     <string name="link_resend_verification">Belum terima kode? <annotation type="resend">Kirim Ulang</annotation></string>
-    <string name="message_channel_hide_with_guide">Kanal ini berhasil disembunyikan. Anda dapat mengembalikan kanal ini melalui <![CDATA[<b>Pengaturan Kanal</b>]]></string>
     <string name="message_channel_hide">Kanal berhasil disembunyikan</string>
     <string name="message_channel_show">Kanal berhasil ditampilkan</string>
     <string name="invalid_credentials">Email/Password salah</string>
-    <string name="email_sent">Berhasil terkirim</string>
     <string name="channel_follow">Apakah ingin mulai mengikuti <![CDATA[<b>%1$s</b>]]>?</string>
     <string name="channel_unfollow">Apakah ingin berhenti mengikuti <![CDATA[<b>%1$s</b>]]>?</string>
     <string name="channel_hide">Anda tidak akan melihat seluruh video dari kanal ini<![CDATA[<br><br>]]>Apakah Anda ingin menyembunyikan kanal <![CDATA[<b>%1$s</b>]]>?</string>
