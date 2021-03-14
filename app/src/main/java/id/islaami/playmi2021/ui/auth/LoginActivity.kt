@@ -66,6 +66,11 @@ class LoginActivity(
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        googleClient?.signOut() // make sure google is already signed out
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
