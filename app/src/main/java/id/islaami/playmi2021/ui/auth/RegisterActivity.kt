@@ -159,14 +159,13 @@ class RegisterActivity(
     }
 
     private fun setupBirthDateDatePickerListener() {
-        val calendar = Calendar.getInstance()
-
-        var day = calendar.get(Calendar.DAY_OF_MONTH)
-        var month = calendar.get(Calendar.MONTH)
-        var year = calendar.get(Calendar.YEAR)
+        var day = 1
+        var month = 0
+        var year = 1999
 
         val datePickerDialog = DatePickerDialog(
             this,
+                R.style.MySpinnerDatePickerStyle,
             DatePickerDialog.OnDateSetListener { _, selectedYear, monthOfYear, dayOfMonth ->
                 day = dayOfMonth
                 month = monthOfYear + 1
@@ -179,12 +178,17 @@ class RegisterActivity(
             }, year, month, day
         )
 
+        datePickerDialog.setTitle("Pilih Tanggal Lahir")
         datePickerDialog.setButton(DatePickerDialog.BUTTON_POSITIVE, "Pilih", datePickerDialog)
         datePickerDialog.setButton(DatePickerDialog.BUTTON_NEGATIVE, "Batal", datePickerDialog)
 
         etBirtdate.setOnFocusChangeListener { view, b ->
             if (view.isFocused) {
                 datePickerDialog.show()
+                datePickerDialog.window?.apply {
+                    setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT)
+                    setBackgroundDrawable(ContextCompat.getDrawable(this@RegisterActivity, R.drawable.bg_dialog_date_picker))
+                }
             } else {
                 datePickerDialog.dismiss()
             }

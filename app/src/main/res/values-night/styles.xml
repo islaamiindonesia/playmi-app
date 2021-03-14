@@ -4,4 +4,10 @@
     <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
     </style>
+
+    <!--  Date picker style  -->
+    <style name="MySpinnerDatePickerStyle" parent="android:Theme.Material.Dialog">
+        <item name="android:datePickerStyle">@style/MySpinnerDatePicker</item>
+        <item name="android:buttonBarButtonStyle">@style/MySpinnerDatePicker.Button</item>
+    </style>
 </resources>

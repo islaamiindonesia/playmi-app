@@ -187,4 +187,22 @@
     <style name="BottomSheet" parent="Theme.MaterialComponents.BottomSheetDialog">
         <item name="android:windowIsFloating">false</item>
     </style>
+
+    <!--  Date picker style  -->
+    <style name="MySpinnerDatePickerStyle" parent="android:Theme.Material.Light.Dialog">
+        <item name="android:datePickerStyle">@style/MySpinnerDatePicker</item>
+        <item name="android:buttonBarButtonStyle">@style/MySpinnerDatePicker.Button</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="MySpinnerDatePicker.Button" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@color/accent</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="MySpinnerDatePicker" parent="android:Widget.Material.DatePicker">
+        <item name="android:datePickerMode">spinner</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+    </style>
 </resources>
