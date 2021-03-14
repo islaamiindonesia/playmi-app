@@ -79,6 +79,10 @@ class RegisterActivity(
         etPassword.setText(intent.getStringExtra(PASSWORD) ?: "")
 
         btnRegister.setOnClickListener {
+            if (validateIsUnderage()) {
+                UnderageActivity.startActivityClearTask(this)
+                return@setOnClickListener
+            }
             if (validateAll()) {
                 if ((intent.getStringExtra(FULLNAME) ?: "").isEmpty()) {
                     firebaseAuthWithPassword(token.toString())
@@ -126,6 +130,17 @@ class RegisterActivity(
             layoutEtConfirmEmail,
             "Konfirmasi email harus sama"
         ) { it.isNotEmpty() && it == etEmail.text.toString() }
+    }
+
+    private fun validateIsUnderage(): Boolean {
+        val today = Calendar.getInstance()
+        val dob = etBirtdate.text.toString().fromAppsFormatDateToCalendar() ?: return true
+        var age = today.get(Calendar.YEAR) - dob.get(Calendar.YEAR)
+
+        if (today.get(Calendar.DAY_OF_YEAR) < dob.get(Calendar.DAY_OF_YEAR))
+            age--
+
+        return age < 17
     }
 
     private fun firebaseAuthWithPassword(notifToken: String) {

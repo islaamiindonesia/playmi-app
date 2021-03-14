@@ -17,6 +17,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="n">
+        <activity android:name=".ui.auth.UnderageActivity"
+            android:theme="@style/SpecialTheme"/>
         <activity
             android:name=".ui.setting.LegalActivity"
             android:theme="@style/SpecialTheme" />
