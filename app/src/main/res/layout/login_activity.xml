@@ -153,18 +153,26 @@
                 android:textColorHint="@color/grey_85"
                 android:textCursorDrawable="@drawable/accent_cursor" />
 
-            <EditText
-                android:id="@+id/password"
-                android:layout_width="match_parent"
-                android:layout_height="45dp"
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                 android:layout_marginHorizontal="20dp"
                 android:layout_marginTop="15dp"
-                android:background="@drawable/edit_capsule_outline"
-                android:ems="10"
-                android:hint="kata sandi"
-                android:inputType="textPassword"
-                android:textColorHint="@color/grey_85"
-                android:textCursorDrawable="@drawable/accent_cursor" />
+                app:endIconMode="password_toggle"
+                app:hintEnabled="false"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <EditText
+                    android:id="@+id/password"
+                    android:background="@drawable/edit_capsule_outline"
+                    android:inputType="textPassword"
+                    android:ems="10"
+                    android:hint="Kata Sandi"
+                    android:paddingStart="16dp"
+                    android:textColorHint="@color/grey_85"
+                    android:textCursorDrawable="@drawable/accent_cursor"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"/>
+            </com.google.android.material.textfield.TextInputLayout>
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/btnForgot"
