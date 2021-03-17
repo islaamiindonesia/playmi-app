@@ -26,6 +26,16 @@ class UserAuthViewModel(private val repository: UserRepository) : BaseViewModel(
             ))
     }
 
+    fun loginWithGoogle(email: String, fcm: String) {
+        disposable.add(repository.login(email, fcm)
+            .execute()
+            .doOnSubscribe { loginResultLd.setLoading() }
+            .subscribe(
+                { result -> loginResultLd.setSuccess(result) },
+                { throwable -> loginResultLd.setError(throwable.getErrorMessage()) }
+            ))
+    }
+
     /* REGISTER */
     lateinit var registerResultLd: MutableLiveData<Resource<Profile>>
 
@@ -38,23 +48,6 @@ class UserAuthViewModel(private val repository: UserRepository) : BaseViewModel(
     ) {
         disposable.add(repository.register(fullname, email, birthdate, gender, notifToken)
             .execute()
-            .doOnSubscribe { registerResultLd.setLoading() }
-            .subscribe(
-                { result -> registerResultLd.setSuccess(result) },
-                { throwable -> registerResultLd.setError(throwable.getErrorMessage()) }
-            )
-        )
-    }
-
-    fun registerFromGoogle(
-        fullname: String,
-        email: String,
-        birthdate: String,
-        gender: String,
-        notifToken: String
-    ) {
-        disposable.add(repository.registerFromGoogle(fullname, email, birthdate, gender, notifToken)
-            .execute()
             .doOnSubscribe { loginResultLd.setLoading() }
             .subscribe(
                 { result -> loginResultLd.setSuccess(result) },
@@ -64,22 +57,11 @@ class UserAuthViewModel(private val repository: UserRepository) : BaseViewModel(
     }
 
     /* VERIFICATION */
-    lateinit var verificationResultLd: MutableLiveData<Resource<LoginResult>>
     lateinit var resendCodeResultLd: MutableLiveData<Resource<Any>>
 
-    fun verifyUser(email: String, code: String) {
-        disposable.add(repository.verify(email, code)
-            .execute()
-            .doOnSubscribe { verificationResultLd.setLoading() }
-            .subscribe(
-                { result -> verificationResultLd.setSuccess(result) },
-                { throwable -> verificationResultLd.setError(throwable.getErrorMessage()) }
-            )
-        )
-    }
 
-    fun resendCode(email: String, token: String) {
-        disposable.add(repository.resendEmail(email, token)
+    fun resendCode(email: String, name: String) {
+        disposable.add(repository.resendEmail(email, name)
             .execute()
             .doOnSubscribe { resendCodeResultLd.setLoading() }
             .subscribe(
@@ -97,7 +79,6 @@ class UserAuthViewModel(private val repository: UserRepository) : BaseViewModel(
 
     /* INIT VERIFICATION */
     fun initVerificationActivity() {
-        verificationResultLd = MutableLiveData()
         resendCodeResultLd = MutableLiveData()
     }
 

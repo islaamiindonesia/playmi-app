@@ -57,23 +57,10 @@ class UserRepository(private val userCache: UserCache, private val userApi: User
         gender: String,
         notifToken: String
     ) = userApi.register(RegisterBody(email, fullname, birthdate, gender, notifToken))
-        .map { it.data }
-
-    fun registerFromGoogle(
-        fullname: String,
-        email: String,
-        birthdate: String,
-        gender: String,
-        notifToken: String
-    ) = userApi.registerFromGoogle(RegisterBody(email, fullname, birthdate, gender, notifToken))
         .map {
-            // save header token to cache
             userCache.headerToken = it.data?.token.toString()
-
             it.data
         }
 
-    fun verify(email: String, code: String) = userApi.verify(email, code).map { it.data }
-
-    fun resendEmail(email: String, token: String) = userApi.resendCode(email, token).map { it.data }
+    fun resendEmail(email: String, name: String) = userApi.resendCode(email, name).map { it.data }
 }

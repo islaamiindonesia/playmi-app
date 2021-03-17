@@ -30,6 +30,9 @@ class LoginActivity(
     var isGoogle: Boolean = false
 ) : BaseActivity() {
     private val viewModel: UserAuthViewModel by viewModel()
+    private var emailFromGoogleSignIn: String? = null
+    private var nameFromGoogleSignIn: String? = null
+    private var idTokenFromGoogleSignIn: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,7 +51,6 @@ class LoginActivity(
         viewModel.initLoginActivity()
         checkIfSessionIsExpired()
         observeLoginResult()
-        observeResendCode()
 
         btnGoogle.setOnClickListener {
             progressBar.setVisibilityToVisible()
@@ -76,17 +78,25 @@ class LoginActivity(
 
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == GOOGLE_CODE) {
-            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
-            try {
-                // Google Sign In was successful, authenticate with Firebase
-                firebaseAuthWithGoogle(task.getResult(ApiException::class.java))
-            } catch (e: ApiException) {
+            if (resultCode == RESULT_OK) {
+                val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+                try {
+                    // Google Sign In was successful, authenticate with Firebase
+                    emailFromGoogleSignIn = task.result?.email
+                    nameFromGoogleSignIn = task.result?.displayName
+                    idTokenFromGoogleSignIn = task.result?.idToken
+                    firebaseAuthWithGoogle(task.getResult(ApiException::class.java))
+                } catch (e: ApiException) {
+                    btnLogin.setVisibilityToVisible()
+                    progressBar.setVisibilityToGone()
+
+                    if (e.statusCode != GoogleSignInStatusCodes.SIGN_IN_CANCELLED) {
+                        showLongToast(getString(R.string.error_message_default))
+                    }
+                }
+            } else {
                 btnLogin.setVisibilityToVisible()
                 progressBar.setVisibilityToGone()
-
-                if (e.statusCode != GoogleSignInStatusCodes.SIGN_IN_CANCELLED) {
-                    showLongToast(getString(R.string.error_message_default))
-                }
             }
         }
     }
@@ -139,26 +149,8 @@ class LoginActivity(
     }
 
     private fun firebaseAuthWithGoogle(account: GoogleSignInAccount?) {
-        firebaseAuth?.signInWithCredential(GoogleAuthProvider.getCredential(account?.idToken, null))
-            ?.addOnCompleteListener(this) { task ->
-                if (task.isSuccessful) {
-                    user = firebaseAuth?.currentUser
-                    isGoogle = true
-                    viewModel.login(user?.email.toString(), token)
-                } else {
-                    btnLogin.setVisibilityToVisible()
-                    progressBar.setVisibilityToGone()
-
-                    // If sign in fails, display a message to the user.
-                    try {
-                        throw task.exception!!
-                    } catch (e: FirebaseNetworkException) {
-                        showLongToast(getString(R.string.error_connection))
-                    } catch (e: Exception) {
-                        showLongToast(getString(R.string.error_message_default))
-                    }
-                }
-            }
+        isGoogle = true
+        viewModel.login(account?.email.toString(), token)
     }
 
     private fun checkIfSessionIsExpired() {
@@ -239,56 +231,55 @@ class LoginActivity(
                     btnLogin.setVisibilityToVisible()
                     progressBar.setVisibilityToGone()
 
-                    MainActivity.startActivityClearTask(this)
-                    Default.hasLoggedIn = true
+                    if (isGoogle) {
+                        firebaseAuth?.signInWithCredential(GoogleAuthProvider.getCredential(idTokenFromGoogleSignIn, null))
+                                ?.addOnCompleteListener(this) { task ->
+                                    if (task.isSuccessful) {
+                                        MainActivity.startActivityClearTask(this)
+                                        Default.hasLoggedIn = true
+                                    } else {
+                                        // If sign in fails, display a message to the user.
+                                        try {
+                                            throw task.exception!!
+                                        } catch (e: FirebaseNetworkException) {
+                                            showLongToast(getString(R.string.error_connection))
+                                        } catch (e: Exception) {
+                                            showLongToast(getString(R.string.error_message_default))
+                                        }
+                                    }
+                                }
+                    } else {
+                        MainActivity.startActivityClearTask(this)
+                        Default.hasLoggedIn = true
+                    }
                 }
                 ERROR -> {
                     btnLogin.setVisibilityToVisible()
                     progressBar.setVisibilityToGone()
 
                     when (result.message) {
-                        "UNVERIFIED" -> {
-                            viewModel.resendCode(email.text.toString(), token)
-                        }
                         "EMAIL_NOT_FOUND" -> {
-                            if (isGoogle) RegisterActivity.startActivityFromGoogleAccount(
-                                this,
-                                audID = audId,
-                                notifToken = token,
-                                fullName = user?.displayName.toString(),
-                                email = user?.email.toString()
+                            if (isGoogle) AccountNotFoundDialogFragment.show(
+                                    fragmentManager = supportFragmentManager,
+                                    email = emailFromGoogleSignIn ?: "",
+                                    btnCancel = "Batal",
+                                    btnOk = "Buat Akun",
+                                    okCallback = {
+                                        RegisterActivity.startActivityFromGoogleAccount(
+                                                this,
+                                                audID = audId,
+                                                notifToken = token,
+                                                idToken = idTokenFromGoogleSignIn ?: "",
+                                                fullName = nameFromGoogleSignIn ?: "",
+                                                email = emailFromGoogleSignIn ?: ""
+                                        )
+                                    }
                             )
                             else showDialogRegisterUser()
                         }
                         else -> {
                             handleApiError(result.message) { showLongToast(it) }
                         }
-                    }
-                }
-            }
-        })
-    }
-
-    private fun observeResendCode() {
-        viewModel.resendCodeResultLd.observe(this, Observer { result ->
-            when (result.status) {
-                LOADING -> {
-                    progressBar.setVisibilityToVisible()
-                    btnLogin.setVisibilityToGone()
-                }
-                SUCCESS -> {
-                    progressBar.setVisibilityToGone()
-                    btnLogin.setVisibilityToVisible()
-
-                    VerificationActivity.startActivityClearTask(this, email.text.toString(), token)
-                }
-                ERROR -> {
-                    progressBar.setVisibilityToGone()
-                    btnLogin.setVisibilityToVisible()
-
-                    when (result.message) {
-                        "EMAIL_NOT_FOUND" -> showDialogRegisterUser()
-                        else -> handleApiError(result.message) { showLongToast(it) }
                     }
                 }
             }

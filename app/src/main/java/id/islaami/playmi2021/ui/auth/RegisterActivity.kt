@@ -4,13 +4,14 @@ import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.WindowManager
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import com.google.firebase.FirebaseNetworkException
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseAuthUserCollisionException
-import com.google.firebase.auth.FirebaseAuthWeakPasswordException
+import com.google.firebase.auth.*
 import com.jakewharton.rxbinding3.widget.textChanges
 import id.islaami.playmi2021.R
+import id.islaami.playmi2021.data.model.kotpref.Default
 import id.islaami.playmi2021.ui.MainActivity
 import id.islaami.playmi2021.ui.base.BaseSpecialActivity
 import id.islaami.playmi2021.util.*
@@ -32,6 +33,8 @@ class RegisterActivity(
     var gender: String = "L" // default gender choice
 ) : BaseSpecialActivity() {
     private val viewModel: UserAuthViewModel by viewModel()
+    private var userToken: String? = null
+    private var idToken: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,13 +43,14 @@ class RegisterActivity(
 
         // initiate firebase auth instance
         firebaseAuth = FirebaseAuth.getInstance()
+        userToken = intent.getStringExtra("NOTIF_TOKEN");
+        idToken = intent.getStringExtra(ID_TOKEN);
 
         viewModel.initRegisterAcitivity()
         observeRegister()
-        observeRegisterFromGoogle()
 
         setupBirthDateDatePickerListener()
-        setupForm(intent.getStringExtra("NOTIF_TOKEN"))
+        setupForm()
 
         radioGender.setOnCheckedChangeListener { _, i ->
             gender = when (i) {
@@ -73,7 +77,7 @@ class RegisterActivity(
     }
 
     /* CUSTOM METHOD */
-    private fun setupForm(token: String?) {
+    private fun setupForm() {
         etName.setText(intent.getStringExtra(FULLNAME) ?: "")
         etEmail.setText(intent.getStringExtra(EMAIL) ?: "")
         etPassword.setText(intent.getStringExtra(PASSWORD) ?: "")
@@ -85,16 +89,31 @@ class RegisterActivity(
             }
             if (validateAll()) {
                 if ((intent.getStringExtra(FULLNAME) ?: "").isEmpty()) {
-                    firebaseAuthWithPassword(token.toString())
+                    VerificationActivity.startActivityFromResult(this, etEmail.text.toString(), etName.text.toString())
                 } else {
-                    viewModel.registerFromGoogle(
-                        fullname = etName.text.toString(),
-                        email = etEmail.text.toString(),
-                        birthdate = etBirtdate.text.toString().fromAppsFormatDateToDbFormatDate()
-                            .toString(),
-                        gender = gender,
-                        notifToken = token.toString()
-                    )
+                    firebaseAuth?.signInWithCredential(GoogleAuthProvider.getCredential(idToken, null))
+                        ?.addOnCompleteListener(this) { task ->
+                            if (task.isSuccessful) {
+                                task.result?.user?.linkWithCredential(EmailAuthProvider.getCredential(etEmail.text.toString(), etPassword.text.toString()))
+                                viewModel.register(
+                                    fullname = etName.text.toString(),
+                                    email = etEmail.text.toString(),
+                                    birthdate = etBirtdate.text.toString().fromAppsFormatDateToDbFormatDate()
+                                        .toString(),
+                                    gender = gender,
+                                    notifToken = userToken.toString()
+                                )
+                            } else {
+                                // If sign in fails, display a message to the user.
+                                try {
+                                    throw task.exception!!
+                                } catch (e: FirebaseNetworkException) {
+                                    showLongToast(getString(R.string.error_connection))
+                                } catch (e: Exception) {
+                                    showLongToast(getString(R.string.error_message_default))
+                                }
+                            }
+                        }
                 }
             }
         }
@@ -214,6 +233,7 @@ class RegisterActivity(
     companion object {
         const val AUD_ID = "AUD_ID"
         const val NOTIF_TOKEN = "NOTIF_TOKEN"
+        const val ID_TOKEN = "ID_TOKEN"
         const val FULLNAME = "FULLNAME"
         const val EMAIL = "EMAIL"
         const val PASSWORD = "PASSSWORD"
@@ -238,6 +258,7 @@ class RegisterActivity(
             context: Context?,
             audID: String,
             notifToken: String,
+            idToken: String,
             fullName: String,
             email: String
         ) {
@@ -245,41 +266,25 @@ class RegisterActivity(
                 Intent(context, RegisterActivity::class.java)
                     .putExtra(AUD_ID, audID)
                     .putExtra(NOTIF_TOKEN, notifToken)
+                    .putExtra(ID_TOKEN, idToken)
                     .putExtra(FULLNAME, fullName)
                     .putExtra(EMAIL, email)
             )
         }
     }
 
-    private fun observeRegister() {
-        viewModel.registerResultLd.observe(this, Observer { result ->
-            when (result.status) {
-                LOADING -> {
-                    progressBar.setVisibilityToVisible()
-                    btnRegister.setVisibilityToGone()
-                }
-                SUCCESS -> {
-                    progressBar.setVisibilityToGone()
-                    btnRegister.setVisibilityToVisible()
-
-                    val token = intent.getStringExtra("NOTIF_TOKEN")
-                    VerificationActivity.startActivityClearTask(
-                        this,
-                        intent.getStringExtra(EMAIL) ?: "",
-                        token
-                    )
-                }
-                ERROR -> {
-                    progressBar.setVisibilityToGone()
-                    btnRegister.setVisibilityToVisible()
-
-                    handleApiError(result.message) { showLongToast(it) }
-                }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == VerificationActivity.EMAIL_VERIF_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                firebaseAuthWithPassword(userToken.toString())
+            } else {
+                showLongToast("Email not verified")
             }
-        })
+        }
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
-    private fun observeRegisterFromGoogle() {
+    private fun observeRegister() {
         viewModel.loginResultLd.observe(this, Observer { result ->
             when (result.status) {
                 LOADING -> {

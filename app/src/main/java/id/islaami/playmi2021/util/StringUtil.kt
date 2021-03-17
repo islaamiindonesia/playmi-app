@@ -163,3 +163,54 @@ fun createClickableString(
 
     return spannableString
 }
+
+fun createColorizedString(
+        context: Context,
+        fulltext: SpannedString,
+        key: String,
+        isUnderLine: Boolean = false,
+        foregroundColor: Int = R.color.grey_bb,
+        onClickAction: (() -> Unit)? = null
+): SpannableString {
+    val spannableString = SpannableString(fulltext)
+    val annotations = fulltext.getSpans(0, fulltext.length, Annotation::class.java)
+
+    val clickableSpan = object : ClickableSpan() {
+        override fun onClick(widget: View) {
+            onClickAction?.invoke()
+        }
+        override fun updateDrawState(ds: TextPaint) {
+            ds.isUnderlineText = isUnderLine
+        }
+    }
+
+    annotations.find { it.value == key }.let {
+        spannableString.apply {
+            setSpan(
+                    clickableSpan,
+                    fulltext.getSpanStart(it),
+                    fulltext.getSpanEnd(it),
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            setSpan(
+                    StyleSpan(Typeface.NORMAL),
+                    fulltext.getSpanStart(it),
+                    fulltext.getSpanEnd(it),
+                    0
+            )
+            setSpan(
+                    ForegroundColorSpan(
+                            ContextCompat.getColor(
+                                    context,
+                                    foregroundColor
+                            )
+                    ),
+                    fulltext.getSpanStart(it),
+                    fulltext.getSpanEnd(it),
+                    0
+            )
+        }
+    }
+
+    return spannableString
+}

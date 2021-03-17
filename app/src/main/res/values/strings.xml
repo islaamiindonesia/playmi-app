@@ -25,7 +25,8 @@
         \nKami akan meninjau terlebih dahulu proposal yang sudah Anda kirimkan. Mohon tunggu beberapa hari agar kami bisa menentukan kerjasama dengan Anda.
         \nTerima kasih.
     </string>
-    <string name="link_resend_verification">Belum terima kode? <annotation type="resend">Kirim Ulang</annotation></string>
+    <string name="link_resend_verification">Belum terima kode? <annotation type="resend">KIRIM ULANG</annotation></string>
+    <string name="link_resend_verification_muted">Belum terima kode? <annotation type="resend">KIRIM ULANG(%1$s)</annotation></string>
     <string name="message_channel_hide">Kanal berhasil disembunyikan</string>
     <string name="message_channel_show">Kanal berhasil ditampilkan</string>
     <string name="invalid_credentials">Email/Password salah</string>

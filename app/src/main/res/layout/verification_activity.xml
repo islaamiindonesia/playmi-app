@@ -10,13 +10,14 @@
     <ImageView
         android:id="@+id/appLogo"
         android:layout_width="200dp"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
         app:layout_constraintBottom_toTopOf="@+id/cardView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.8"
-        app:srcCompat="@drawable/app_logo" />
+        app:srcCompat="@drawable/islaami_logo" />
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardView"
@@ -26,6 +27,8 @@
         android:layout_marginLeft="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
+        app:cardElevation="6dp"
+        app:cardUseCompatPadding="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -54,7 +57,7 @@
                 android:layout_marginTop="10dp"
                 android:fontFamily="sans-serif"
                 android:gravity="center"
-                android:text="Kami telah mengirimkan kode verifikasi ke perangkat Anda, silahkan masukkan pada kolom di bawah ini."
+                android:text="Kami telah mengirimkan kode verifikasi ke email Anda, silahkan masukkan pada kolom di bawah ini."
                 android:textColor="@color/text_color"
                 android:textSize="14sp" />
 
@@ -64,6 +67,7 @@
                 android:layout_height="45dp"
                 android:layout_marginTop="20dp"
                 android:background="@drawable/edit_capsule_outline"
+                android:hint="masukkan kode"
                 android:ems="10"
                 android:inputType="numberDecimal"
                 android:textColorHint="@color/grey_85"
