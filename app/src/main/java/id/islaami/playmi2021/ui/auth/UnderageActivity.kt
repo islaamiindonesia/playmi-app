@@ -4,10 +4,10 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import id.islaami.playmi2021.R
-import id.islaami.playmi2021.ui.base.BaseSpecialActivity
+import id.islaami.playmi2021.ui.base.BaseActivity
 import kotlinx.android.synthetic.main.activity_underage.*
 
-class UnderageActivity : BaseSpecialActivity() {
+class UnderageActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_underage)
