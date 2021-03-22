@@ -106,6 +106,7 @@ class VideoSearchActivity(var searchQuery: String = "") : BaseActivity() {
 
         swipeRefreshLayout.apply {
             setColorSchemeResources(R.color.accent)
+            setProgressBackgroundColorSchemeResource(R.color.refresh_icon_background)
             setOnRefreshListener { refresh() }
         }
     }

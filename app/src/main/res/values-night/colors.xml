@@ -9,4 +9,5 @@
     <color name="border_7_color">@color/grey_46</color>
     <color name="text_color">@color/grey_eb</color>
     <color name="layout_background_color">@color/grey_28</color>
+    <color name="refresh_icon_background">#000</color>
 </resources>

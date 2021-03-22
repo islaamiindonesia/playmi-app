@@ -91,6 +91,7 @@ class VideoUpdateFragment : BaseFragment() {
 
         swipeRefreshLayout.apply {
             setColorSchemeResources(R.color.accent)
+            setProgressBackgroundColorSchemeResource(R.color.refresh_icon_background)
             setOnRefreshListener { refresh() }
         }
 

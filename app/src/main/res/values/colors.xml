@@ -29,4 +29,6 @@
 
     <color name="colorAdLabelText">#FFFFFF</color>
     <color name="colorAdLabelBackground">#FFCC66</color>
+
+    <color name="refresh_icon_background">#fff</color>
 </resources>

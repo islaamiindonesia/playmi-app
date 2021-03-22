@@ -96,6 +96,7 @@ class PlaylistDetailActivity(var playlistId: Int = 0) : BaseActivity() {
         setupToolbar(toolbar)
         swipeRefreshLayout.apply {
             setColorSchemeResources(R.color.accent)
+            setProgressBackgroundColorSchemeResource(R.color.refresh_icon_background)
             setOnRefreshListener { refresh() }
         }
 

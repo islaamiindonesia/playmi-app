@@ -92,6 +92,7 @@ class VideoCategoryFragment(var categoryID: Int = 0) : BaseFragment() {
         swipeRefreshLayout.apply {
             startRefreshing()
             setColorSchemeResources(R.color.accent)
+            setProgressBackgroundColorSchemeResource(R.color.refresh_icon_background)
             setOnRefreshListener { refresh() }
         }
 
