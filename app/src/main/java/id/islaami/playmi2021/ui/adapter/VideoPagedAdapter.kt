@@ -10,6 +10,8 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
 import androidx.paging.PagedList
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
@@ -74,11 +76,12 @@ class VideoPagedAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         /*if (holder is AdViewHolder)
             Log.i("Cek ", "Ad at position: $position")*/
-        holder.bindView(getItem(position))
+        val calculatedPosition = position - (position+1)/7
+        holder.bindView(getItem(calculatedPosition))
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (position % 7 == 0 && position != 0) UNIFIED_NATIVE_AD_VIEW_TYPE
+        return if ((position+1) % 7 == 0 && (position+1) != 1) UNIFIED_NATIVE_AD_VIEW_TYPE
         else VIDEO_ITEM_VIEW_TYPE
     }
 
@@ -170,6 +173,7 @@ class VideoPagedAdapter(
         // do any ad setup
 
         private var unav: UnifiedNativeAdView? = null
+        private var ad_card: ConstraintLayout? = null
         private var ad_app_icon: ImageView? = null
         private var ad_headline: TextView? = null
         private var ad_advertiser: TextView? = null
@@ -185,6 +189,7 @@ class VideoPagedAdapter(
 
         init {
             unav = itemView.findViewById(R.id.unav)
+            ad_card = itemView.findViewById(R.id.adCard)
             ad_app_icon = itemView.findViewById(R.id.ad_app_icon)
             ad_headline = itemView.findViewById(R.id.ad_headline)
             ad_advertiser = itemView.findViewById(R.id.ad_advertiser)
@@ -218,8 +223,10 @@ class VideoPagedAdapter(
             unifiedNativeAd: UnifiedNativeAd,
             unifiedNativeAdView: UnifiedNativeAdView
         ) {
+            ad_card?.isVisible = true
             ad_headline?.text = unifiedNativeAd.headline
             ad_media?.setMediaContent(unifiedNativeAd.mediaContent)
+            if(!unifiedNativeAd.mediaContent.hasVideoContent()) ad_media?.isVisible = false
 
             unifiedNativeAd.body?.let {
                 ad_body?.visibility = View.VISIBLE
@@ -272,15 +279,16 @@ class VideoPagedAdapter(
         }
 
         private fun hideAdViews() {
-            ad_app_icon?.visibility = View.INVISIBLE
-            ad_headline?.visibility = View.INVISIBLE
-            ad_advertiser?.visibility = View.INVISIBLE
-            ad_stars?.visibility = View.INVISIBLE
-            ad_body?.visibility = View.INVISIBLE
-            ad_media?.visibility = View.INVISIBLE
-            ad_price?.visibility = View.INVISIBLE
-            ad_store?.visibility = View.INVISIBLE
-            ad_call_to_action?.visibility = View.INVISIBLE
+            ad_card?.isVisible = false
+            ad_app_icon?.isVisible = false
+            ad_headline?.isVisible = false
+            ad_advertiser?.isVisible = false
+            ad_stars?.isVisible = false
+            ad_body?.isVisible = false
+            ad_media?.isVisible = false
+            ad_price?.isVisible = false
+            ad_store?.isVisible = false
+            ad_call_to_action?.isVisible = false
         }
     }
 
