@@ -26,7 +26,7 @@ class VideoByLabelDataSource(
                 .subscribe(
                     { result ->
                         if (!result.isNullOrEmpty()) {
-                            callback.onResult(result, null, 2)
+                            callback.onResult(result.filter { it.isPublished ?: false }, null, 2)
                             networkStatus.setSuccess()
                         } else {
                             networkStatus.setError(ERROR_EMPTY_LIST)
@@ -44,7 +44,7 @@ class VideoByLabelDataSource(
                 .subscribe(
                     { result ->
                         if (!result.isNullOrEmpty()) {
-                            callback.onResult(result, params.key + 1)
+                            callback.onResult(result.filter { it.isPublished ?: false }, params.key + 1)
                         }
                         networkStatus.setSuccess()
                     },
