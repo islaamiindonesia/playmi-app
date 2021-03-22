@@ -72,11 +72,6 @@ class HomeFragment(var list: List<Category> = emptyList()) : BaseFragment() {
         }
 
         viewModel.initHome()
-    }
-
-    override fun onResume() {
-        super.onResume()
-
         observeGetAllCategory()
     }
 
@@ -103,7 +98,7 @@ class HomeFragment(var list: List<Category> = emptyList()) : BaseFragment() {
                     if (!result.data.isNullOrEmpty()) {
                         viewPagerAdapter = ViewPagerAdapter()
                         viewPager.adapter = viewPagerAdapter
-                        viewPager.offscreenPageLimit = 4
+                        viewPager.offscreenPageLimit = result.data.size
                         tabLayout.setupWithViewPager(viewPager)
 
                         setupTab(result.data)
