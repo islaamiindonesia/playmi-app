@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import id.islaami.playmi2021.R
 import id.islaami.playmi2021.ui.adapter.ChannelHiddenAdapter
 import id.islaami.playmi2021.ui.base.BaseFragment
+import id.islaami.playmi2021.ui.base.BaseRecyclerViewFragment
 import id.islaami.playmi2021.util.ERROR_CONNECTION
 import id.islaami.playmi2021.util.ERROR_CONNECTION_TIMEOUT
 import id.islaami.playmi2021.util.ERROR_EMPTY_LIST
@@ -22,7 +23,7 @@ import kotlinx.android.synthetic.main.following_hidden_fragment.swipeRefreshLayo
 import kotlinx.android.synthetic.main.video_category_fragment.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class ChannelHiddenFragment : BaseFragment() {
+class ChannelHiddenFragment : BaseFragment(), BaseRecyclerViewFragment {
     private val viewModel: OrganizeChannelViewModel by viewModel()
 
     private var adapter = ChannelHiddenAdapter { channelId -> viewModel.showChannel(channelId) }
@@ -145,5 +146,9 @@ class ChannelHiddenFragment : BaseFragment() {
                 }
             }
         })
+    }
+
+    override fun scrollToTop() {
+        recyclerView.scrollToPosition(0)
     }
 }

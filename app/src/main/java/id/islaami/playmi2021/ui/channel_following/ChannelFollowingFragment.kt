@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import id.islaami.playmi2021.R
 import id.islaami.playmi2021.ui.adapter.ChannelFollowingAdapter
 import id.islaami.playmi2021.ui.base.BaseFragment
+import id.islaami.playmi2021.ui.base.BaseRecyclerViewFragment
 import id.islaami.playmi2021.util.*
 import id.islaami.playmi2021.util.ResourceStatus.*
 import id.islaami.playmi2021.util.ui.*
@@ -21,7 +22,7 @@ import kotlinx.android.synthetic.main.following_hidden_fragment.swipeRefreshLayo
 import kotlinx.android.synthetic.main.video_category_fragment.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class ChannelFollowingFragment : BaseFragment() {
+class ChannelFollowingFragment : BaseFragment(), BaseRecyclerViewFragment {
     private val viewModel: OrganizeChannelViewModel by viewModel()
 
     private var adapter = ChannelFollowingAdapter { context, view, channel ->
@@ -162,5 +163,9 @@ class ChannelFollowingFragment : BaseFragment() {
                 }
             }
         })
+    }
+
+    override fun scrollToTop() {
+        recyclerView.scrollToPosition(0)
     }
 }

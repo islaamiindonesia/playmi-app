@@ -8,13 +8,12 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.Observer
 import androidx.paging.PagedList
-import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import id.islaami.playmi2021.R
 import id.islaami.playmi2021.data.model.video.Video
 import id.islaami.playmi2021.ui.adapter.VideoPagedAdapter
 import id.islaami.playmi2021.ui.base.BaseFragment
-import id.islaami.playmi2021.ui.home.HomeFragment
+import id.islaami.playmi2021.ui.base.BaseRecyclerViewFragment
 import id.islaami.playmi2021.ui.home.HomeViewModel
 import id.islaami.playmi2021.util.*
 import id.islaami.playmi2021.util.ResourceStatus.*
@@ -22,8 +21,9 @@ import id.islaami.playmi2021.util.ui.*
 import kotlinx.android.synthetic.main.video_category_fragment.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class VideoCategoryFragment(var categoryID: Int = 0) : BaseFragment() {
+class VideoCategoryFragment(var categoryID: Int = 0) : BaseFragment(), BaseRecyclerViewFragment {
     private val viewModel: HomeViewModel by viewModel()
+    private var scrollPosition = 0
 
     private var adapter = VideoPagedAdapter(context,
         popMenu = { context, menuView, video ->
@@ -112,9 +112,7 @@ class VideoCategoryFragment(var categoryID: Int = 0) : BaseFragment() {
 
         observeGetAllVideoResult()
 
-        val position =
-            PreferenceManager.getDefaultSharedPreferences(context).getInt("HOME_SCROLL", 0)
-        recyclerView.scrollToPosition(position)
+        recyclerView.scrollToPosition(scrollPosition)
     }
 
     override fun onPause() {
@@ -125,10 +123,7 @@ class VideoCategoryFragment(var categoryID: Int = 0) : BaseFragment() {
             val position =
                 (layoutManager as LinearLayoutManager).findFirstCompletelyVisibleItemPosition()
 
-            PreferenceManager.getDefaultSharedPreferences(context)
-                .edit()
-                .putInt("HOME_SCROLL", position)
-                .apply()
+            scrollPosition = position
         }
     }
 
@@ -137,10 +132,6 @@ class VideoCategoryFragment(var categoryID: Int = 0) : BaseFragment() {
             viewModel.refreshAllVideoByCategory()
         } else {
             viewModel.refreshAllVideo()
-        }
-
-        if (this.parentFragment != null) {
-            (this.parentFragment as HomeFragment).refresh()
         }
     }
 
@@ -293,5 +284,9 @@ class VideoCategoryFragment(var categoryID: Int = 0) : BaseFragment() {
                 }
             }
         })
+    }
+
+    override fun scrollToTop() {
+        recyclerView.scrollToPosition(0)
     }
 }

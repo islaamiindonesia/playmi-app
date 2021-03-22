@@ -3,16 +3,19 @@ package id.islaami.playmi2021.ui
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.SparseArray
 import android.view.LayoutInflater
+import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentPagerAdapter
+import androidx.fragment.app.FragmentStatePagerAdapter
 import com.google.android.material.tabs.TabLayout
 import com.google.firebase.messaging.FirebaseMessaging
 import id.islaami.playmi2021.R
 import id.islaami.playmi2021.ui.base.BaseActivity
+import id.islaami.playmi2021.ui.base.BaseRecyclerViewFragment
 import id.islaami.playmi2021.ui.channel_following.OrganizeChannelFragment
 import id.islaami.playmi2021.ui.home.HomeFragment
 import id.islaami.playmi2021.ui.playlist.PlaylistFragment
@@ -22,6 +25,8 @@ import kotlinx.android.synthetic.main.main_activity.*
 import java.util.*
 
 class MainActivity : BaseActivity() {
+
+    private var viewPagerAdapter : ViewPagerAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,7 +40,7 @@ class MainActivity : BaseActivity() {
 
     private fun setupTabLayout() {
         // Setup View Pager
-        val viewPagerAdapter = ViewPagerAdapter(supportFragmentManager)
+        viewPagerAdapter = ViewPagerAdapter(supportFragmentManager)
         viewPagerMain.adapter = viewPagerAdapter
         viewPagerMain.offscreenPageLimit = 4
 
@@ -57,7 +62,7 @@ class MainActivity : BaseActivity() {
         )
 
         // setup each tab on first load
-        for (tabPosition in 0 until viewPagerAdapter.count) {
+        for (tabPosition in 0 until (viewPagerAdapter?.count ?: 0)) {
             val tabItem: ImageView =
                 LayoutInflater.from(this).inflate(R.layout.main_tab_item, null) as ImageView
 
@@ -73,6 +78,10 @@ class MainActivity : BaseActivity() {
 
         tabLayoutMain.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabReselected(tab: TabLayout.Tab?) {
+                val fragment = viewPagerAdapter?.getFragment(tab?.position ?: 0)
+                if (fragment is BaseRecyclerViewFragment) {
+                    (fragment as BaseRecyclerViewFragment).scrollToTop()
+                }
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {
@@ -105,16 +114,28 @@ class MainActivity : BaseActivity() {
     }
 
     inner class ViewPagerAdapter(fragmentManager: FragmentManager) :
-        FragmentPagerAdapter(fragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+        FragmentStatePagerAdapter(fragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+
+        private val fragments = SparseArray<Fragment>()
 
         private val numberOfTab = 4
 
-        override fun getItem(position: Int): Fragment = when (position) {
-            0 -> HomeFragment.newInstance()
-            1 -> VideoUpdateFragment.newInstance()
-            2 -> PlaylistFragment.newInstance()
-            3 -> OrganizeChannelFragment.newInstance()
-            else -> Fragment()
+        fun getFragment(position: Int) = fragments.get(position)
+
+        override fun getItem(position: Int): Fragment {
+            return when (position) {
+                0 -> HomeFragment.newInstance()
+                1 -> VideoUpdateFragment.newInstance()
+                2 -> PlaylistFragment.newInstance()
+                3 -> OrganizeChannelFragment.newInstance()
+                else -> Fragment()
+            }
+        }
+
+
+        override fun setPrimaryItem(container: ViewGroup, position: Int, `object`: Any) {
+            fragments.put(position, `object` as Fragment)
+            super.setPrimaryItem(container, position, `object`)
         }
 
         override fun getCount(): Int = numberOfTab

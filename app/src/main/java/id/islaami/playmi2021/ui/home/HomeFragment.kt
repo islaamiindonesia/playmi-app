@@ -3,6 +3,7 @@ package id.islaami.playmi2021.ui.home
 import android.app.SearchManager
 import android.content.Context
 import android.os.Bundle
+import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,9 +11,11 @@ import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.lifecycle.Observer
+import com.google.android.material.tabs.TabLayout
 import id.islaami.playmi2021.R
 import id.islaami.playmi2021.data.model.category.Category
 import id.islaami.playmi2021.ui.base.BaseFragment
+import id.islaami.playmi2021.ui.base.BaseRecyclerViewFragment
 import id.islaami.playmi2021.ui.setting.SettingActivity
 import id.islaami.playmi2021.ui.video.VideoCategoryFragment
 import id.islaami.playmi2021.util.ERROR_CONNECTION
@@ -141,13 +144,35 @@ class HomeFragment(var list: List<Category> = emptyList()) : BaseFragment() {
     private fun setupTab(categories: List<Category>) {
         list = categories
         viewPagerAdapter?.notifyDataSetChanged()
+
+        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+                viewPagerAdapter?.getFragment(tab?.position ?: 0)?.scrollToTop()
+            }
+
+        })
     }
 
     inner class ViewPagerAdapter :
         FragmentStatePagerAdapter(childFragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
 
-        override fun getItem(position: Int): Fragment {
-            return VideoCategoryFragment.newInstance(list[position].ID.value())
+        private val fragments = SparseArray<BaseRecyclerViewFragment>()
+
+        fun getFragment(position: Int): BaseRecyclerViewFragment? {
+            return fragments.get(position)
+        }
+
+        override fun getItem(position: Int): Fragment =VideoCategoryFragment.newInstance(list[position].ID.value())
+
+        override fun setPrimaryItem(container: ViewGroup, position: Int, `object`: Any) {
+            fragments.put(position, `object` as BaseRecyclerViewFragment)
+            super.setPrimaryItem(container, position, `object`)
         }
 
         override fun getCount(): Int {

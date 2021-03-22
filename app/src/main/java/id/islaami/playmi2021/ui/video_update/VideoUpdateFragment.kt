@@ -14,8 +14,9 @@ import androidx.lifecycle.Observer
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import id.islaami.playmi2021.R
-import id.islaami.playmi2021.ui.adapter.VideoPagedAdapterOld
+import id.islaami.playmi2021.ui.adapter.VideoPagedAdapter
 import id.islaami.playmi2021.ui.base.BaseFragment
+import id.islaami.playmi2021.ui.base.BaseRecyclerViewFragment
 import id.islaami.playmi2021.ui.setting.SettingActivity
 import id.islaami.playmi2021.util.*
 import id.islaami.playmi2021.util.ResourceStatus.*
@@ -23,10 +24,10 @@ import id.islaami.playmi2021.util.ui.*
 import kotlinx.android.synthetic.main.video_update_fragment.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class VideoUpdateFragment : BaseFragment() {
+class VideoUpdateFragment : BaseFragment(), BaseRecyclerViewFragment {
     private val viewModel: VideoUpdateViewModel by viewModel()
 
-    private var videoPagedAdapter = VideoPagedAdapterOld(context,
+    private var videoPagedAdapter = VideoPagedAdapter(context,
         popMenu = { context, menuView, video ->
             PopupMenu(context, menuView, Gravity.END).apply {
                 inflate(R.menu.menu_popup_video_update)
@@ -261,5 +262,9 @@ class VideoUpdateFragment : BaseFragment() {
                 }
             }
         })
+    }
+
+    override fun scrollToTop() {
+        recyclerView.scrollToPosition(0)
     }
 }

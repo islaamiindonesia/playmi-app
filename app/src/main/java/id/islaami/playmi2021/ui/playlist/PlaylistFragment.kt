@@ -18,6 +18,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import id.islaami.playmi2021.R
 import id.islaami.playmi2021.ui.adapter.PlaylistAdapter
 import id.islaami.playmi2021.ui.base.BaseFragment
+import id.islaami.playmi2021.ui.base.BaseRecyclerViewFragment
 import id.islaami.playmi2021.ui.setting.SettingActivity
 import id.islaami.playmi2021.util.ERROR_CONNECTION
 import id.islaami.playmi2021.util.ERROR_CONNECTION_TIMEOUT
@@ -29,7 +30,7 @@ import kotlinx.android.synthetic.main.change_playlist_name_dialog.view.*
 import kotlinx.android.synthetic.main.playlist_fragment.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class PlaylistFragment : BaseFragment() {
+class PlaylistFragment : BaseFragment(), BaseRecyclerViewFragment {
     private val viewModel: PlaylistViewModel by viewModel()
 
     private var playlistAdapter = PlaylistAdapter { context, menuView, playlist ->
@@ -283,5 +284,9 @@ class PlaylistFragment : BaseFragment() {
                 }
             }
         })
+    }
+
+    override fun scrollToTop() {
+        successLayout.smoothScrollTo(0, 0)
     }
 }
