@@ -98,7 +98,7 @@ class VideoPagedAdapter(
         override fun bindView(video: Video?) = with(itemView) {
             if (video != null) {
                 videoTitle.text = video.title
-                videoThumbnail.loadExternalImage("https://img.youtube.com/vi/${video.videoID}/sddefault.jpg")
+                videoThumbnail.loadExternalImage("https://img.youtube.com/vi/${video.videoID}/mqdefault.jpg")
                 channelName.text = video.channel?.name
                 channelIcon.loadImage(video.channel?.thumbnail)
                 views.text = "${video.views ?: 0}x"
