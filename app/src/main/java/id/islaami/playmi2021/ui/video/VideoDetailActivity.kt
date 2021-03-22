@@ -17,7 +17,6 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.gms.ads.AdRequest
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.FirebaseApp
@@ -88,9 +87,6 @@ class VideoDetailActivity(
         }
 
         swipeRefreshLayout.startRefreshing()
-
-        val adRequest = AdRequest.Builder().build()
-        adView.loadAd(adRequest)
 
         videoPlayer.addFullScreenListener(object : YouTubePlayerFullScreenListener {
             override fun onYouTubePlayerEnterFullScreen() {
@@ -292,13 +288,11 @@ class VideoDetailActivity(
 
     private fun enterFullScreen() {
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
-        adView.setVisibilityToGone()
         fullScreenHelper.enterFullScreen()
     }
 
     private fun exitFullScreen() {
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-        adView.setVisibilityToVisible()
         fullScreenHelper.exitFullScreen()
 
         if (Mode.appMode == AppCompatDelegate.MODE_NIGHT_NO) {
