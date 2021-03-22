@@ -28,9 +28,9 @@ fun String?.toDouble(): Double {
     return 0.0
 }
 
-fun String?.digitGrouping(): String {
-    if (this != null && this.isNotEmpty())
-        return NumberFormat.getInstance(Locale.ITALY).format(this.toDouble().toInt())
+fun Double?.digitGrouping(): String {
+    if (this != null)
+        return NumberFormat.getInstance(Locale.ITALY).format(this)
     return "0"
 }
 

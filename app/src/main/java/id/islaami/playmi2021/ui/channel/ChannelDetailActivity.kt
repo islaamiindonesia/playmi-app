@@ -3,9 +3,11 @@ package id.islaami.playmi2021.ui.channel
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.SparseArray
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.MenuItem
+import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -16,11 +18,11 @@ import com.google.android.material.tabs.TabLayout
 import id.islaami.playmi2021.R
 import id.islaami.playmi2021.data.model.channel.Channel
 import id.islaami.playmi2021.ui.base.BaseActivity
+import id.islaami.playmi2021.ui.base.BaseRecyclerViewFragment
 import id.islaami.playmi2021.util.*
 import id.islaami.playmi2021.util.ResourceStatus.*
 import id.islaami.playmi2021.util.ui.*
 import kotlinx.android.synthetic.main.channel_detail_activity.*
-import kotlinx.android.synthetic.main.channel_detail_activity.successLayout
 import kotlinx.android.synthetic.main.channel_detail_activity.swipeRefreshLayout
 import kotlinx.android.synthetic.main.channel_detail_activity.toolbar
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -120,6 +122,8 @@ class ChannelDetailActivity : BaseActivity() {
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabReselected(tab: TabLayout.Tab?) {
+                val fragment = viewPagerAdapter.getFragment(tab?.position ?: 0)
+                if (fragment is BaseRecyclerViewFragment) (fragment as BaseRecyclerViewFragment).scrollToTop()
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {
@@ -196,8 +200,8 @@ class ChannelDetailActivity : BaseActivity() {
 
         channelImage.loadImage(thumbnail)
         channelName.text = name
-        videoCount.text = videos.toString()
-        followerCount.text = followers.toString()
+        videoCount.text = videos?.toDouble().digitGrouping()
+        followerCount.text = followers?.toDouble().digitGrouping()
 
         if (isFollowed == true) {
             btnUnfollow.setVisibilityToVisible()
@@ -244,7 +248,6 @@ class ChannelDetailActivity : BaseActivity() {
                 }
                 SUCCESS -> {
                     swipeRefreshLayout.stopRefreshing()
-                    successLayout.setVisibilityToVisible()
 
                     channel = result.data ?: Channel()
                     channel?.showData()
@@ -349,9 +352,18 @@ class ChannelDetailActivity : BaseActivity() {
         fragmentManager,
         BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT
     ) {
+        private val fragments = SparseArray<Fragment>()
+
+        fun getFragment(position: Int) = fragments.get(position)
+
         override fun getItem(position: Int): Fragment {
             return if (position == 0) ChannelVideoFragment.newInstance(channelID)
             else ChannelAboutFragment.newInstance()
+        }
+
+        override fun setPrimaryItem(container: ViewGroup, position: Int, `object`: Any) {
+            fragments.put(position, `object` as Fragment)
+            super.setPrimaryItem(container, position, `object`)
         }
 
         override fun getCount(): Int {

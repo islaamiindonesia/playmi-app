@@ -32,6 +32,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone"
+            tools:visibility="visible"
             android:fillViewport="true">
 
             <LinearLayout
@@ -94,13 +95,13 @@
                                 android:layout_marginVertical="10dp"
                                 android:background="@color/border_color" />
 
-                            <RelativeLayout
+                            <LinearLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:gravity="center_horizontal">
+                                android:layout_height="wrap_content">
 
                                 <LinearLayout
                                     android:id="@+id/videoCountLayout"
+                                    android:layout_weight="1"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_alignParentStart="true"
@@ -127,6 +128,7 @@
 
                                 <LinearLayout
                                     android:id="@+id/followerCountLayout"
+                                    android:layout_weight="1"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_alignParentEnd="true"
@@ -150,7 +152,7 @@
                                         android:textColor="@color/grey_85"
                                         android:textSize="14sp" />
                                 </LinearLayout>
-                            </RelativeLayout>
+                            </LinearLayout>
                         </LinearLayout>
 
                         <LinearLayout
@@ -168,8 +170,10 @@
                                 style="@style/ButtonPrimaryRoundedRectangle"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:layout_marginEnd="8dp"
+                                android:layout_marginEnd="16dp"
                                 android:layout_weight="5"
+                                android:textSize="14sp"
+                                android:paddingVertical="0dp"
                                 android:text="Ikuti" />
 
                             <com.google.android.material.button.MaterialButton
@@ -177,8 +181,10 @@
                                 style="@style/ButtonPrimaryOutline"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:layout_marginEnd="8dp"
+                                android:layout_marginEnd="16dp"
                                 android:layout_weight="5"
+                                android:textSize="14sp"
+                                android:paddingVertical="0dp"
                                 android:text="Mengikuti"
                                 android:visibility="gone" />
 
@@ -188,6 +194,8 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="5"
+                                android:textSize="14sp"
+                                android:paddingVertical="0dp"
                                 android:text="Sembunyikan" />
                         </LinearLayout>
 
