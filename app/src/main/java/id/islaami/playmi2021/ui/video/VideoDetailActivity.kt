@@ -307,7 +307,7 @@ class VideoDetailActivity(
 
         FirebaseDynamicLinks.getInstance().createDynamicLink()
             .setLink(Uri.parse("https://islaami.id/videos/" + video.ID))
-            .setDomainUriPrefix("https://playmi.page.link")
+            .setDomainUriPrefix("https://videoplaymi.page.link")
             /*// Open links with this app on Android
             .setAndroidParameters(
                 DynamicLink.AndroidParameters.Builder("id.islaami.playmi")
