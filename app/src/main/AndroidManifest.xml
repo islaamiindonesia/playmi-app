@@ -44,7 +44,19 @@
             android:theme="@style/SpecialTheme" />
         <activity
             android:name=".ui.channel.ChannelDetailActivity"
-            android:launchMode="singleTop" />
+            android:parentActivityName=".ui.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="islaami.id"
+                    android:pathPrefix="/channel"
+                    android:scheme="https" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".ui.setting.recommendation.RecommendationActivity"
             android:theme="@style/SpecialTheme" />

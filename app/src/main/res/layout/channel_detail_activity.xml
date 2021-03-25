@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -12,20 +12,211 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:focusable="true">
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            style="@style/ToolbarWhiteBackArrow"
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:titleEnabled="false"
+            android:background="@color/layout_background_color"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:elevation="4dp"
-            app:title="Kanal" />
+            android:layout_height="match_parent">
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                style="@style/ToolbarWhiteBackArrow"
+                android:background="@color/layout_background_color"
+                app:layout_collapseMode="pin"
+                android:layout_width="match_parent"
+                android:minHeight="?attr/actionBarSize"
+                android:layout_height="wrap_content"
+                android:elevation="4dp"
+                app:title="Kanal">
+            </androidx.appcompat.widget.Toolbar>
+            <com.google.android.material.card.MaterialCardView
+                android:layout_marginTop="?attr/actionBarSize"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/layout_background_color">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="8dp">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/card"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        app:cardCornerRadius="50dp"
+                        app:cardPreventCornerOverlap="false"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/channelImage"
+                            android:layout_width="90dp"
+                            android:layout_height="90dp"
+                            tools:src="@tools:sample/avatars" />
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <LinearLayout
+                        android:id="@+id/infoLayout"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="16dp"
+                        android:orientation="vertical"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/card"
+                        app:layout_constraintTop_toTopOf="@+id/card">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/channelName"
+                            style="@style/LabelText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-medium"
+                            android:text="Nama Channel"
+                            android:textAlignment="center"
+                            android:textColor="@color/text_color"
+                            android:textSize="16sp" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginVertical="10dp"
+                            android:background="@color/border_color" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <LinearLayout
+                                android:id="@+id/videoCountLayout"
+                                android:layout_weight="1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:layout_marginStart="16dp"
+                                android:gravity="center_horizontal"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/videoCount"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="sans-serif-medium"
+                                    android:text="112.500"
+                                    android:textColor="@color/text_color"
+                                    android:textSize="18sp" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Video"
+                                    android:textColor="@color/grey_85"
+                                    android:textSize="14sp" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:id="@+id/followerCountLayout"
+                                android:layout_weight="1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_marginEnd="16dp"
+                                android:gravity="center_horizontal"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/followerCount"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="sans-serif-medium"
+                                    android:text="120.000.000"
+                                    android:textColor="@color/text_color"
+                                    android:textSize="18sp" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Pengikut"
+                                    android:textColor="@color/grey_85"
+                                    android:textSize="14sp" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/showLayout"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:orientation="horizontal"
+                        app:layout_constraintEnd_toEndOf="@id/infoLayout"
+                        app:layout_constraintStart_toStartOf="@id/card"
+                        app:layout_constraintTop_toBottomOf="@id/card">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnFollow"
+                            style="@style/ButtonPrimaryRoundedRectangle"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="16dp"
+                            android:layout_weight="5"
+                            android:textSize="14sp"
+                            android:paddingVertical="0dp"
+                            android:text="Ikuti" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnUnfollow"
+                            style="@style/ButtonPrimaryOutline"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="16dp"
+                            android:layout_weight="5"
+                            android:textSize="14sp"
+                            android:paddingVertical="0dp"
+                            android:text="Mengikuti"
+                            android:visibility="gone" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnHide"
+                            style="@style/ButtonPrimaryOutline"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="5"
+                            android:textSize="14sp"
+                            android:paddingVertical="0dp"
+                            android:text="Sembunyikan" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/hiddenLayout"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:visibility="gone"
+                        app:layout_constraintEnd_toEndOf="@id/infoLayout"
+                        app:layout_constraintStart_toStartOf="@id/card"
+                        app:layout_constraintTop_toBottomOf="@id/card">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnShow"
+                            style="@style/ButtonPrimaryRoundedRectangle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Tampilkan"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefreshLayout"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <androidx.core.widget.NestedScrollView
             android:id="@+id/successLayout"
@@ -39,186 +230,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
-
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:cardBackgroundColor="@color/layout_background_color">
-
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingBottom="8dp">
-
-                        <com.google.android.material.card.MaterialCardView
-                            android:id="@+id/card"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
-                            android:layout_marginTop="16dp"
-                            app:cardCornerRadius="50dp"
-                            app:cardPreventCornerOverlap="false"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent">
-
-                            <androidx.appcompat.widget.AppCompatImageView
-                                android:id="@+id/channelImage"
-                                android:layout_width="90dp"
-                                android:layout_height="90dp"
-                                tools:src="@tools:sample/avatars" />
-                        </com.google.android.material.card.MaterialCardView>
-
-                        <LinearLayout
-                            android:id="@+id/infoLayout"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginHorizontal="16dp"
-                            android:orientation="vertical"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toEndOf="@+id/card"
-                            app:layout_constraintTop_toTopOf="@+id/card">
-
-                            <androidx.appcompat.widget.AppCompatTextView
-                                android:id="@+id/channelName"
-                                style="@style/LabelText"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="sans-serif-medium"
-                                android:text="Nama Channel"
-                                android:textAlignment="center"
-                                android:textColor="@color/text_color"
-                                android:textSize="16sp" />
-
-                            <View
-                                android:layout_width="match_parent"
-                                android:layout_height="1dp"
-                                android:layout_marginVertical="10dp"
-                                android:background="@color/border_color" />
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content">
-
-                                <LinearLayout
-                                    android:id="@+id/videoCountLayout"
-                                    android:layout_weight="1"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_alignParentStart="true"
-                                    android:layout_marginStart="16dp"
-                                    android:gravity="center_horizontal"
-                                    android:orientation="vertical">
-
-                                    <TextView
-                                        android:id="@+id/videoCount"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:fontFamily="sans-serif-medium"
-                                        android:text="112.500"
-                                        android:textColor="@color/text_color"
-                                        android:textSize="18sp" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="Video"
-                                        android:textColor="@color/grey_85"
-                                        android:textSize="14sp" />
-                                </LinearLayout>
-
-                                <LinearLayout
-                                    android:id="@+id/followerCountLayout"
-                                    android:layout_weight="1"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_alignParentEnd="true"
-                                    android:layout_marginEnd="16dp"
-                                    android:gravity="center_horizontal"
-                                    android:orientation="vertical">
-
-                                    <TextView
-                                        android:id="@+id/followerCount"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:fontFamily="sans-serif-medium"
-                                        android:text="120.000.000"
-                                        android:textColor="@color/text_color"
-                                        android:textSize="18sp" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="Pengikut"
-                                        android:textColor="@color/grey_85"
-                                        android:textSize="14sp" />
-                                </LinearLayout>
-                            </LinearLayout>
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:id="@+id/showLayout"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:orientation="horizontal"
-                            app:layout_constraintEnd_toEndOf="@id/infoLayout"
-                            app:layout_constraintStart_toStartOf="@id/card"
-                            app:layout_constraintTop_toBottomOf="@id/card">
-
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btnFollow"
-                                style="@style/ButtonPrimaryRoundedRectangle"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_marginEnd="16dp"
-                                android:layout_weight="5"
-                                android:textSize="14sp"
-                                android:paddingVertical="0dp"
-                                android:text="Ikuti" />
-
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btnUnfollow"
-                                style="@style/ButtonPrimaryOutline"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_marginEnd="16dp"
-                                android:layout_weight="5"
-                                android:textSize="14sp"
-                                android:paddingVertical="0dp"
-                                android:text="Mengikuti"
-                                android:visibility="gone" />
-
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btnHide"
-                                style="@style/ButtonPrimaryOutline"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="5"
-                                android:textSize="14sp"
-                                android:paddingVertical="0dp"
-                                android:text="Sembunyikan" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:id="@+id/hiddenLayout"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:visibility="gone"
-                            app:layout_constraintEnd_toEndOf="@id/infoLayout"
-                            app:layout_constraintStart_toStartOf="@id/card"
-                            app:layout_constraintTop_toBottomOf="@id/card">
-
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btnShow"
-                                style="@style/ButtonPrimaryRoundedRectangle"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="Tampilkan"
-                                android:textSize="14sp" />
-                        </LinearLayout>
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-                </com.google.android.material.card.MaterialCardView>
 
                 <View
                     android:layout_width="match_parent"
@@ -248,4 +259,4 @@
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-</LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

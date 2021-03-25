@@ -2,12 +2,11 @@ package id.islaami.playmi2021.ui.channel
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.util.SparseArray
-import android.view.Gravity
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.ViewGroup
+import android.view.*
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -15,6 +14,9 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.lifecycle.Observer
 import com.google.android.material.tabs.TabLayout
+import com.google.firebase.dynamiclinks.DynamicLink
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
+import com.google.firebase.dynamiclinks.ShortDynamicLink
 import id.islaami.playmi2021.R
 import id.islaami.playmi2021.data.model.channel.Channel
 import id.islaami.playmi2021.ui.base.BaseActivity
@@ -44,6 +46,12 @@ class ChannelDetailActivity : BaseActivity() {
 
         name = intent.getStringExtra(CHANNEL_NAME)
         channelID = intent.getIntExtra(CHANNEL_ID, 0)
+
+        // channelId will have 0 value if user opens channel from external/shared url
+        if (channelID == 0) {
+            val uri = Uri.parse(intent.data.toString())
+            channelID = uri.lastPathSegment.toString().toInt()
+        }
 
         viewModel.initChannelDetail(channelID)
         observeChannelDetail()
@@ -248,6 +256,7 @@ class ChannelDetailActivity : BaseActivity() {
                 }
                 SUCCESS -> {
                     swipeRefreshLayout.stopRefreshing()
+                    successLayout.setVisibilityToVisible()
 
                     channel = result.data ?: Channel()
                     channel?.showData()
@@ -346,6 +355,55 @@ class ChannelDetailActivity : BaseActivity() {
                 }
             }
         })
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_channel_detail, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return if (item.itemId == R.id.popShare) {
+            createDynamicLink(channel?.name.toString(), channel ?: Channel())
+            true
+        } else {
+            super.onOptionsItemSelected(item)
+        }
+    }
+    
+    private fun createDynamicLink(body: String, channel: Channel) {
+        var shortLink: Uri?
+
+        FirebaseDynamicLinks.getInstance().createDynamicLink()
+            .setLink(Uri.parse("https://islaami.id/channel/" + channel.ID))
+            .setDomainUriPrefix("https://channelplaymi.page.link")
+            /*// Open links with this app on Android
+            .setAndroidParameters(
+                DynamicLink.AndroidParameters.Builder("id.islaami.playmi")
+                    .build()
+            )*/
+            .setSocialMetaTagParameters(
+                DynamicLink.SocialMetaTagParameters.Builder()
+                    .setTitle(channel.name.toString())
+                    .setDescription(channel.bio.toString())
+                    .setImageUrl(Uri.parse(channel.thumbnail))
+                    .build()
+            )
+            .buildShortDynamicLink(ShortDynamicLink.Suffix.SHORT)
+            .addOnSuccessListener { result ->
+                // Short link created
+                shortLink = result.shortLink
+
+                startActivity(
+                    Intent.createChooser(Intent().apply {
+                        action = Intent.ACTION_SEND
+                        putExtra(Intent.EXTRA_TEXT, "$body\n$shortLink")
+                        type = "text/plain"
+                    }, "Bagikan")
+                )
+            }.addOnFailureListener {
+                Log.d("HEIKAMU", it.toString())
+            }
     }
 
     inner class ViewPagerAdapter(fragmentManager: FragmentManager) : FragmentStatePagerAdapter(
