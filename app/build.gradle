@@ -11,8 +11,8 @@ android {
         applicationId "id.islaami.playmi2021"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 1
-        versionName "1.0"
+        versionCode 6
+        versionName "1.0.5"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
@@ -32,9 +32,9 @@ android {
     productFlavors {
         playmi {
             dimension "tier"
-            applicationId "id.islaami.playmi"
-            versionCode 1
-            versionName "1.0"
+            applicationId "id.islaami.playmi2021"
+            versionCode 6
+            versionName "1.0.5"
         }
     }
     bundle {
@@ -80,7 +80,6 @@ dependencies {
     implementation 'com.google.firebase:firebase-crashlytics:17.1.0'
     implementation 'com.google.firebase:firebase-dynamic-links:19.1.0'
     implementation 'com.google.firebase:firebase-auth:20.0.2'
-    implementation 'com.google.android.gms:play-services-auth:18.0.0'
 
     // Kotlin
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
@@ -102,7 +101,6 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.legacy:legacy-support-v13:1.0.0'
-    implementation 'com.google.firebase:firebase-analytics:17.4.3'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
 
     // Android Architecture (ViewModel and LiveData)
