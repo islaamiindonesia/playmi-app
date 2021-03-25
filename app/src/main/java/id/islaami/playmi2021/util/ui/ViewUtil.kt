@@ -141,6 +141,11 @@ fun ImageView.loadImage(url: String?) = Glide.with(this).load("$STORAGE_URL$url"
 
 fun ImageView.loadExternalImage(url: String?) = Glide.with(this).load(url).into(this)
 
+fun ImageView.loadYoutubeThumbnail(videoId: String) {
+    val url = "https://img.youtube.com/vi/$videoId/"
+    Glide.with(this).load(url+"maxresdefault.jpg").error(Glide.with(this).load(url+"mqdefault.jpg")).into(this)
+}
+
 fun ImageView.loadImage(imageAsset: Int) = Glide.with(this).load(imageAsset).into(this)
 
 fun ImageView.loadImage(bitmap: Bitmap?) = Glide.with(this).load(bitmap).into(this)

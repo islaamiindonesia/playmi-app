@@ -16,8 +16,8 @@ import id.islaami.playmi2021.ui.video.VideoDetailActivity
 import id.islaami.playmi2021.ui.video.VideoLabelActivity
 import id.islaami.playmi2021.ui.video.VideoSubcategoryActivity
 import id.islaami.playmi2021.util.fromDbFormatDateTimeToCustomFormat
-import id.islaami.playmi2021.util.ui.loadExternalImage
 import id.islaami.playmi2021.util.ui.loadImage
+import id.islaami.playmi2021.util.ui.loadYoutubeThumbnail
 import id.islaami.playmi2021.util.ui.setVisibilityToGone
 import id.islaami.playmi2021.util.value
 import kotlinx.android.synthetic.main.video_item.view.*
@@ -48,7 +48,7 @@ class VideoAdapter(
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(video: Video) = with(itemView) {
             videoTitle.text = video.title
-            videoThumbnail.loadExternalImage("https://img.youtube.com/vi/${video.videoID}/mqdefault.jpg")
+            videoThumbnail.loadYoutubeThumbnail(video.videoID ?: "")
             channelName.text = video.channel?.name
             channelIcon.loadImage(video.channel?.thumbnail)
             views.text = "${video.views ?: 0}x"
