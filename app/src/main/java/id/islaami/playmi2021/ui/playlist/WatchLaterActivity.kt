@@ -38,12 +38,6 @@ class WatchLaterActivity : BaseActivity() {
         PopupMenu(context, menuView).apply {
             inflate(R.menu.menu_popup_later_video)
 
-            if (video.channel?.isFollowed != true) {
-                menu.getItem(2).title = "Mulai Mengikuti"
-            } else {
-                menu.getItem(2).title = "Berhenti Mengikuti"
-            }
-
             setOnMenuItemClickListener { item ->
                 when (item.itemId) {
                     R.id.popSavePlaylist -> {
@@ -52,26 +46,6 @@ class WatchLaterActivity : BaseActivity() {
                     }
                     R.id.popDeleteList -> {
                         viewModel.deleteFromLater(video.ID.value())
-                        true
-                    }
-                    R.id.popFollow -> {
-                        if (video.channel?.isFollowed != true) {
-                            PlaymiDialogFragment.show(
-                                fragmentManager = supportFragmentManager,
-                                text = getString(R.string.channel_follow, video.channel?.name),
-                                okCallback = { viewModel.followChannel(video.channel?.ID.value()) }
-                            )
-                        } else {
-                            PlaymiDialogFragment.show(
-                                fragmentManager = supportFragmentManager,
-                                text = getString(
-                                    R.string.channel_unfollow,
-                                    video.channel?.name
-                                ),
-                                okCallback = { viewModel.unfollowChannel(video.channel?.ID.value()) }
-                            )
-                        }
-
                         true
                     }
                     else -> false
