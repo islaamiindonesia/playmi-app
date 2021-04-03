@@ -154,11 +154,6 @@ class VideoCategoryFragment(var categoryID: Int = 0) : BaseFragment(), BaseRecyc
 
     /* OBSERVERS */
     private fun observeGetAllVideoResult() {
-        val dialog = context?.createMaterialAlertDialog(
-            "Coba Lagi",
-            positiveCallback = { refresh() },
-            dismissCallback = { refresh() }
-        )
 
         viewModel.videoPagedListResultLd.observe(viewLifecycleOwner, Observer { result ->
             if (result.isNullOrEmpty()) {
@@ -175,7 +170,6 @@ class VideoCategoryFragment(var categoryID: Int = 0) : BaseFragment(), BaseRecyc
         viewModel.networkStatusLd.observe(viewLifecycleOwner, Observer { result ->
             when (result?.status) {
                 LOADING -> {
-                    dialog?.dismiss()
                 }
                 SUCCESS -> {
                     swipeRefreshLayout.stopRefreshing()
@@ -189,20 +183,18 @@ class VideoCategoryFragment(var categoryID: Int = 0) : BaseFragment(), BaseRecyc
                             "Anda belum mengikuti kanal manapun"
                         )
                         ERROR_CONNECTION -> {
-                            dialog?.let {
-                                context?.showMaterialAlertDialog(
-                                    it,
-                                    getString(R.string.error_connection)
-                                )
-                            }
+                            context?.showMaterialAlertDialog(
+                                    message = getString(R.string.error_connection),
+                                    positive = "Coba Lagi",
+                                    positiveCallback = { refresh() },
+                            )
                         }
                         ERROR_CONNECTION_TIMEOUT -> {
-                            dialog?.let {
-                                context?.showMaterialAlertDialog(
-                                    it,
-                                    getString(R.string.error_connection_timeout)
-                                )
-                            }
+                            context?.showMaterialAlertDialog(
+                                    message = getString(R.string.error_connection_timeout),
+                                    positive = "Coba Lagi",
+                                    positiveCallback = { refresh() },
+                            )
                         }
                         else -> {
                             handleApiError(errorMessage = result.message) { message ->
