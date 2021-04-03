@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.lifecycle.Observer
@@ -70,11 +71,7 @@ class HomeFragment(var list: List<Category> = emptyList()) : BaseFragment(), Bas
             }
         }
 
-        swipeRefresh.apply {
-            setColorSchemeResources(R.color.accent)
-            setProgressBackgroundColorSchemeResource(R.color.refresh_icon_background)
-            setOnRefreshListener { refresh() }
-        }
+        btnRetry.setOnClickListener { refresh() }
 
         viewModel.initHome()
         observeGetAllCategory()
@@ -97,14 +94,12 @@ class HomeFragment(var list: List<Category> = emptyList()) : BaseFragment(), Bas
                         viewPager.adapter = viewPagerAdapter
                         viewPager.offscreenPageLimit = result.data.size
                         tabLayout.setupWithViewPager(viewPager)
-                        swipeRefresh.isRefreshing = false
-                        swipeRefresh.isEnabled = false
-
+                        btnRetry.isVisible = false
                         setupTab(result.data)
                     }
                 }
                 ERROR -> {
-                    swipeRefresh.isEnabled = true
+                    btnRetry.isVisible = true
                     when (result.message) {
                         ERROR_CONNECTION -> {
                             showMaterialAlertDialog(
