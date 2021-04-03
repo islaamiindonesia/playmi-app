@@ -30,9 +30,12 @@
                 app:title="Kanal">
             </androidx.appcompat.widget.Toolbar>
             <com.google.android.material.card.MaterialCardView
+                android:id="@id/successLayout"
                 android:layout_marginTop="?attr/actionBarSize"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
+                tools:visibility="visible"
                 app:cardBackgroundColor="@color/layout_background_color">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -159,10 +162,10 @@
                             android:id="@+id/btnFollow"
                             style="@style/ButtonPrimaryRoundedRectangle"
                             android:layout_width="0dp"
-                            android:layout_height="wrap_content"
+                            android:layout_height="44dp"
                             android:layout_marginEnd="16dp"
-                            android:layout_weight="5"
-                            android:textSize="14sp"
+                            android:layout_weight="1"
+                            android:textSize="13sp"
                             android:paddingVertical="0dp"
                             android:text="Ikuti" />
 
@@ -170,10 +173,10 @@
                             android:id="@+id/btnUnfollow"
                             style="@style/ButtonPrimaryOutline"
                             android:layout_width="0dp"
-                            android:layout_height="wrap_content"
+                            android:layout_height="44dp"
                             android:layout_marginEnd="16dp"
-                            android:layout_weight="5"
-                            android:textSize="14sp"
+                            android:layout_weight="1"
+                            android:textSize="13sp"
                             android:paddingVertical="0dp"
                             android:text="Mengikuti"
                             android:visibility="gone" />
@@ -182,10 +185,12 @@
                             android:id="@+id/btnHide"
                             style="@style/ButtonPrimaryOutline"
                             android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="5"
-                            android:textSize="14sp"
+                            android:layout_height="44dp"
+                            android:layout_weight="1"
+                            android:textSize="13sp"
                             android:paddingVertical="0dp"
+                            android:ellipsize="end"
+                            android:maxLines="1"
                             android:text="Sembunyikan" />
                     </LinearLayout>
 
@@ -219,11 +224,8 @@
         android:layout_height="wrap_content">
 
         <androidx.core.widget.NestedScrollView
-            android:id="@+id/successLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone"
-            tools:visibility="visible"
             android:fillViewport="true">
 
             <LinearLayout
@@ -245,7 +247,7 @@
                     app:tabMode="fixed"
                     app:tabSelectedTextColor="@color/accent"
                     app:tabTextAppearance="@style/CustomTabText"
-                    app:tabTextColor="@color/text_color" />
+                    app:tabTextColor="?android:textColorPrimary" />
 
                 <View
                     android:layout_width="match_parent"
