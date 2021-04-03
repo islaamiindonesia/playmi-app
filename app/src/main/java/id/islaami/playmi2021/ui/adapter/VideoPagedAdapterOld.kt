@@ -19,10 +19,7 @@ import id.islaami.playmi2021.ui.video.VideoDetailActivity
 import id.islaami.playmi2021.ui.video.VideoLabelActivity
 import id.islaami.playmi2021.ui.video.VideoSubcategoryActivity
 import id.islaami.playmi2021.util.fromDbFormatDateTimeToCustomFormat
-import id.islaami.playmi2021.util.ui.loadExternalImage
-import id.islaami.playmi2021.util.ui.loadImage
-import id.islaami.playmi2021.util.ui.setVisibilityToGone
-import id.islaami.playmi2021.util.ui.setVisibilityToVisible
+import id.islaami.playmi2021.util.ui.*
 import id.islaami.playmi2021.util.value
 import kotlinx.android.synthetic.main.video_item.view.*
 import java.text.SimpleDateFormat
@@ -51,7 +48,7 @@ class VideoPagedAdapterOld(
         fun bind(video: Video?) = with(itemView) {
             if (video != null) {
                 videoTitle.text = video.title
-                videoThumbnail.loadExternalImage("https://img.youtube.com/vi/${video.videoID}/sddefault.jpg")
+                videoThumbnail.loadYoutubeThumbnail(video.videoID ?: "")
                 channelName.text = video.channel?.name
                 channelIcon.loadImage(video.channel?.thumbnail)
                 views.text = "${video.views ?: 0}x"
