@@ -117,7 +117,6 @@ class HomeViewModel(
         getCategoryListResultLd = MutableLiveData()
 
         getAllCategory()
-        getAllVideo()
     }
 
     /* WATCH LATER */
