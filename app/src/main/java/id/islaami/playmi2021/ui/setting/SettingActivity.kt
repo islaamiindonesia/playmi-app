@@ -1,9 +1,7 @@
 package id.islaami.playmi2021.ui.setting
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.location.Geocoder
-import android.location.LocationManager
+import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatDelegate.*
 import androidx.lifecycle.Observer
@@ -124,7 +122,12 @@ class SettingActivity : BaseSpecialActivity() {
 
         btnHelp.setOnClickListener()
         {
-            LegalActivity.startActivity(this)
+            startActivity(
+                    Intent.createChooser(Intent().apply {
+                        action = Intent.ACTION_VIEW
+                        setData(Uri.parse("https://support.allislaam.com/"))
+                    }, "Buka menggunakan:")
+            )
         }
 
         btnCollaborate.setOnClickListener()
