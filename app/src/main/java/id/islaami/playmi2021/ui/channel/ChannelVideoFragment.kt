@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import id.islaami.playmi2021.R
-import id.islaami.playmi2021.ui.adapter.VideoPagedAdapter
+import id.islaami.playmi2021.ui.adapter.VideoPagedAdapterOld
 import id.islaami.playmi2021.ui.base.BaseFragment
 import id.islaami.playmi2021.ui.base.BaseRecyclerViewFragment
 import id.islaami.playmi2021.util.ERROR_EMPTY_LIST
@@ -25,7 +25,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class ChannelVideoFragment(var channelID: Int) : BaseFragment(), BaseRecyclerViewFragment {
     val viewModel: ChannelViewModel by viewModel()
 
-    private var videoPagedAdapter = VideoPagedAdapter(context,
+    private var videoPagedAdapter = VideoPagedAdapterOld(context,
         popMenu = { context, menuView, video ->
             PopupMenu(context, menuView).apply {
                 inflate(R.menu.menu_popup_channel_detail)
