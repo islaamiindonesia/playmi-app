@@ -39,8 +39,6 @@ class PlaylistDetailActivity(var playlistId: Int = 0) : BaseActivity() {
     private var videoAdapter = VideoAdapter { context, menuView, video ->
         PopupMenu(context, menuView).apply {
             inflate(R.menu.menu_popup_playlist_video)
-            if (video.channel?.isFollowed != true) menu.getItem(3).title = "Mulai Mengikuti"
-            else menu.getItem(3).title = "Berhenti Mengikuti"
 
             menu.getItem(2).title = "Hapus dari ${intent.getStringExtra(EXTRA_NAME) ?: ""}"
 
@@ -59,26 +57,6 @@ class PlaylistDetailActivity(var playlistId: Int = 0) : BaseActivity() {
                             video.ID.value(),
                             playlistId
                         )
-                        true
-                    }
-                    R.id.popFollow -> {
-                        if (video.channel?.isFollowed != true) {
-                            PlaymiDialogFragment.show(
-                                fragmentManager = supportFragmentManager,
-                                text = getString(R.string.channel_follow, video.channel?.name),
-                                okCallback = { viewModel.followChannel(video.channel?.ID.value()) }
-                            )
-                        } else {
-                            PlaymiDialogFragment.show(
-                                fragmentManager = supportFragmentManager,
-                                text = getString(
-                                    R.string.channel_unfollow,
-                                    video.channel?.name
-                                ),
-                                okCallback = { viewModel.unfollowChannel(video.channel?.ID.value()) }
-                            )
-                        }
-
                         true
                     }
                     else -> false
