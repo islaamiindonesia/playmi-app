@@ -11,8 +11,4 @@
     <item
         android:id="@+id/popDeleteList"
         android:title="Hapus dari nama daftar"/>
-
-    <item
-        android:id="@+id/popFollow"
-        android:title="Mulai mengikuti"/>
 </menu>

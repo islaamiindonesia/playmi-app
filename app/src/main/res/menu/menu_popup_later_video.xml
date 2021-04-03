@@ -7,8 +7,4 @@
     <item
         android:id="@+id/popDeleteList"
         android:title="Hapus dari Tonton Nanti"/>
-
-    <item
-        android:id="@+id/popFollow"
-        android:title="Mulai mengikuti"/>
 </menu>
