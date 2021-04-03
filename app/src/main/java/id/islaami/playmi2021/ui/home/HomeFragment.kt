@@ -70,6 +70,12 @@ class HomeFragment(var list: List<Category> = emptyList()) : BaseFragment(), Bas
             }
         }
 
+        swipeRefresh.apply {
+            setColorSchemeResources(R.color.accent)
+            setProgressBackgroundColorSchemeResource(R.color.refresh_icon_background)
+            setOnRefreshListener { refresh() }
+        }
+
         viewModel.initHome()
         observeGetAllCategory()
     }
@@ -91,11 +97,14 @@ class HomeFragment(var list: List<Category> = emptyList()) : BaseFragment(), Bas
                         viewPager.adapter = viewPagerAdapter
                         viewPager.offscreenPageLimit = result.data.size
                         tabLayout.setupWithViewPager(viewPager)
+                        swipeRefresh.isRefreshing = false
+                        swipeRefresh.isEnabled = false
 
                         setupTab(result.data)
                     }
                 }
                 ERROR -> {
+                    swipeRefresh.isEnabled = true
                     when (result.message) {
                         ERROR_CONNECTION -> {
                             showMaterialAlertDialog(
