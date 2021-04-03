@@ -219,9 +219,35 @@ class VideoDetailActivity(
             )
         }
 
-        btnFollow.setOnClickListener { viewModel.followChannel(channelId) }
+        btnFollow.setOnClickListener {
+            if (channel?.isBlacklisted == true) {
+                PlaymiDialogFragment.show(
+                    fragmentManager = supportFragmentManager,
+                    text = "Kanal sedang Anda sembunyikan, untuk bisa mengikuti silakan tampilkan dulu kanal ini",
+                    okCallback = {
+                        ChannelDetailActivity.startActivity(
+                            this@VideoDetailActivity,
+                            channel?.name.toString(),
+                            channel?.ID.value()
+                        )
+                    },
+                    okText = "Tampilkan"
+                )
+            } else {
+                viewModel.followChannel(channelId)
+            }
 
-        btnUnfollow.setOnClickListener { viewModel.unfollowChannel(channelId) }
+        }
+
+        btnUnfollow.setOnClickListener {
+            PlaymiDialogFragment.show(
+                fragmentManager = supportFragmentManager,
+                text = getString(R.string.channel_unfollow, channel?.name),
+                okCallback = {
+                    viewModel.unfollowChannel(channelId)
+                }
+            )
+        }
 
         if (channel?.isFollowed == true) {
             btnUnfollow.setVisibilityToVisible()
