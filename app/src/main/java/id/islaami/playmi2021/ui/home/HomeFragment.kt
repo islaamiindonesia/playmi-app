@@ -22,7 +22,6 @@ import id.islaami.playmi2021.util.ERROR_CONNECTION
 import id.islaami.playmi2021.util.ERROR_CONNECTION_TIMEOUT
 import id.islaami.playmi2021.util.ResourceStatus.*
 import id.islaami.playmi2021.util.handleApiError
-import id.islaami.playmi2021.util.ui.createMaterialAlertDialog
 import id.islaami.playmi2021.util.ui.showLongToast
 import id.islaami.playmi2021.util.ui.showMaterialAlertDialog
 import id.islaami.playmi2021.util.value
@@ -80,19 +79,11 @@ class HomeFragment(var list: List<Category> = emptyList()) : BaseFragment(), Bas
     }
 
     private fun observeGetAllCategory() {
-        // init error dialog
-        val dialog = context?.createMaterialAlertDialog(
-            "Coba Lagi",
-            positiveCallback = { refresh() },
-            dismissCallback = { refresh() }
-        )
-
         // observe all category data that are received from the API.
         // observe will consist of 3 statuses, loading, success, and error.
         viewModel.getCategoryListResultLd.observe(viewLifecycleOwner, Observer { result ->
             when (result?.status) {
                 LOADING -> {
-                    dialog?.dismiss()
                 }
                 SUCCESS -> {
                     if (!result.data.isNullOrEmpty()) {
@@ -107,20 +98,20 @@ class HomeFragment(var list: List<Category> = emptyList()) : BaseFragment(), Bas
                 ERROR -> {
                     when (result.message) {
                         ERROR_CONNECTION -> {
-                            dialog?.let {
-                                context?.showMaterialAlertDialog(
-                                    it,
-                                    getString(R.string.error_connection)
-                                )
-                            }
+                            showMaterialAlertDialog(
+                                    context,
+                                    getString(R.string.error_connection),
+                                    "Coba Lagi",
+                                    positiveCallback = { refresh() },
+                            )
                         }
                         ERROR_CONNECTION_TIMEOUT -> {
-                            dialog?.let {
-                                context?.showMaterialAlertDialog(
-                                    it,
-                                    getString(R.string.error_connection_timeout)
-                                )
-                            }
+                            showMaterialAlertDialog(
+                                    context,
+                                    getString(R.string.error_connection_timeout),
+                                    "Coba Lagi",
+                                    positiveCallback = { refresh() },
+                            )
                         }
                         else -> {
                             handleApiError(errorMessage = result.message) {
