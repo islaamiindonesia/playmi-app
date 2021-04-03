@@ -125,12 +125,11 @@ class VideoUpdateFragment : BaseFragment(), BaseRecyclerViewFragment {
         observeFollowResult()
         observeUnfollowResult()
         observeWatchLaterResult()
+        observeGetAllVideoResult()
     }
 
     override fun onResume() {
         super.onResume()
-
-        observeGetAllVideoResult()
 
         val position =
             PreferenceManager.getDefaultSharedPreferences(context).getInt("UPDATE_SCROLL", 0)
