@@ -30,7 +30,7 @@ import kotlinx.android.synthetic.main.home_fragment.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 
-class HomeFragment(var list: List<Category> = emptyList()) : BaseFragment() {
+class HomeFragment(var list: List<Category> = emptyList()) : BaseFragment(), BaseRecyclerViewFragment {
     private val viewModel: HomeViewModel by viewModel()
 
     var viewPagerAdapter: ViewPagerAdapter? = null
@@ -181,5 +181,9 @@ class HomeFragment(var list: List<Category> = emptyList()) : BaseFragment() {
 
     companion object {
         fun newInstance(): Fragment = HomeFragment()
+    }
+
+    override fun scrollToTop() {
+        viewPagerAdapter?.getFragment(tabLayout.selectedTabPosition)?.scrollToTop()
     }
 }
