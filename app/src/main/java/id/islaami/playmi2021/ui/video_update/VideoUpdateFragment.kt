@@ -187,8 +187,7 @@ class VideoUpdateFragment : BaseFragment(), BaseRecyclerViewFragment {
                                 context,
                                 message = getString(R.string.error_connection),
                                 positive = "Coba Lagi",
-                                positiveCallback = { refresh() },
-                                dismissCallback = { refresh() }
+                                positiveCallback = { refresh() }
                             )
                         }
                         ERROR_CONNECTION_TIMEOUT -> {
@@ -196,8 +195,7 @@ class VideoUpdateFragment : BaseFragment(), BaseRecyclerViewFragment {
                                 context,
                                 message = getString(R.string.error_connection),
                                 positive = "Coba Lagi",
-                                positiveCallback = { refresh() },
-                                dismissCallback = { refresh() }
+                                positiveCallback = { refresh() }
                             )
                         }
                         else -> {

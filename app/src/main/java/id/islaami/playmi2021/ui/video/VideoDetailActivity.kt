@@ -364,16 +364,14 @@ class VideoDetailActivity(
                             showMaterialAlertDialog(
                                 getString(R.string.error_connection),
                                 "Coba Lagi",
-                                positiveCallback = { refresh() },
-                                dismissCallback = { refresh() }
+                                positiveCallback = { refresh() }
                             )
                         }
                         ERROR_CONNECTION_TIMEOUT -> {
                             showMaterialAlertDialog(
                                 getString(R.string.error_connection_timeout),
                                 "Coba Lagi",
-                                positiveCallback = { refresh() },
-                                dismissCallback = { refresh() }
+                                positiveCallback = { refresh() }
                             )
                         }
                         else -> {
@@ -404,16 +402,14 @@ class VideoDetailActivity(
                             showMaterialAlertDialog(
                                 getString(R.string.error_connection),
                                 "Coba Lagi",
-                                positiveCallback = { refresh() },
-                                dismissCallback = { refresh() }
+                                positiveCallback = { refresh() }
                             )
                         }
                         ERROR_CONNECTION_TIMEOUT -> {
                             showMaterialAlertDialog(
                                 getString(R.string.error_connection_timeout),
                                 "Coba Lagi",
-                                positiveCallback = { refresh() },
-                                dismissCallback = { refresh() }
+                                positiveCallback = { refresh() }
                             )
                         }
                         else -> handleApiError(errorMessage = result.message) { showLongToast(it) }

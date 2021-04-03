@@ -203,16 +203,14 @@ class WatchLaterActivity : BaseActivity() {
                             showMaterialAlertDialog(
                                 message = getString(R.string.error_connection),
                                 positive = "Coba Lagi",
-                                positiveCallback = { refresh() },
-                                dismissCallback = { refresh() }
+                                positiveCallback = { refresh() }
                             )
                         }
                         ERROR_CONNECTION_TIMEOUT -> {
                             showMaterialAlertDialog(
                                 message = getString(R.string.error_connection),
                                 positive = "Coba Lagi",
-                                positiveCallback = { refresh() },
-                                dismissCallback = { refresh() }
+                                positiveCallback = { refresh() }
                             )
                         }
                         else -> {
@@ -245,8 +243,7 @@ class WatchLaterActivity : BaseActivity() {
                             showMaterialAlertDialog(
                                 message = getString(R.string.error_connection),
                                 positive = "Coba Lagi",
-                                positiveCallback = { refresh() },
-                                dismissCallback = { refresh() }
+                                positiveCallback = { refresh() }
 
                             )
                         }
@@ -254,8 +251,7 @@ class WatchLaterActivity : BaseActivity() {
                             showMaterialAlertDialog(
                                 message = getString(R.string.error_connection),
                                 positive = "Coba Lagi",
-                                positiveCallback = { refresh() },
-                                dismissCallback = { refresh() }
+                                positiveCallback = { refresh() }
                             )
                         }
                         else -> {

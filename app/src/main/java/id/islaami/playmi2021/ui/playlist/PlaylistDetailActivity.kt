@@ -272,16 +272,14 @@ class PlaylistDetailActivity(var playlistId: Int = 0) : BaseActivity() {
                             showMaterialAlertDialog(
                                 getString(R.string.error_connection),
                                 "Coba Lagi",
-                                positiveCallback = { refresh() },
-                                dismissCallback = { refresh() }
+                                positiveCallback = { refresh() }
                             )
                         }
                         ERROR_CONNECTION_TIMEOUT -> {
                             showMaterialAlertDialog(
                                 getString(R.string.error_connection_timeout),
                                 "Coba Lagi",
-                                positiveCallback = { refresh() },
-                                dismissCallback = { refresh() }
+                                positiveCallback = { refresh() }
                             )
                         }
                         else -> {
@@ -312,16 +310,14 @@ class PlaylistDetailActivity(var playlistId: Int = 0) : BaseActivity() {
                             showMaterialAlertDialog(
                                 getString(R.string.error_connection),
                                 "Coba Lagi",
-                                positiveCallback = { refresh() },
-                                dismissCallback = { refresh() }
+                                positiveCallback = { refresh() }
                             )
                         }
                         ERROR_CONNECTION_TIMEOUT -> {
                             showMaterialAlertDialog(
                                 getString(R.string.error_connection_timeout),
                                 "Coba Lagi",
-                                positiveCallback = { refresh() },
-                                dismissCallback = { refresh() }
+                                positiveCallback = { refresh() }
                             )
                         }
                         else -> {
@@ -347,16 +343,14 @@ class PlaylistDetailActivity(var playlistId: Int = 0) : BaseActivity() {
                             showMaterialAlertDialog(
                                 getString(R.string.error_connection),
                                 "Coba Lagi",
-                                positiveCallback = { refresh() },
-                                dismissCallback = { refresh() }
+                                positiveCallback = { refresh() }
                             )
                         }
                         ERROR_CONNECTION_TIMEOUT -> {
                             showMaterialAlertDialog(
                                 getString(R.string.error_connection_timeout),
                                 "Coba Lagi",
-                                positiveCallback = { refresh() },
-                                dismissCallback = { refresh() }
+                                positiveCallback = { refresh() }
                             )
                         }
                         else -> {
@@ -382,16 +376,14 @@ class PlaylistDetailActivity(var playlistId: Int = 0) : BaseActivity() {
                             showMaterialAlertDialog(
                                 getString(R.string.error_connection),
                                 "Coba Lagi",
-                                positiveCallback = { refresh() },
-                                dismissCallback = { refresh() }
+                                positiveCallback = { refresh() }
                             )
                         }
                         ERROR_CONNECTION_TIMEOUT -> {
                             showMaterialAlertDialog(
                                 getString(R.string.error_connection_timeout),
                                 "Coba Lagi",
-                                positiveCallback = { refresh() },
-                                dismissCallback = { refresh() }
+                                positiveCallback = { refresh() }
                             )
                         }
                         else -> {
@@ -418,7 +410,6 @@ class PlaylistDetailActivity(var playlistId: Int = 0) : BaseActivity() {
                                 getString(R.string.error_connection),
                                 "Coba Lagi",
                                 positiveCallback = { refresh() },
-                                dismissCallback = { refresh() }
                             )
                         }
                         ERROR_CONNECTION_TIMEOUT -> {
@@ -426,7 +417,6 @@ class PlaylistDetailActivity(var playlistId: Int = 0) : BaseActivity() {
                                 getString(R.string.error_connection_timeout),
                                 "Coba Lagi",
                                 positiveCallback = { refresh() },
-                                dismissCallback = { refresh() }
                             )
                         }
                         else -> {
@@ -453,16 +443,14 @@ class PlaylistDetailActivity(var playlistId: Int = 0) : BaseActivity() {
                             showMaterialAlertDialog(
                                 getString(R.string.error_connection),
                                 "Coba Lagi",
-                                positiveCallback = { refresh() },
-                                dismissCallback = { refresh() }
+                                positiveCallback = { refresh() }
                             )
                         }
                         ERROR_CONNECTION_TIMEOUT -> {
                             showMaterialAlertDialog(
                                 getString(R.string.error_connection_timeout),
                                 "Coba Lagi",
-                                positiveCallback = { refresh() },
-                                dismissCallback = { refresh() }
+                                positiveCallback = { refresh() }
                             )
                         }
                         else -> {
@@ -489,16 +477,14 @@ class PlaylistDetailActivity(var playlistId: Int = 0) : BaseActivity() {
                             showMaterialAlertDialog(
                                 getString(R.string.error_connection),
                                 "Coba Lagi",
-                                positiveCallback = { refresh() },
-                                dismissCallback = { refresh() }
+                                positiveCallback = { refresh() }
                             )
                         }
                         ERROR_CONNECTION_TIMEOUT -> {
                             showMaterialAlertDialog(
                                 getString(R.string.error_connection_timeout),
                                 "Coba Lagi",
-                                positiveCallback = { refresh() },
-                                dismissCallback = { refresh() }
+                                positiveCallback = { refresh() }
                             )
                         }
                         else -> {
@@ -525,16 +511,14 @@ class PlaylistDetailActivity(var playlistId: Int = 0) : BaseActivity() {
                             showMaterialAlertDialog(
                                 getString(R.string.error_connection),
                                 "Coba Lagi",
-                                positiveCallback = { refresh() },
-                                dismissCallback = { refresh() }
+                                positiveCallback = { refresh() }
                             )
                         }
                         ERROR_CONNECTION_TIMEOUT -> {
                             showMaterialAlertDialog(
                                 getString(R.string.error_connection_timeout),
                                 "Coba Lagi",
-                                positiveCallback = { refresh() },
-                                dismissCallback = { refresh() }
+                                positiveCallback = { refresh() }
                             )
                         }
                         else -> {

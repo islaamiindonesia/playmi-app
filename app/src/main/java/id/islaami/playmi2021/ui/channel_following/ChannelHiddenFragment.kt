@@ -106,8 +106,7 @@ class ChannelHiddenFragment : BaseFragment(), BaseRecyclerViewFragment {
                                 context,
                                 getString(R.string.error_connection),
                                 "Coba Lagi",
-                                positiveCallback = { refresh() },
-                                dismissCallback = { refresh() }
+                                positiveCallback = { refresh() }
                             )
                         }
                         ERROR_CONNECTION_TIMEOUT -> {
@@ -115,8 +114,7 @@ class ChannelHiddenFragment : BaseFragment(), BaseRecyclerViewFragment {
                                 context,
                                 getString(R.string.error_connection_timeout),
                                 "Coba Lagi",
-                                positiveCallback = { refresh() },
-                                dismissCallback = { refresh() }
+                                positiveCallback = { refresh() }
                             )
                         }
                         else -> {
