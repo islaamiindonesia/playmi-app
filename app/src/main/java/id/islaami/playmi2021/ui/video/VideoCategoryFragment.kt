@@ -105,12 +105,12 @@ class VideoCategoryFragment(var categoryID: Int = 0) : BaseFragment(), BaseRecyc
         observeFollowResult()
         observeUnfollowResult()
         observeHideResult()
+        observeGetAllVideoResult()
+
     }
 
     override fun onResume() {
         super.onResume()
-
-        observeGetAllVideoResult()
 
         recyclerView.scrollToPosition(scrollPosition)
     }
