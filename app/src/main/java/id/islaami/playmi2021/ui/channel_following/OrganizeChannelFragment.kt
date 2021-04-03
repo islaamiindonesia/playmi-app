@@ -23,7 +23,10 @@ import id.islaami.playmi2021.util.value
 import kotlinx.android.synthetic.main.organize_channel_fragment.*
 import kotlinx.android.synthetic.main.organize_channel_fragment.toolbar
 
-class OrganizeChannelFragment : BaseFragment() {
+class OrganizeChannelFragment : BaseFragment(), BaseRecyclerViewFragment {
+
+    var viewPagerAdapter: ViewPagerAdapter? = null
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -63,7 +66,7 @@ class OrganizeChannelFragment : BaseFragment() {
             }
         }
 
-        val viewPagerAdapter = ViewPagerAdapter(childFragmentManager)
+        viewPagerAdapter = ViewPagerAdapter(childFragmentManager)
         viewPager.adapter = viewPagerAdapter
         viewPager.offscreenPageLimit = 2
         tabLayout.setupWithViewPager(viewPager)
@@ -76,7 +79,7 @@ class OrganizeChannelFragment : BaseFragment() {
         val tabColorDefault = context?.let { ContextCompat.getColor(it, R.color.main_tab) }
         val tabColorSelected = context?.let { ContextCompat.getColor(it, R.color.accent) }
 
-        for (tabPosition in 0 until viewPagerAdapter.count) {
+        for (tabPosition in 0 until (viewPagerAdapter?.count ?: 0)) {
             val tabItem: TextView =
                 LayoutInflater.from(context)
                     .inflate(R.layout.organize_channel_tab_item, null) as TextView
@@ -91,7 +94,7 @@ class OrganizeChannelFragment : BaseFragment() {
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabReselected(tab: TabLayout.Tab?) {
-                viewPagerAdapter.getFragment(tab?.position ?: 0).scrollToTop()
+                viewPagerAdapter?.getFragment(tab?.position ?: 0)?.scrollToTop()
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {
@@ -140,5 +143,9 @@ class OrganizeChannelFragment : BaseFragment() {
 
     companion object {
         fun newInstance(): Fragment = OrganizeChannelFragment()
+    }
+
+    override fun scrollToTop() {
+        viewPagerAdapter?.getFragment(tabLayout.selectedTabPosition)?.scrollToTop()
     }
 }
