@@ -25,7 +25,13 @@ class VideoBySubcategoryDataSource(
                 .subscribe(
                     { result ->
                         if (!result.isNullOrEmpty()) {
-                            callback.onResult(result.filter { it.isPublished ?: false }, null, 2)
+                            val resultWithAds: MutableList<Video?> =
+                                result.filter { it.isPublished ?: false }.toMutableList()
+                            result.forEachIndexed { index, video ->
+                                if ((index + 1) % 6 == 0 && (index + 1) != 1)
+                                    resultWithAds.add(index+1, Video(99990000+index, "ads"))
+                            }
+                            callback.onResult(resultWithAds, null, 2)
                             networkStatus.setSuccess()
                         } else {
                             networkStatus.setError(ERROR_EMPTY_LIST)
@@ -43,7 +49,16 @@ class VideoBySubcategoryDataSource(
                 .subscribe(
                     { result ->
                         if (!result.isNullOrEmpty()) {
-                            callback.onResult(result.filter { it.isPublished ?: false }, params.key + 1)
+                            val resultWithAds: MutableList<Video?> =
+                                result.filter { it.isPublished ?: false }.toMutableList()
+                            val previousCount = (params.key-1)*10
+                            val previousCountWithAds = previousCount + (previousCount/6)
+                            result.forEachIndexed { index, video ->
+                                val indexWithPrevious = index+previousCountWithAds
+                                if ((indexWithPrevious + 1) % 7 == 0)
+                                    resultWithAds.add(index+1, Video(99990000+indexWithPrevious, "ads"))
+                            }
+                            callback.onResult(resultWithAds, params.key + 1)
                         }
                         networkStatus.setSuccess()
                     },

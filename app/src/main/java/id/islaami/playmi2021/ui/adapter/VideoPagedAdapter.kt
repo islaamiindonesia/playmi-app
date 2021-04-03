@@ -73,12 +73,11 @@ class VideoPagedAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         /*if (holder is AdViewHolder)
             Log.i("Cek ", "Ad at position: $position")*/
-        val calculatedPosition = position - (position+1)/7
-        holder.bindView(getItem(calculatedPosition))
+        holder.bindView(getItem(position))
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if ((position+1) % 7 == 0 && (position+1) != 1) UNIFIED_NATIVE_AD_VIEW_TYPE
+        return if (getItem(position)?.title == "ads") UNIFIED_NATIVE_AD_VIEW_TYPE
         else VIDEO_ITEM_VIEW_TYPE
     }
 
