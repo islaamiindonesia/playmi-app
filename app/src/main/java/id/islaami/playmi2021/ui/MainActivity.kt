@@ -49,14 +49,14 @@ class MainActivity : BaseActivity() {
 
         val tabIconListSelected = arrayOf(
             R.drawable.ic_home_selected,
-            R.drawable.ic_explore_selected,
+            R.drawable.ic_notification_selected,
             R.drawable.ic_playlist_selected,
             R.drawable.ic_following_selected
         )
 
         val tabIconListDefault = arrayOf(
             R.drawable.ic_home,
-            R.drawable.ic_explore,
+            R.drawable.ic_notification,
             R.drawable.ic_playlist,
             R.drawable.ic_following
         )
@@ -124,8 +124,8 @@ class MainActivity : BaseActivity() {
 
         override fun getItem(position: Int): Fragment {
             return when (position) {
-                0 -> VideoUpdateFragment.newInstance()
-                1 -> HomeFragment.newInstance()
+                0 -> HomeFragment.newInstance()
+                1 -> VideoUpdateFragment.newInstance()
                 2 -> PlaylistFragment.newInstance()
                 3 -> OrganizeChannelFragment.newInstance()
                 else -> Fragment()
