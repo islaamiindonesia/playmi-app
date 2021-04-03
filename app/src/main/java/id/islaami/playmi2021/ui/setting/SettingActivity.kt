@@ -1,20 +1,14 @@
 package id.islaami.playmi2021.ui.setting
-
-import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.LocationManager
 import android.os.Bundle
-import android.os.Looper
-import android.provider.Settings
 import androidx.appcompat.app.AppCompatDelegate.*
-import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Observer
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.location.*
 import com.google.firebase.iid.FirebaseInstanceId
 import id.islaami.playmi2021.R
 import id.islaami.playmi2021.data.model.kotpref.Mode
@@ -56,7 +50,6 @@ class SettingActivity : BaseSpecialActivity() {
 
         stgLanguage.text = Locale(viewModel.selectedLocale).displayLanguage
 
-        setupLocation()
         setupButton()
 
         swipeRefreshLayout.apply {
@@ -92,26 +85,6 @@ class SettingActivity : BaseSpecialActivity() {
             override fun onAdClosed() {
                 // Code to be executed when the user is about to return
                 // to the app after tapping on an ad.
-            }
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        if (checkAccessLocationPermission()) {
-            getLastLocation()
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == PERMISSION_ID) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                getLastLocation()
             }
         }
     }
@@ -180,114 +153,8 @@ class SettingActivity : BaseSpecialActivity() {
         }
     }
 
-    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-    private lateinit var geocoder: Geocoder
-
-    private val locationCallback: LocationCallback = object : LocationCallback() {
-        override fun onLocationResult(locationResult: LocationResult) {
-            val location = locationResult.lastLocation
-            getCityName(location.latitude, location.longitude)
-        }
-    }
-
-    private fun setupLocation() {
-        geocoder = Geocoder(this, Locale.getDefault())
-
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-
-        getLastLocation()
-    }
-
-    private fun getCityName(latitude: Double, longitude: Double) {
-        val address = geocoder.getFromLocation(latitude, longitude, 1)
-
-        if (!address.isNullOrEmpty()) {
-            stgLocation.text = address[0].locality
-        }
-    }
-
-    private fun getLastLocation() {
-        if (checkAccessLocationPermission()) {
-            if (checkIsLocationEnabled()) {
-                fusedLocationProviderClient.lastLocation.addOnCompleteListener { task ->
-                    val location = task.result
-                    if (location != null) {
-                        getCityName(location.latitude, location.longitude)
-                    } else {
-                        requestNewLocationData()
-                    }
-                }
-            } else {
-                showLongToast("Turn on location")
-                startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
-            }
-        } else {
-            requestAccessLocationPermission()
-        }
-    }
-
-    private fun requestNewLocationData() {
-        val locationRequest = LocationRequest()
-        locationRequest.apply {
-            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-            interval = 0
-            fastestInterval = 0
-            numUpdates = 1
-        }
-
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return
-        }
-        fusedLocationProviderClient.requestLocationUpdates(
-            locationRequest, locationCallback, Looper.myLooper()
-        )
-    }
-
-    private fun requestAccessLocationPermission() {
-        ActivityCompat.requestPermissions(
-            this,
-            listOf(
-                Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ).toTypedArray(),
-            PERMISSION_ID
-        )
-    }
-
-    private fun checkIsLocationEnabled(): Boolean {
-        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
-            LocationManager.NETWORK_PROVIDER
-        )
-    }
-
-    private fun checkAccessLocationPermission() =
-        ActivityCompat.checkSelfPermission(
-            this,
-            android.Manifest.permission.ACCESS_COARSE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(
-                    this,
-                    android.Manifest.permission.ACCESS_FINE_LOCATION
-                ) == PackageManager.PERMISSION_GRANTED
 
     companion object {
-        const val PERMISSION_ID = 100
 
         fun startActivity(context: Context?) {
             context?.startActivity(
