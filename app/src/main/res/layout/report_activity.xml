@@ -62,6 +62,7 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:padding="8dp"
+                android:tint="?attr/colorOnBackground"
                 app:srcCompat="@drawable/ic_add_photo" />
 
             <androidx.appcompat.widget.AppCompatImageView
