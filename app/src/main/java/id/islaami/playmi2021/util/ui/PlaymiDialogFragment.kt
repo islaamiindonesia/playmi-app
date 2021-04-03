@@ -36,6 +36,8 @@ class PlaymiDialogFragment : DialogFragment() {
             val okCallback: (() -> Unit)? =
                 bundle.getSerializable(EXTRA_OK_CALLBACK) as (() -> Unit)?
 
+            val okText = bundle.getString(EXTRA_OK_TEXT, "")
+            if (okText.isNotEmpty() && okText.isNotBlank()) btnOk.text = okText
             btnOk.apply {
                 setOnClickListener {
                     okCallback?.invoke()
@@ -58,6 +60,7 @@ class PlaymiDialogFragment : DialogFragment() {
 
     companion object {
         private const val EXTRA_TEXT = "EXTRA_TEXT"
+        private const val EXTRA_OK_TEXT = "EXTRA_OK_TEXT"
         private const val EXTRA_OK_CALLBACK = "EXTRA_OK_CALLBACK"
         private const val EXTRA_OUTSIDE_TOUCH_CALLBACK = "EXTRA_OUTSIDE_TOUCH_CALLBACK"
 
@@ -67,12 +70,14 @@ class PlaymiDialogFragment : DialogFragment() {
             fragmentManager: FragmentManager?,
             text: String,
             okCallback: (() -> Unit)? = null,
-            outsideTouchCallback: (() -> Unit)? = null
+            outsideTouchCallback: (() -> Unit)? = null,
+            okText: String? = null
         ) {
             if (fragmentManager != null) {
                 PlaymiDialogFragment().apply {
                     arguments = Bundle().apply {
                         putString(EXTRA_TEXT, text)
+                        putString(EXTRA_OK_TEXT, okText)
                         if (okCallback != null) putSerializable(
                             EXTRA_OK_CALLBACK,
                             okCallback as Serializable
