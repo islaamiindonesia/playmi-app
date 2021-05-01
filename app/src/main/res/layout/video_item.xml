@@ -43,10 +43,22 @@
             android:layout_marginStart="8dp"
             android:textColor="@color/text_color"
             android:textSize="14sp"
+            android:ellipsize="end"
+            android:maxWidth="280dp"
+            android:maxLines="1"
             app:layout_constraintBottom_toBottomOf="@+id/channelIcon"
             app:layout_constraintStart_toEndOf="@+id/channelIcon"
             app:layout_constraintTop_toTopOf="@+id/channelIcon"
-            tools:text="Google Developer" />
+            tools:text="Google Developer Google Developer Google Developer" />
+        <ImageView
+            android:id="@+id/verified_icon"
+            android:src="@drawable/ic_verified"
+            android:layout_marginStart="8dp"
+            android:tint="@color/accent"
+            android:visibility="gone"
+            tools:visibility="visible"
+            android:layout_width="14dp"
+            android:layout_height="14dp"/>
     </LinearLayout>
 
     <androidx.appcompat.widget.AppCompatImageView

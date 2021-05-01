@@ -44,11 +44,27 @@
             android:fontFamily="sans-serif-medium"
             android:textColor="@color/text_color"
             android:textSize="14sp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:maxWidth="270dp"
             app:layout_constraintBottom_toBottomOf="@id/card"
-            app:layout_constraintEnd_toStartOf="@+id/menu"
             app:layout_constraintStart_toEndOf="@id/card"
             app:layout_constraintTop_toTopOf="@id/card"
-            tools:text="Nama Channel" />
+            tools:text="Nama Channel Nama Channel Nama Channel" />
+
+        <ImageView
+            android:id="@+id/verified_icon"
+            android:src="@drawable/ic_verified"
+            android:layout_marginStart="8dp"
+            android:visibility="gone"
+            tools:visibility="visible"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintTop_toTopOf="@id/card"
+            app:layout_constraintBottom_toBottomOf="@id/card"
+            app:layout_constraintStart_toEndOf="@id/channelName"
+            app:layout_constraintEnd_toStartOf="@id/menu"
+            android:layout_width="14dp"
+            android:layout_height="14dp"/>
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/menu"

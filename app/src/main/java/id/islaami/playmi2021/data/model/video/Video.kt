@@ -24,8 +24,9 @@ data class Video(
     @field:Json(name = "is_published") var isPublished: Boolean? = null,
     @field:Json(name = "is_published_now") var isPublishedNow: Boolean? = null,
     @field:Json(name = "is_upload_shown") var isUploadShown: Boolean? = null,
-    @field:Json(name = "is_saved_later") var isSavedLater: Boolean? = null
-) : Parcelable {
+    @field:Json(name = "is_saved_later") var isSavedLater: Boolean? = null,
+    @field:Json(name = "series_id") var seriesId: Int? = null,
+    ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readValue(Int::class.java.classLoader) as? Int,
         parcel.readString(),
@@ -42,8 +43,9 @@ data class Video(
         parcel.readValue(Boolean::class.java.classLoader) as? Boolean,
         parcel.readValue(Boolean::class.java.classLoader) as? Boolean,
         parcel.readValue(Boolean::class.java.classLoader) as? Boolean,
-        parcel.readValue(Boolean::class.java.classLoader) as? Boolean
-    )
+        parcel.readValue(Boolean::class.java.classLoader) as? Boolean,
+        parcel.readValue(Int::class.java.classLoader) as? Int,
+        )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeValue(ID)
@@ -62,6 +64,7 @@ data class Video(
         parcel.writeValue(isPublishedNow)
         parcel.writeValue(isUploadShown)
         parcel.writeValue(isSavedLater)
+        parcel.writeValue(seriesId)
     }
 
     override fun describeContents(): Int {

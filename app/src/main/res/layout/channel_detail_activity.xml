@@ -71,16 +71,32 @@
                         app:layout_constraintStart_toEndOf="@+id/card"
                         app:layout_constraintTop_toTopOf="@+id/card">
 
-                        <androidx.appcompat.widget.AppCompatTextView
-                            android:id="@+id/channelName"
-                            style="@style/LabelText"
+                        <LinearLayout
+                            android:gravity="center"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="sans-serif-medium"
-                            android:text="Nama Channel"
-                            android:textAlignment="center"
-                            android:textColor="@color/text_color"
-                            android:textSize="16sp" />
+                            android:layout_height="wrap_content">
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/channelName"
+                                style="@style/LabelText"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="sans-serif-medium"
+                                android:text="Nama Channel Nama Channel Nama Channel"
+                                android:maxLines="1"
+                                android:ellipsize="end"
+                                android:maxWidth="240dp"
+                                android:textAlignment="center"
+                                android:textColor="@color/text_color"
+                                android:textSize="16sp" />
+                            <ImageView
+                                android:id="@+id/verified_icon"
+                                android:src="@drawable/ic_verified"
+                                android:layout_marginStart="8dp"
+                                android:visibility="gone"
+                                tools:visibility="visible"
+                                android:layout_width="14dp"
+                                android:layout_height="14dp"/>
+                        </LinearLayout>
 
                         <View
                             android:layout_width="match_parent"

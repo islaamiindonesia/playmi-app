@@ -36,4 +36,5 @@
     <string name="playlist_remove">Apakah ingin menghapus daftar <![CDATA[<b>%1$s</b>]]>?</string>
     <string name="video">Video</string>
     <string name="about">Tentang</string>
+    <string name="serial_video">Serial Video</string>
 </resources>

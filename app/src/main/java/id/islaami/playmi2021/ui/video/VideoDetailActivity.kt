@@ -15,6 +15,7 @@ import android.view.WindowManager.LayoutParams.FLAG_SECURE
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -196,6 +197,7 @@ class VideoDetailActivity(
                 )
             }
         }
+        verified_icon.isVisible = channel?.status == 1
 
         recyclerView.adapter =
             LabelAdapter(labels ?: emptyList(),

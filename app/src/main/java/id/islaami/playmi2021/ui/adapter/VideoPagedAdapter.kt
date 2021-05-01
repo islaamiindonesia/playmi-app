@@ -98,6 +98,8 @@ class VideoPagedAdapter(
                 channelName.text = video.channel?.name
                 channelIcon.loadImage(video.channel?.thumbnail)
                 views.text = "${video.views ?: 0}x"
+                verified_icon.isVisible = video.channel?.status == 1
+                serial.isVisible = video.seriesId != null
 
                 subcategoryName.apply {
                     text = video.subcategory?.name

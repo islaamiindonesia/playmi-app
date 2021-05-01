@@ -15,7 +15,8 @@ data class Channel(
     @field:Json(name = "followers") var followers: Int? = null,
     @field:Json(name = "is_followed") var isFollowed: Boolean? = null,
     @field:Json(name = "is_blacklisted") var isBlacklisted: Boolean? = null,
-    @field:Json(name = "videos") var videos: Int? = null
+    @field:Json(name = "videos") var videos: Int? = null,
+    @field:Json(name = "status") var status: Int? = null,
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readValue(Int::class.java.classLoader) as? Int,
@@ -26,8 +27,11 @@ data class Channel(
         parcel.readString(),
         parcel.readString(),
         parcel.readValue(Int::class.java.classLoader) as? Int,
-        parcel.readValue(Boolean::class.java.classLoader) as? Boolean
-    )
+        parcel.readValue(Boolean::class.java.classLoader) as? Boolean,
+        parcel.readValue(Boolean::class.java.classLoader) as? Boolean,
+        parcel.readValue(Int::class.java.classLoader) as? Int,
+        parcel.readValue(Int::class.java.classLoader) as? Int,
+        )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeValue(ID)
@@ -39,6 +43,9 @@ data class Channel(
         parcel.writeString(suspendedAt)
         parcel.writeValue(followers)
         parcel.writeValue(isFollowed)
+        parcel.writeValue(isBlacklisted)
+        parcel.writeValue(videos)
+        parcel.writeValue(status)
     }
 
     override fun describeContents(): Int {

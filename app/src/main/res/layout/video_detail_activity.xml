@@ -20,6 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
+            tools:visibility="visible"
             android:visibility="gone">
 
             <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
@@ -200,26 +201,43 @@
                                     app:srcCompat="@drawable/dummy_thumbnail" />
                             </com.google.android.material.card.MaterialCardView>
 
-                            <TextView
-                                android:id="@+id/channelName"
-                                style="@style/LabelText"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
+                            <LinearLayout
+                                android:id="@+id/channelNameVerified"
+                                ads:layout_constraintStart_toEndOf="@id/layoutPhoto"
+                                ads:layout_constraintEnd_toEndOf="parent"
+                                ads:layout_constraintTop_toTopOf="parent"
                                 android:layout_marginStart="@dimen/margin_8_dp"
-                                android:textSize="14sp"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintStart_toEndOf="@id/layoutPhoto"
-                                app:layout_constraintTop_toTopOf="parent"
-                                tools:text="Ini Channel Video" />
+                                android:gravity="center_vertical"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content">
+                                <TextView
+                                    android:id="@+id/channelName"
+                                    style="@style/LabelText"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textSize="14sp"
+                                    android:maxLines="1"
+                                    android:ellipsize="end"
+                                    android:maxWidth="200dp"
+                                    tools:text="Ini Channel Video Ini Ini Channel Video Ini" />
+                                <ImageView
+                                    android:id="@+id/verified_icon"
+                                    android:src="@drawable/ic_verified"
+                                    android:layout_marginStart="8dp"
+                                    android:visibility="gone"
+                                    tools:visibility="visible"
+                                    android:layout_width="14dp"
+                                    android:layout_height="14dp"/>
+                            </LinearLayout>
 
                             <TextView
                                 android:id="@+id/channelFollower"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:textSize="12sp"
-                                app:layout_constraintEnd_toEndOf="@id/channelName"
-                                app:layout_constraintStart_toStartOf="@id/channelName"
-                                app:layout_constraintTop_toBottomOf="@id/channelName"
+                                app:layout_constraintEnd_toEndOf="@id/channelNameVerified"
+                                app:layout_constraintStart_toStartOf="@id/channelNameVerified"
+                                app:layout_constraintTop_toBottomOf="@id/channelNameVerified"
                                 tools:text="2.000 Pengikut" />
                         </androidx.constraintlayout.widget.ConstraintLayout>
 

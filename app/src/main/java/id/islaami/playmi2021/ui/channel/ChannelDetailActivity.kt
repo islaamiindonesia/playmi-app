@@ -9,6 +9,7 @@ import android.util.SparseArray
 import android.view.*
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
@@ -210,6 +211,7 @@ class ChannelDetailActivity : BaseActivity() {
         channelName.text = name
         videoCount.text = videos?.toDouble().digitGrouping()
         followerCount.text = followers?.toDouble().digitGrouping()
+        verified_icon.isVisible = status == 1
 
         if (isFollowed == true) {
             btnUnfollow.setVisibilityToVisible()

@@ -3,6 +3,7 @@ package id.islaami.playmi2021.ui.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import id.islaami.playmi2021.R
 import id.islaami.playmi2021.data.model.channel.Channel
@@ -37,6 +38,7 @@ class ChannelHiddenAdapter(
         fun bind(channel: Channel) = with(itemView) {
             channelThumb.loadImage(channel.thumbnail)
             channelName.text = channel.name
+            verified_icon.isVisible = channel.status == 1
 
             itemLayout.setOnClickListener {
                 ChannelDetailActivity.startActivity(
