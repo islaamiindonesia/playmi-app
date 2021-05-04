@@ -65,14 +65,6 @@ class VideoPagedAdapterOld(
                     }
                 }
 
-                if (video.isUploadShown == false) {
-                    layoutUploadTime.setVisibilityToGone()
-                    dot.setVisibilityToGone()
-                } else {
-                    layoutUploadTime.setVisibilityToVisible()
-                    dot.setVisibilityToVisible()
-                }
-
                 recyclerView.adapter =
                     LabelAdapter(video.labels ?: emptyList(),
                         itemClickListener = { labelId, labelName ->

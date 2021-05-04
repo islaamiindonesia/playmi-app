@@ -175,10 +175,6 @@ class VideoDetailActivity(
             movementMethod = LinkMovementMethod.getInstance()
         }
 
-        if (isUploadShown == false) {
-            layoutUploadTime.setVisibilityToGone()
-        }
-
         videoViews.text = "${views}x"
 
         videoPublishedDate.text = publishedAt.fromDbFormatDateTimeToCustomFormat("dd MMMM yyyy")

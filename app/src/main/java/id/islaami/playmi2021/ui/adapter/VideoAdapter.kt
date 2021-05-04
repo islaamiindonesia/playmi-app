@@ -60,10 +60,6 @@ class VideoAdapter(
                 VideoSeriesActivity.startActivity(context, video.seriesId.value(), video.seriesName.toString())
             }
 
-            if (video.isUploadShown == false) {
-                layoutUploadTime.setVisibilityToGone()
-            }
-
             subcategoryName.apply {
                 text = video.subcategory?.name
                 setOnClickListener {
