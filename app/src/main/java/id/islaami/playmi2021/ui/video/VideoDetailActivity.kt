@@ -43,6 +43,7 @@ import id.islaami.playmi2021.util.ui.*
 import kotlinx.android.synthetic.main.add_new_playlist_dialog.view.*
 import kotlinx.android.synthetic.main.playlist_bottom_sheet.view.*
 import kotlinx.android.synthetic.main.video_detail_activity.*
+import kotlinx.android.synthetic.main.video_item.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class VideoDetailActivity(
@@ -196,6 +197,9 @@ class VideoDetailActivity(
         verified_icon.isVisible = channel?.status == 1
         serial.isVisible = seriesId != null
         serial_name.text = seriesName
+        serial_name.setOnClickListener {
+            VideoSeriesActivity.startActivity(this@VideoDetailActivity, seriesId.value(), seriesName.toString())
+        }
 
         recyclerView.adapter =
             LabelAdapter(labels ?: emptyList(),
