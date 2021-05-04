@@ -5,6 +5,7 @@ import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.marlonlom.utilities.timeago.TimeAgo
@@ -14,6 +15,7 @@ import id.islaami.playmi2021.data.model.video.Video
 import id.islaami.playmi2021.ui.channel.ChannelDetailActivity
 import id.islaami.playmi2021.ui.video.VideoDetailActivity
 import id.islaami.playmi2021.ui.video.VideoLabelActivity
+import id.islaami.playmi2021.ui.video.VideoSeriesActivity
 import id.islaami.playmi2021.ui.video.VideoSubcategoryActivity
 import id.islaami.playmi2021.util.fromDbFormatDateTimeToCustomFormat
 import id.islaami.playmi2021.util.ui.loadImage
@@ -52,6 +54,11 @@ class VideoAdapter(
             channelName.text = video.channel?.name
             channelIcon.loadImage(video.channel?.thumbnail)
             views.text = "${video.views ?: 0}x"
+            serial.isVisible = video.seriesId != null
+            serial_name.text = video.seriesName
+            serial.setOnClickListener {
+                VideoSeriesActivity.startActivity(context, video.seriesId.value(), video.seriesName.toString())
+            }
 
             if (video.isUploadShown == false) {
                 layoutUploadTime.setVisibilityToGone()

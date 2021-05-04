@@ -94,6 +94,32 @@
         app:layout_constraintStart_toStartOf="@+id/videoThumbnail"
         app:layout_constraintTop_toBottomOf="@+id/videoThumbnail">
 
+        <ImageView
+            android:id="@+id/serial_icon"
+            android:src="@drawable/ic_series_blue"
+            app:layout_constraintTop_toTopOf="@id/serial_name"
+            app:layout_constraintBottom_toBottomOf="@id/serial_name"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/serial_name"
+            tools:text="Serial Name"
+            android:layout_marginStart="6dp"
+            app:layout_constraintStart_toEndOf="@id/serial_icon"
+            android:textSize="13sp"
+            android:textColor="@color/accent"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/serial"
+            android:visibility="gone"
+            tools:visibility="visible"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="serial_icon,serial_name"/>
         <TextView
             android:id="@+id/videoTitle"
             android:layout_width="0dp"
@@ -103,9 +129,10 @@
             android:maxLines="2"
             android:textColor="@color/text_color"
             android:textSize="14sp"
+            android:layout_marginTop="4dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/serial_name"
             tools:text="Google's Video Title" />
 
         <TextView

@@ -9,14 +9,15 @@
     <application
         android:name=".PlaymiApp"
         android:allowBackup="true"
+        android:hardwareAccelerated="true"
         android:icon="@drawable/app_icon"
         android:label="@string/app_name"
         android:roundIcon="@drawable/app_icon"
-        android:hardwareAccelerated="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="n">
-        <activity android:name=".ui.auth.UnderageActivity"/>
+        <activity android:name=".ui.video.VideoSeriesActivity"></activity>
+        <activity android:name=".ui.auth.UnderageActivity" />
         <activity
             android:name=".ui.setting.LegalActivity"
             android:theme="@style/SpecialTheme" />

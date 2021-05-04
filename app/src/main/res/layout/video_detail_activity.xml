@@ -39,16 +39,41 @@
                     android:layout_height="wrap_content"
                     android:background="@color/layout_background_color"
                     android:orientation="vertical">
+                    <LinearLayout
+                        android:id="@+id/serial"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginStart="12dp"
+                        android:visibility="gone"
+                        tools:visibility="visible"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+                        <ImageView
+                            android:id="@+id/serial_icon"
+                            android:src="@drawable/ic_series_blue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                        <TextView
+                            android:id="@+id/serial_name"
+                            tools:text="Serial Name"
+                            android:layout_marginStart="6dp"
+                            android:textSize="13sp"
+                            android:textColor="@color/accent"
+                            android:textStyle="bold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                    </LinearLayout>
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
+                        android:layout_marginTop="8dp"
                         android:layout_height="wrap_content">
 
                         <TextView
                             android:id="@+id/videoTitle"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
                             android:layout_marginStart="12dp"
                             android:fontFamily="sans-serif-medium"
                             android:textColor="?android:attr/textColorPrimary"

@@ -11,6 +11,7 @@ import id.islaami.playmi2021.data.repository.PlaylistRepository
 import id.islaami.playmi2021.data.repository.VideoRepository
 import id.islaami.playmi2021.ui.base.BaseViewModel
 import id.islaami.playmi2021.ui.datafactory.VideoByLabelDataFactory
+import id.islaami.playmi2021.ui.datafactory.VideoBySeriesDataFactory
 import id.islaami.playmi2021.ui.datafactory.VideoBySubcategoryDataFactory
 import id.islaami.playmi2021.ui.datafactory.VideoDataFactory
 import id.islaami.playmi2021.util.*
@@ -27,6 +28,7 @@ class VideoViewModel(
     lateinit var videoDataFactory: VideoDataFactory
     lateinit var videoBySubcategoryDataFactory: VideoBySubcategoryDataFactory
     lateinit var videoByLabelDataFactory: VideoByLabelDataFactory
+    lateinit var videoBySeriesDataFactory: VideoBySeriesDataFactory
 
     fun getAllVideo(query: String? = null) {
         videoDataFactory = VideoDataFactory(disposable, video, query)
@@ -84,6 +86,25 @@ class VideoViewModel(
 
     fun refreshAllVideoByLabel() {
         videoByLabelDataFactory.refreshData()
+    }
+
+    fun getAllVideoBySeries(seriesId: Int) {
+        videoBySeriesDataFactory = VideoBySeriesDataFactory(disposable, video, seriesId)
+
+        networkStatusLd = videoBySeriesDataFactory.getNetworkStatus()
+
+        val pageListConfig = PagedList.Config.Builder()
+            .setEnablePlaceholders(false)
+            .setInitialLoadSizeHint(DEFAULT_SIZE)
+            .setPageSize(DEFAULT_SIZE)
+            .build()
+
+        videoPagedListResultLd =
+            LivePagedListBuilder(videoBySeriesDataFactory, pageListConfig).build()
+    }
+
+    fun refreshAllVideoBySeries() {
+        videoBySeriesDataFactory.refreshData()
     }
 
     /* WATCH LATER */
@@ -216,6 +237,10 @@ class VideoViewModel(
         unfollowResultLd = MutableLiveData()
 
         getAllVideoByLabel(categoryId, subcategoryId, labelId)
+    }
+
+    fun initVideoSeriesActivity(seriesId: Int) {
+        getAllVideoBySeries(seriesId)
     }
 
     fun initVideoSearchActivity() {

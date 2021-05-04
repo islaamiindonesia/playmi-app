@@ -37,6 +37,9 @@ class VideoRepository(
             labelId = labelId
         ).map { it.data }
 
+    fun getAllVideoBySeries(seriesId: Int, page: Int) =
+        video.getAllVideoBySeries(seriesId, page).map { it.data }
+
     fun getAllVideoByFollowing(page: Int) =
         video.getAllVideoByFollowing(page).map { it.data }
 

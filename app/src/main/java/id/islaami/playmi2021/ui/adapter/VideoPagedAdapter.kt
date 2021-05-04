@@ -30,6 +30,7 @@ import id.islaami.playmi2021.data.model.video.Video
 import id.islaami.playmi2021.ui.channel.ChannelDetailActivity
 import id.islaami.playmi2021.ui.video.VideoDetailActivity
 import id.islaami.playmi2021.ui.video.VideoLabelActivity
+import id.islaami.playmi2021.ui.video.VideoSeriesActivity
 import id.islaami.playmi2021.ui.video.VideoSubcategoryActivity
 import id.islaami.playmi2021.util.fromDbFormatDateTimeToCustomFormat
 import id.islaami.playmi2021.util.ui.*
@@ -40,7 +41,8 @@ import java.util.*
 
 class VideoPagedAdapter(
     var context: Context? = null,
-    var popMenu: (Context, View, Video) -> Unit
+    var popMenu: (Context, View, Video) -> Unit,
+    var showSeries: Boolean = true,
 ) : PagedListAdapter<Video, VideoPagedAdapter.ViewHolder>(DIFF_CALLBACK) {
 
     companion object {
@@ -99,7 +101,11 @@ class VideoPagedAdapter(
                 channelIcon.loadImage(video.channel?.thumbnail)
                 views.text = "${video.views ?: 0}x"
                 verified_icon.isVisible = video.channel?.status == 1
-                serial.isVisible = video.seriesId != null
+                serial.isVisible = video.seriesId != null && showSeries
+                serial_name.text = video.seriesName
+                serial_name.setOnClickListener {
+                    VideoSeriesActivity.startActivity(context, video.seriesId.value(), video.seriesName.toString())
+                }
 
                 subcategoryName.apply {
                     text = video.subcategory?.name

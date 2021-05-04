@@ -39,6 +39,12 @@ interface VideoApi {
         @Query("page") page: Int
     ): Single<ApiResponse<List<Video>>>
 
+    @GET("series/{seriesId}")
+    fun getAllVideoBySeries(
+        @Path("seriesId") seriesId: Int,
+        @Query("page") page: Int
+    ): Single<ApiResponse<List<Video>>>
+
     @GET("videos/following")
     fun getAllVideoByFollowing(@Query("page") page: Int): Single<ApiResponse<List<Video>>>
 

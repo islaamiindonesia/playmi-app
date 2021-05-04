@@ -198,6 +198,8 @@ class VideoDetailActivity(
             }
         }
         verified_icon.isVisible = channel?.status == 1
+        serial.isVisible = seriesId != null
+        serial_name.text = seriesName
 
         recyclerView.adapter =
             LabelAdapter(labels ?: emptyList(),
