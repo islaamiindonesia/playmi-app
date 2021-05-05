@@ -33,7 +33,6 @@ import id.islaami.playmi2021.R
 import id.islaami.playmi2021.data.model.kotpref.Mode
 import id.islaami.playmi2021.data.model.video.Video
 import id.islaami.playmi2021.ui.MainActivity
-import id.islaami.playmi2021.ui.adapter.LabelAdapter
 import id.islaami.playmi2021.ui.adapter.PlaylistSelectAdapter
 import id.islaami.playmi2021.ui.base.BaseVideoActivity
 import id.islaami.playmi2021.ui.channel.ChannelDetailActivity
@@ -200,20 +199,6 @@ class VideoDetailActivity(
         serial_name.setOnClickListener {
             VideoSeriesActivity.startActivity(this@VideoDetailActivity, seriesId.value(), seriesName.toString())
         }
-
-        recyclerView.adapter =
-            LabelAdapter(labels ?: emptyList(),
-                itemClickListener = { labelId, labelName ->
-                    VideoLabelActivity.startActivity(
-                        this@VideoDetailActivity,
-                        category?.ID.value(),
-                        subcategory?.ID.value(),
-                        labelId,
-                        labelName
-                    )
-                })
-        recyclerView.layoutManager =
-            LinearLayoutManager(this@VideoDetailActivity, LinearLayoutManager.HORIZONTAL, false)
 
         btnChannel.setOnClickListener {
             ChannelDetailActivity.startActivity(

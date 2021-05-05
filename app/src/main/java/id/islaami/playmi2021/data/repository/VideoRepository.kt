@@ -29,14 +29,6 @@ class VideoRepository(
         video.getAllVideoBySubcategory(page = page, categoryId = catId, subcategoryId = subId)
             .map { it.data }
 
-    fun getAllVideoByLabel(page: Int, catId: Int, subId: Int, labelId: Int) =
-        video.getAllVideoByLabel(
-            page = page,
-            categoryId = catId,
-            subcategoryId = subId,
-            labelId = labelId
-        ).map { it.data }
-
     fun getAllVideoBySeries(seriesId: Int, page: Int) =
         video.getAllVideoBySeries(seriesId, page).map { it.data }
 

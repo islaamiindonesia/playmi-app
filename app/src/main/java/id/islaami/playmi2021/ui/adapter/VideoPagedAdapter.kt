@@ -29,7 +29,6 @@ import id.islaami.playmi2021.R
 import id.islaami.playmi2021.data.model.video.Video
 import id.islaami.playmi2021.ui.channel.ChannelDetailActivity
 import id.islaami.playmi2021.ui.video.VideoDetailActivity
-import id.islaami.playmi2021.ui.video.VideoLabelActivity
 import id.islaami.playmi2021.ui.video.VideoSeriesActivity
 import id.islaami.playmi2021.ui.video.VideoSubcategoryActivity
 import id.islaami.playmi2021.util.fromDbFormatDateTimeToCustomFormat
@@ -118,20 +117,6 @@ class VideoPagedAdapter(
                         )
                     }
                 }
-
-                recyclerView.adapter =
-                    LabelAdapter(video.labels ?: emptyList(),
-                        itemClickListener = { labelId, labelName ->
-                            VideoLabelActivity.startActivity(
-                                context,
-                                video.category?.ID.value(),
-                                video.subcategory?.ID.value(),
-                                labelId,
-                                labelName
-                            )
-                        })
-                recyclerView.layoutManager =
-                    LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     val locale = Locale.forLanguageTag("id")

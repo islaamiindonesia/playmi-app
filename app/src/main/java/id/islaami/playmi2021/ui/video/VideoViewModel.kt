@@ -10,7 +10,6 @@ import id.islaami.playmi2021.data.repository.ChannelRepository
 import id.islaami.playmi2021.data.repository.PlaylistRepository
 import id.islaami.playmi2021.data.repository.VideoRepository
 import id.islaami.playmi2021.ui.base.BaseViewModel
-import id.islaami.playmi2021.ui.datafactory.VideoByLabelDataFactory
 import id.islaami.playmi2021.ui.datafactory.VideoBySeriesDataFactory
 import id.islaami.playmi2021.ui.datafactory.VideoBySubcategoryDataFactory
 import id.islaami.playmi2021.ui.datafactory.VideoDataFactory
@@ -27,7 +26,6 @@ class VideoViewModel(
     lateinit var videoPagedListResultLd: LiveData<PagedList<Video>>
     lateinit var videoDataFactory: VideoDataFactory
     lateinit var videoBySubcategoryDataFactory: VideoBySubcategoryDataFactory
-    lateinit var videoByLabelDataFactory: VideoByLabelDataFactory
     lateinit var videoBySeriesDataFactory: VideoBySeriesDataFactory
 
     fun getAllVideo(query: String? = null) {
@@ -66,26 +64,6 @@ class VideoViewModel(
 
     fun refreshAllVideoBySub() {
         videoBySubcategoryDataFactory.refreshData()
-    }
-
-    fun getAllVideoByLabel(categoryId: Int, subcategoryId: Int, labelId: Int) {
-        videoByLabelDataFactory =
-            VideoByLabelDataFactory(disposable, video, categoryId, subcategoryId, labelId)
-
-        networkStatusLd = videoByLabelDataFactory.getNetworkStatus()
-
-        val pageListConfig = PagedList.Config.Builder()
-            .setEnablePlaceholders(false)
-            .setInitialLoadSizeHint(DEFAULT_SIZE)
-            .setPageSize(DEFAULT_SIZE)
-            .build()
-
-        videoPagedListResultLd =
-            LivePagedListBuilder(videoByLabelDataFactory, pageListConfig).build()
-    }
-
-    fun refreshAllVideoByLabel() {
-        videoByLabelDataFactory.refreshData()
     }
 
     fun getAllVideoBySeries(seriesId: Int) {
@@ -228,15 +206,6 @@ class VideoViewModel(
         unfollowResultLd = MutableLiveData()
 
         getAllVideoBySubcategory(categoryId, subcategoryId)
-    }
-
-    fun initVideoLabelActivity(categoryId: Int, subcategoryId: Int, labelId: Int) {
-        watchLaterResultLd = MutableLiveData()
-        hideResultLd = MutableLiveData()
-        followResultLd = MutableLiveData()
-        unfollowResultLd = MutableLiveData()
-
-        getAllVideoByLabel(categoryId, subcategoryId, labelId)
     }
 
     fun initVideoSeriesActivity(seriesId: Int) {
