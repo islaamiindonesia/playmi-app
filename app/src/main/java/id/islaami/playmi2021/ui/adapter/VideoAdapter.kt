@@ -51,10 +51,11 @@ class VideoAdapter(
             videoThumbnail.loadYoutubeThumbnail(video.videoID ?: "")
             channelName.text = video.channel?.name
             channelIcon.loadImage(video.channel?.thumbnail)
+            verified_icon.isVisible = video.channel?.status == 1
             views.text = "${video.views ?: 0}x"
             serial.isVisible = video.seriesId != null
             serial_name.text = video.seriesName
-            serial.setOnClickListener {
+            serial_name.setOnClickListener {
                 VideoSeriesActivity.startActivity(context, video.seriesId.value(), video.seriesName.toString())
             }
 

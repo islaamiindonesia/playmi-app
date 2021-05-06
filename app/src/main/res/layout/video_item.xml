@@ -8,7 +8,7 @@
     android:background="@color/layout_background_color"
     android:paddingBottom="8dp">
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/channelLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -23,6 +23,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/channelIconContainer"
             android:layout_width="wrap_content"
             android:layout_height="30dp"
             app:cardCornerRadius="25dp"
@@ -35,31 +36,31 @@
                 android:scaleType="centerCrop"
                 tools:srcCompat="@tools:sample/backgrounds/scenic[7]" />
         </com.google.android.material.card.MaterialCardView>
-
         <TextView
             android:id="@+id/channelName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/channelIconContainer"
+            android:layout_centerVertical="true"
+            android:includeFontPadding="false"
+            android:paddingEnd="15dp"
             android:layout_marginStart="8dp"
             android:textColor="@color/text_color"
             android:textSize="14sp"
             android:ellipsize="end"
-            android:maxWidth="280dp"
             android:maxLines="1"
-            app:layout_constraintBottom_toBottomOf="@+id/channelIcon"
-            app:layout_constraintStart_toEndOf="@+id/channelIcon"
-            app:layout_constraintTop_toTopOf="@+id/channelIcon"
-            tools:text="Google Developer Google Developer Google Developer" />
+            tools:text="Google Developer Google " />
         <ImageView
             android:id="@+id/verified_icon"
             android:src="@drawable/ic_verified"
-            android:layout_marginStart="8dp"
+            android:layout_alignEnd="@id/channelName"
             android:tint="@color/accent"
             android:visibility="gone"
+            android:layout_centerVertical="true"
             tools:visibility="visible"
-            android:layout_width="14dp"
-            android:layout_height="14dp"/>
-    </LinearLayout>
+            android:layout_width="11dp"
+            android:layout_height="11dp"/>
+    </RelativeLayout>
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/menu"
@@ -85,7 +86,7 @@
         app:layout_constraintTop_toBottomOf="@+id/channelLayout"
         tools:srcCompat="@tools:sample/backgrounds/scenic[7]" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <RelativeLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -93,33 +94,36 @@
         app:layout_constraintEnd_toEndOf="@id/videoThumbnail"
         app:layout_constraintStart_toStartOf="@+id/videoThumbnail"
         app:layout_constraintTop_toBottomOf="@+id/videoThumbnail">
-
-        <ImageView
-            android:id="@+id/serial_icon"
-            android:src="@drawable/ic_series_blue"
-            app:layout_constraintTop_toTopOf="@id/serial_name"
-            app:layout_constraintBottom_toBottomOf="@id/serial_name"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-        <TextView
-            android:id="@+id/serial_name"
-            tools:text="Serial Name"
-            android:layout_marginStart="6dp"
-            app:layout_constraintStart_toEndOf="@id/serial_icon"
-            android:textSize="13sp"
-            android:textColor="@color/accent"
-            android:textStyle="bold"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-        <androidx.constraintlayout.widget.Group
+        <LinearLayout
             android:id="@+id/serial"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:orientation="horizontal"
             android:visibility="gone"
             tools:visibility="visible"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:constraint_referenced_ids="serial_icon,serial_name"/>
+            android:gravity="center_vertical"
+            android:layout_marginBottom="3dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/serial_icon"
+                android:src="@drawable/ic_series"
+                android:layout_width="12dp"
+                android:layout_height="12dp"/>
+            <TextView
+                android:id="@+id/serial_name"
+                tools:text="Serial Name"
+                android:layout_marginStart="6dp"
+                android:includeFontPadding="false"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textSize="13sp"
+                android:textColor="@color/accent"
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
         <TextView
             android:id="@+id/videoTitle"
             android:layout_width="0dp"
@@ -129,10 +133,9 @@
             android:maxLines="2"
             android:textColor="@color/text_color"
             android:textSize="14sp"
-            android:layout_marginTop="4dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/serial_name"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@id/serial"
             tools:text="Google's Video Title" />
 
         <TextView
@@ -146,18 +149,21 @@
             android:clickable="true"
             android:focusable="true"
             android:background="?selectableItemBackground"
-            app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
-            app:layout_constraintEnd_toEndOf="@+id/videoTitle"
-            app:layout_constraintTop_toTopOf="@+id/linearLayout"
+            android:layout_alignEnd="@id/videoTitle"
+            android:layout_alignTop="@id/linearLayout"
+            android:layout_alignBottom="@id/linearLayout"
             tools:text="Hijrah" />
 
         <LinearLayout
             android:id="@+id/linearLayout"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:gravity="center_vertical"
             android:orientation="horizontal"
+            android:layout_below="@id/videoTitle"
+            android:layout_alignStart="@id/videoTitle"
+            android:layout_toStartOf="@id/subcategoryName"
             app:layout_constraintEnd_toStartOf="@id/subcategoryName"
             app:layout_constraintStart_toStartOf="@id/videoTitle"
             app:layout_constraintTop_toBottomOf="@id/videoTitle">
@@ -208,5 +214,5 @@
                     tools:text="6 bulan yang lalu" />
             </LinearLayout>
         </LinearLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </RelativeLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

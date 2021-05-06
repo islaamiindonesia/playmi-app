@@ -209,6 +209,7 @@ class VideoViewModel(
     }
 
     fun initVideoSeriesActivity(seriesId: Int) {
+        watchLaterResultLd = MutableLiveData()
         getAllVideoBySeries(seriesId)
     }
 

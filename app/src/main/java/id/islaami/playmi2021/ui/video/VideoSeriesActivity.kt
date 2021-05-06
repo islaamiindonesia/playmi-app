@@ -71,6 +71,7 @@ class VideoSeriesActivity(
         swipeRefreshLayout.startRefreshing()
 
         observeGetAllVideoResult()
+        observeWatchLaterResult()
 
         val position =
             PreferenceManager.getDefaultSharedPreferences(this).getInt("SERIES_SCROLL", 0)
@@ -150,6 +151,23 @@ class VideoSeriesActivity(
                         else -> {
                             handleApiError(errorMessage = result.message) { showLongToast(it) }
                         }
+                    }
+                }
+            }
+        })
+    }
+
+    private fun observeWatchLaterResult() {
+        viewModel.watchLaterResultLd.observe(this, Observer { result ->
+            when (result?.status) {
+                LOADING -> {
+                }
+                SUCCESS -> {
+                    showLongToast("Berhasil disimpan")
+                }
+                ERROR -> {
+                    handleApiError(errorMessage = result.message) { message ->
+                        showLongToast(message)
                     }
                 }
             }
