@@ -5,6 +5,7 @@
     android:id="@+id/itemLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:paddingTop="5dp"
     android:background="@color/layout_background_color"
     android:paddingBottom="8dp">
 
