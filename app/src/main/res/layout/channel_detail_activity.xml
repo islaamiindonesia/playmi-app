@@ -239,7 +239,7 @@
     <TextView
         android:id="@+id/suspendedText"
         android:text="Kanal ditangguhkan"
-        android:textColor="@color/black"
+        android:textColor="@color/text_color"
         android:padding="8dp"
         android:textStyle="bold"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"

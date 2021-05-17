@@ -213,7 +213,7 @@ class ChannelDetailActivity : BaseActivity() {
         followerCount.text = followers?.toDouble().digitGrouping()
         verified_icon.isVisible = status == 1
 
-        if (isBlacklisted != null) {
+        if (suspendedAt != null) {
             swipeRefreshLayout.isVisible = false
             suspendedText.isVisible = true
             showLongToast("Kanal ditangguhkan")
