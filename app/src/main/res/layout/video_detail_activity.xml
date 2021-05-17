@@ -115,7 +115,6 @@
                             android:layout_height="wrap_content"
                             android:gravity="center_vertical"
                             android:orientation="horizontal"
-                            android:layout_marginTop="5dp"
                             app:layout_constraintBottom_toBottomOf="@+id/subcategoryName"
                             app:layout_constraintEnd_toStartOf="@id/subcategoryName"
                             app:layout_constraintStart_toStartOf="parent"
@@ -177,9 +176,11 @@
                             android:padding="4dp"
                             android:textAllCaps="true"
                             android:textColor="@color/accent"
+                            android:layout_marginTop="5dp"
                             android:textSize="10sp"
                             ads:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
+                            ads:layout_constraintBottom_toBottomOf="parent"
                             tools:text="Hijrah" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
