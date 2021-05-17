@@ -171,6 +171,7 @@ class RegisterActivity(
             etPassword.text.toString()
         )?.addOnCompleteListener(this) { task ->
             if (task.isSuccessful) {
+                viewModel.verify(etEmail.text.toString())
                 viewModel.register(
                     fullname = etName.text.toString(),
                     email = etEmail.text.toString(),

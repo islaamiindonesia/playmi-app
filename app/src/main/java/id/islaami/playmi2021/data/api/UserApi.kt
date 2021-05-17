@@ -19,6 +19,11 @@ interface UserApi {
         @Query("name") name: String
     ): Single<ApiResponse<Any>>
 
+    @GET("https://islaami.id:3000/verifyUser/{email}")
+    fun verify(
+        @Path("email") email: String
+    ): Single<Void>
+
     @POST("user/logout")
     fun logout(): Single<ApiResponse<Any>>
 

@@ -58,6 +58,7 @@ class UserAuthViewModel(private val repository: UserRepository) : BaseViewModel(
 
     /* VERIFICATION */
     lateinit var resendCodeResultLd: MutableLiveData<Resource<Any>>
+    lateinit var verifiedResultLd: MutableLiveData<Resource<Any>>
 
 
     fun resendCode(email: String, name: String) {
@@ -68,6 +69,16 @@ class UserAuthViewModel(private val repository: UserRepository) : BaseViewModel(
                 { result -> resendCodeResultLd.setSuccess(result) },
                 { throwable -> resendCodeResultLd.setError(throwable.getErrorMessage()) }
             )
+        )
+    }
+
+    fun verify(email: String) {
+        disposable.add(
+            repository.verify(email).execute().doOnSubscribe { verifiedResultLd.setLoading() }
+                .subscribe(
+                    { result -> verifiedResultLd.setSuccess(result) },
+                    { throwable -> verifiedResultLd.setError(throwable.getErrorMessage()) }
+                )
         )
     }
 
@@ -86,5 +97,6 @@ class UserAuthViewModel(private val repository: UserRepository) : BaseViewModel(
     fun initRegisterAcitivity() {
         registerResultLd = MutableLiveData()
         loginResultLd = MutableLiveData()
+        verifiedResultLd = MutableLiveData()
     }
 }
