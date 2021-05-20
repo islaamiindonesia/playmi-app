@@ -6,6 +6,7 @@ import id.islaami.playmi2021.data.model.kotpref.Default
 import id.islaami.playmi2021.data.model.profile.LoginBody
 import id.islaami.playmi2021.data.model.profile.Profile
 import id.islaami.playmi2021.data.model.profile.RegisterBody
+import id.islaami.playmi2021.data.model.profile.UpdateProfileBody
 
 class UserRepository(private val userCache: UserCache, private val userApi: UserApi) {
     var hasSeenIntro: Boolean
@@ -43,6 +44,11 @@ class UserRepository(private val userCache: UserCache, private val userApi: User
 
     fun isLoggedIn(): Boolean = userCache.headerToken.isNotEmpty()
 
+    fun getProfile() = userApi.getProfile().map {
+        userCache.profile = it.data
+        it.data
+    }
+
     fun getProfileName() = userApi.getProfile().map {
         // save profile data to cache
         userCache.profile = it.data
@@ -61,6 +67,13 @@ class UserRepository(private val userCache: UserCache, private val userApi: User
             userCache.headerToken = it.data?.token.toString()
             it.data
         }
+
+    fun updateProfile(
+        fullname: String,
+        email: String,
+        birthdate: String,
+        gender: String,
+    ) = userApi.updateProfile(UpdateProfileBody(email, fullname, birthdate, gender)).map { it.data }
 
     fun resendEmail(email: String, name: String) = userApi.resendCode(email, name).map { it.data }
 

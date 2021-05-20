@@ -16,7 +16,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="n">
-        <activity android:name=".ui.video.VideoSeriesActivity"></activity>
+        <activity
+            android:name=".ui.setting.profile.ProfileActivity"
+            android:theme="@style/SpecialTheme" />
+        <activity android:name=".ui.video.VideoSeriesActivity" />
         <activity android:name=".ui.auth.UnderageActivity" />
         <activity
             android:name=".ui.setting.LegalActivity"

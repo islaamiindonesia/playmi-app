@@ -2,10 +2,7 @@ package id.islaami.playmi2021.data.api
 
 import id.islaami.playmi2021.data.model.ApiMessageResult
 import id.islaami.playmi2021.data.model.ApiResponse
-import id.islaami.playmi2021.data.model.profile.LoginBody
-import id.islaami.playmi2021.data.model.profile.LoginResult
-import id.islaami.playmi2021.data.model.profile.Profile
-import id.islaami.playmi2021.data.model.profile.RegisterBody
+import id.islaami.playmi2021.data.model.profile.*
 import io.reactivex.Single
 import retrofit2.http.*
 
@@ -38,4 +35,7 @@ interface UserApi {
 
     @GET("user/profile")
     fun getProfile(): Single<ApiResponse<Profile>>
+
+    @PUT("user/profile/update")
+    fun updateProfile(@Body updateProfileBody: UpdateProfileBody): Single<ApiResponse<Any>>
 }

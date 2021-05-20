@@ -13,6 +13,7 @@ import id.islaami.playmi2021.data.model.kotpref.Mode
 import id.islaami.playmi2021.ui.auth.LoginActivity
 import id.islaami.playmi2021.ui.base.BaseSpecialActivity
 import id.islaami.playmi2021.ui.setting.insight.InsightActivity
+import id.islaami.playmi2021.ui.setting.profile.ProfileActivity
 import id.islaami.playmi2021.ui.setting.recommendation.RecommendationActivity
 import id.islaami.playmi2021.ui.setting.report.ReportActivity
 import id.islaami.playmi2021.util.ResourceStatus.*
@@ -102,7 +103,8 @@ class SettingActivity : BaseSpecialActivity() {
 
         btnAccount.setOnClickListener()
         {
-            showLongToast("open islaami")
+//            showLongToast("open islaami")
+            ProfileActivity.startActivity(this)
         }
 
         btnRecommendation.setOnClickListener()

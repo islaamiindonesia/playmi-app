@@ -11,6 +11,7 @@ import id.islaami.playmi2021.ui.home.HomeViewModel
 import id.islaami.playmi2021.ui.intro.IntroViewModel
 import id.islaami.playmi2021.ui.playlist.PlaylistViewModel
 import id.islaami.playmi2021.ui.setting.SettingViewModel
+import id.islaami.playmi2021.ui.setting.profile.ProfileViewModel
 import id.islaami.playmi2021.ui.video.VideoViewModel
 import id.islaami.playmi2021.ui.video_update.VideoUpdateViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -55,6 +56,7 @@ val viewModelModule: Module = module {
     viewModel { OrganizeChannelViewModel(repository = get()) }
     viewModel { PlaylistViewModel(repository = get()) }
     viewModel { SettingViewModel(repository = get(), userRepository = get()) }
+    viewModel { ProfileViewModel(userRepository = get()) }
 }
 
 val apiModule: Module = module {
