@@ -4,16 +4,21 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.core.view.isVisible
+import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.AdRequest
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import id.islaami.playmi2021.R
+import id.islaami.playmi2021.ui.auth.ForgotPasswordActivity
 import id.islaami.playmi2021.ui.base.BaseSpecialActivity
 import id.islaami.playmi2021.util.isValidPassword
 import id.islaami.playmi2021.util.ui.showLongToast
 import id.islaami.playmi2021.util.ui.validate
 import kotlinx.android.synthetic.main.activity_change_password.*
+import kotlinx.android.synthetic.main.activity_change_password.adView
 import kotlinx.android.synthetic.main.activity_change_password.progressBar
 import kotlinx.android.synthetic.main.activity_change_password.toolbar
+import kotlinx.android.synthetic.main.setting_activity.*
 
 class ChangePasswordActivity : BaseSpecialActivity() {
     lateinit var email: String
@@ -33,6 +38,36 @@ class ChangePasswordActivity : BaseSpecialActivity() {
         btnSave.setOnClickListener {
             if (validateAll()) {
                 changePassword()
+            }
+        }
+
+        val adRequest = AdRequest.Builder().build()
+        adView.loadAd(adRequest)
+        adView.adListener = object : AdListener() {
+            override fun onAdLoaded() {
+                // Code to be executed when an ad finishes loading.
+            }
+
+            override fun onAdFailedToLoad(errorCode: Int) {
+                // Code to be executed when an ad request fails.
+            }
+
+            override fun onAdOpened() {
+                // Code to be executed when an ad opens an overlay that
+                // covers the screen.
+            }
+
+            override fun onAdClicked() {
+                // Code to be executed when the user clicks on an ad.
+            }
+
+            override fun onAdLeftApplication() {
+                // Code to be executed when the user has left the app.
+            }
+
+            override fun onAdClosed() {
+                // Code to be executed when the user is about to return
+                // to the app after tapping on an ad.
             }
         }
     }
