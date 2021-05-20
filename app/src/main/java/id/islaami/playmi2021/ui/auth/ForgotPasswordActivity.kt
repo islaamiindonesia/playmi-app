@@ -11,11 +11,21 @@ import id.islaami.playmi2021.util.ui.setVisibilityToGone
 import id.islaami.playmi2021.util.ui.setVisibilityToVisible
 import id.islaami.playmi2021.util.ui.showLongToast
 import kotlinx.android.synthetic.main.forgot_password_activity.*
+import kotlinx.android.synthetic.main.forgot_password_activity.progressBar
 
 class ForgotPasswordActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.forgot_password_activity)
+
+        val fromProfile = intent.getBooleanExtra(EXTRA_FROM_PROFILE, false)
+        val emailStr = intent.getStringExtra(EXTRA_EMAIL)
+
+        if (fromProfile) {
+            linkLogin.text = "Batal"
+        }
+
+        email.setText(emailStr)
 
         btnSend.setOnClickListener {
             btnSend.setVisibilityToGone()
@@ -31,6 +41,9 @@ class ForgotPasswordActivity : BaseActivity() {
                         textTitle.text = "Cek Email Anda!"
                         textSubtitle.text =
                             "Instruksi pengaturan ulang kata sandi\nsudah dikirimkan ke email Anda"
+                        if (fromProfile) {
+                            linkLogin.text = "kembali ke halaman akun"
+                        }
                     } else {
                         try {
                             throw task.exception!!
@@ -52,8 +65,22 @@ class ForgotPasswordActivity : BaseActivity() {
     }
 
     companion object {
+        const val EXTRA_FROM_PROFILE = "extra_from_profile"
+        const val EXTRA_EMAIL = "extra_email"
+
         fun startActivity(context: Context) {
             context.startActivity(Intent(context, ForgotPasswordActivity::class.java))
+        }
+
+        fun startActivityFromProfile(context: Context, email: String) {
+            context.startActivity(Intent(context, ForgotPasswordActivity::class.java).apply {
+                putExtra(
+                    EXTRA_FROM_PROFILE, true
+                )
+                putExtra(
+                    EXTRA_EMAIL, email
+                )
+            })
         }
     }
 }

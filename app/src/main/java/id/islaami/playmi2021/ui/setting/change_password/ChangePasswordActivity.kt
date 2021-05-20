@@ -41,6 +41,10 @@ class ChangePasswordActivity : BaseSpecialActivity() {
             }
         }
 
+        btnForgot.setOnClickListener {
+            ForgotPasswordActivity.startActivityFromProfile(this, email)
+        }
+
         val adRequest = AdRequest.Builder().build()
         adView.loadAd(adRequest)
         adView.adListener = object : AdListener() {
