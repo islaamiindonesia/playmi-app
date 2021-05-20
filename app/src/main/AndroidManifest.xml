@@ -16,6 +16,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="n">
+        <activity android:name=".ui.setting.change_password.ChangePasswordActivity"
+            android:theme="@style/SpecialTheme"/>
         <activity
             android:name=".ui.setting.profile.ProfileActivity"
             android:theme="@style/SpecialTheme" />

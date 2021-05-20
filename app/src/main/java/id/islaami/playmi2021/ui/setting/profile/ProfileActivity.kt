@@ -10,6 +10,7 @@ import androidx.core.view.isVisible
 import id.islaami.playmi2021.R
 import id.islaami.playmi2021.data.model.profile.Profile
 import id.islaami.playmi2021.ui.base.BaseSpecialActivity
+import id.islaami.playmi2021.ui.setting.change_password.ChangePasswordActivity
 import id.islaami.playmi2021.util.*
 import id.islaami.playmi2021.util.ui.*
 import kotlinx.android.synthetic.main.activity_profile.*
@@ -58,6 +59,10 @@ class ProfileActivity : BaseSpecialActivity() {
                 R.id.radioMale -> "L"
                 else -> "P"
             }
+        }
+
+        btnChangePassword.setOnClickListener {
+            ChangePasswordActivity.startActivity(this, etEmail.text.toString())
         }
     }
 
