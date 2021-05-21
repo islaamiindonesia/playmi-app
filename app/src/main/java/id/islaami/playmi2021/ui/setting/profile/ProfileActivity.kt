@@ -161,6 +161,7 @@ class ProfileActivity : BaseSpecialActivity() {
                 ResourceStatus.SUCCESS -> {
                     swipeRefreshLayout.stopRefreshing()
                     result.data?.showData()
+                    showLongToast("Berhasil disimpan")
                 }
                 ResourceStatus.ERROR -> {
                     swipeRefreshLayout.stopRefreshing()

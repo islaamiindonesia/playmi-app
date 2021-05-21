@@ -31,4 +31,6 @@
     <color name="colorAdLabelBackground">#FFCC66</color>
 
     <color name="refresh_icon_background">#fff</color>
+
+    <color name="account_background">@color/grey_e1</color>
 </resources>

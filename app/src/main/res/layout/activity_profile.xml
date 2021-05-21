@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/layout_background_color"
+    android:background="@color/account_background"
     android:orientation="vertical"
     tools:context=".ui.auth.RegisterActivity">
 
@@ -37,7 +37,6 @@
         android:layout_below="@id/appBar">
 
         <ScrollView
-            android:background="@color/layout_background_color"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -51,6 +50,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="16dp"
                     android:layout_marginTop="16dp"
+                    app:cardBackgroundColor="@color/layout_background_color"
                     app:cardCornerRadius="16dp"
                     app:cardElevation="8dp"
                     app:contentPadding="16dp">
@@ -138,6 +138,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="16dp"
                     android:layout_marginTop="16dp"
+                    app:cardBackgroundColor="@color/layout_background_color"
                     app:cardCornerRadius="16dp"
                     app:cardElevation="8dp"
                     app:contentPadding="16dp">
@@ -181,6 +182,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="16dp"
                     android:layout_marginTop="16dp"
+                    app:cardBackgroundColor="@color/layout_background_color"
                     app:cardCornerRadius="16dp"
                     app:cardElevation="8dp"
                     app:contentPadding="16dp">
