@@ -12,6 +12,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.tabs.TabLayout
 import com.google.firebase.messaging.FirebaseMessaging
 import id.islaami.playmi2021.R
@@ -29,6 +30,7 @@ import java.util.*
 class MainActivity : BaseActivity() {
 
     private var viewPagerAdapter : ViewPagerAdapter? = null
+    lateinit var floatingActionButton: FloatingActionButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +40,7 @@ class MainActivity : BaseActivity() {
         FirebaseMessaging.getInstance().subscribeToTopic("playmi")
 
         setupTabLayout()
+        floatingActionButton = fab
     }
 
     private fun setupTabLayout() {
@@ -102,10 +105,12 @@ class MainActivity : BaseActivity() {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 val fragment = viewPagerAdapter?.getFragment(tab?.position ?: 0)
                 if (fragment is BaseHasFloatingButtonFragment) {
-                    fab.isVisible = true
-                    fab.scaleX = 1f
-                    fab.scaleY = 1f
-                    fab.alpha = 1f
+                    fab.apply {
+                        isVisible = true
+                        scaleX = 1f
+                        scaleY = 1f
+                        alpha = 1f
+                    }
                 } else {
                     fab.isVisible = false
                 }
@@ -136,7 +141,7 @@ class MainActivity : BaseActivity() {
 
         override fun getItem(position: Int): Fragment {
             return when (position) {
-                0 -> VideoUpdateFragment.newInstance(fab)
+                0 -> VideoUpdateFragment.newInstance()
                 1 -> HomeFragment.newInstance()
                 2 -> PlaylistFragment.newInstance()
                 3 -> OrganizeChannelFragment.newInstance()

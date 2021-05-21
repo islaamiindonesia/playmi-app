@@ -6,18 +6,20 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.view.*
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.SearchView
-import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import id.islaami.playmi2021.R
+import id.islaami.playmi2021.ui.MainActivity
 import id.islaami.playmi2021.ui.adapter.VideoPagedAdapter
 import id.islaami.playmi2021.ui.base.BaseFragment
 import id.islaami.playmi2021.ui.base.BaseHasFloatingButtonFragment
@@ -29,9 +31,8 @@ import id.islaami.playmi2021.util.ui.*
 import kotlinx.android.synthetic.main.video_update_fragment.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class VideoUpdateFragment(
-    val fab: FloatingActionButton
-) : BaseFragment(), BaseRecyclerViewFragment, BaseHasFloatingButtonFragment {
+class VideoUpdateFragment() : BaseFragment(), BaseRecyclerViewFragment,
+    BaseHasFloatingButtonFragment {
     private val viewModel: VideoUpdateViewModel by viewModel()
     private var shuffle: Int = 0
     private val handler = Handler(Looper.getMainLooper())
@@ -105,17 +106,19 @@ class VideoUpdateFragment(
             setOnRefreshListener { refresh() }
         }
 
-        fab.setOnClickListener {
-            if (shuffle == 0) {
-                swipeRefreshLayout.isRefreshing = true
-                viewModel.changeParam(++shuffle)
-                fab.setImageResource(R.drawable.ic_sort_black)
-                showLongToast(requireContext(), "Diurutkan secara acak")
-            } else {
-                swipeRefreshLayout.isRefreshing = true
-                viewModel.changeParam(--shuffle)
-                fab.setImageResource(R.drawable.ic_shuffle_black)
-                showLongToast(requireContext(), "Diurutkan dari terbaru")
+        (activity as? MainActivity)?.floatingActionButton?.let { fab ->
+            fab.setOnClickListener {
+                if (shuffle == 0) {
+                    swipeRefreshLayout.isRefreshing = true
+                    viewModel.changeParam(++shuffle)
+                    fab.setImageResource(R.drawable.ic_sort_black)
+                    showLongToast(requireContext(), "Diurutkan secara acak")
+                } else {
+                    swipeRefreshLayout.isRefreshing = true
+                    viewModel.changeParam(--shuffle)
+                    fab.setImageResource(R.drawable.ic_shuffle_black)
+                    showLongToast(requireContext(), "Diurutkan dari terbaru")
+                }
             }
         }
 
@@ -126,26 +129,31 @@ class VideoUpdateFragment(
                         Log.i("190401", "onScrollStateChanged: DRAGGING")
                         if (!isDetached) {
                             handler.removeCallbacksAndMessages(null)
-                            fab.animate()
-                                .setDuration(200)
-                                .scaleX(0f)
-                                .scaleY(0f)
-                                .alpha(0f)
-                                .withEndAction {
-                                    fab.isVisible = false
-                                }
+                            (activity as? MainActivity)?.floatingActionButton?.let {
+                                it.animate()
+                                    .setDuration(200)
+                                    .scaleX(0f)
+                                    .scaleY(0f)
+                                    .alpha(0f)
+                                    .withEndAction {
+                                        (activity as? MainActivity)?.floatingActionButton?.isVisible =
+                                            false
+                                    }
+                            }
                         }
                     }
                     RecyclerView.SCROLL_STATE_IDLE -> {
                         Log.i("190401", "onScrollStateChanged: IDLE")
                         if (!isDetached) {
                             handler.postDelayed({
-                                fab.isVisible = true
-                                fab.alpha = 1f
-                                fab.animate()
-                                    .setDuration(200)
-                                    .scaleX(1f)
-                                    .scaleY(1f)
+                                (activity as? MainActivity)?.floatingActionButton?.let {
+                                    it.isVisible = true
+                                    it.alpha = 1f
+                                    it.animate()
+                                        .setDuration(200)
+                                        .scaleY(1f)
+                                        .scaleX(1f)
+                                }
                             }, 3000)
                         }
                     }
@@ -219,7 +227,7 @@ class VideoUpdateFragment(
     }
 
     companion object {
-        fun newInstance(fab: FloatingActionButton): Fragment = VideoUpdateFragment(fab)
+        fun newInstance(): Fragment = VideoUpdateFragment()
     }
 
     private fun observeGetAllVideoResult() {
@@ -328,7 +336,4 @@ class VideoUpdateFragment(
         recyclerView.scrollToPosition(0)
     }
 
-    override fun floatingButtonClicked(fab: FloatingActionButton) {
-        Log.i("190401", "floatingButtonClicked: Floating button clicked!!")
-    }
 }
