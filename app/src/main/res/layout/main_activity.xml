@@ -39,13 +39,14 @@
         android:id="@+id/fab"
         app:layout_constraintBottom_toTopOf="@id/tabLayoutMain"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_margin="11dp"
+        android:layout_marginBottom="11dp"
+        android:layout_marginStart="4dp"
         app:backgroundTint="@color/layout_background_color"
         android:src="@drawable/ic_shuffle_black"
         android:foregroundTint="@color/text_color"
         app:tint="@color/text_color"
         app:maxImageSize="36dp"
-        app:fabCustomSize="42dp"
+        app:fabCustomSize="36dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
