@@ -110,11 +110,12 @@ class VideoUpdateFragment(
                 swipeRefreshLayout.isRefreshing = true
                 viewModel.changeParam(++shuffle)
                 fab.setImageResource(R.drawable.ic_sort_black)
+                showLongToast(requireContext(), "Diurutkan secara acak")
             } else {
                 swipeRefreshLayout.isRefreshing = true
                 viewModel.changeParam(--shuffle)
                 fab.setImageResource(R.drawable.ic_shuffle_black)
-
+                showLongToast(requireContext(), "Diurutkan dari terbaru")
             }
         }
 
