@@ -15,15 +15,21 @@ class VideoUpdateDataFactory(
     private val repository: VideoRepository,
     val mutableLiveData: MutableLiveData<VideoUpdateDataSource> = MutableLiveData()
 ) : DataSource.Factory<Int, Video>() {
+    private var shuffle = 0
 
     override fun create(): DataSource<Int, Video> {
-        val dataSource = VideoUpdateDataSource(disposable, repository)
+        val dataSource = VideoUpdateDataSource(disposable, repository, shuffle)
         mutableLiveData.postValue(dataSource)
         return dataSource
     }
 
     fun getNetworkStatus(): LiveData<Resource<Unit>> =
         Transformations.switchMap(mutableLiveData) { dataSource -> dataSource.networkStatus }
+
+    fun setShuffle(shuffle: Int) {
+        this.shuffle = shuffle
+        refreshData()
+    }
 
     fun refreshData() {
         mutableLiveData.value?.invalidate()

@@ -3,19 +3,24 @@ package id.islaami.playmi2021.ui.video_update
 import android.app.SearchManager
 import android.content.Context
 import android.os.Bundle
-import android.view.Gravity
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
+import android.view.*
 import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import id.islaami.playmi2021.R
 import id.islaami.playmi2021.ui.adapter.VideoPagedAdapter
 import id.islaami.playmi2021.ui.base.BaseFragment
+import id.islaami.playmi2021.ui.base.BaseHasFloatingButtonFragment
 import id.islaami.playmi2021.ui.base.BaseRecyclerViewFragment
 import id.islaami.playmi2021.ui.setting.SettingActivity
 import id.islaami.playmi2021.util.*
@@ -24,8 +29,12 @@ import id.islaami.playmi2021.util.ui.*
 import kotlinx.android.synthetic.main.video_update_fragment.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class VideoUpdateFragment : BaseFragment(), BaseRecyclerViewFragment {
+class VideoUpdateFragment(
+    val fab: FloatingActionButton
+) : BaseFragment(), BaseRecyclerViewFragment, BaseHasFloatingButtonFragment {
     private val viewModel: VideoUpdateViewModel by viewModel()
+    private var shuffle: Int = 0
+    private val handler = Handler(Looper.getMainLooper())
 
     private var videoPagedAdapter = VideoPagedAdapter(context,
         popMenu = { context, menuView, video ->
@@ -96,6 +105,57 @@ class VideoUpdateFragment : BaseFragment(), BaseRecyclerViewFragment {
             setOnRefreshListener { refresh() }
         }
 
+        fab.setOnClickListener {
+            if (shuffle == 0) {
+                swipeRefreshLayout.isRefreshing = true
+                viewModel.changeParam(++shuffle)
+                fab.setImageResource(R.drawable.ic_sort_black)
+            } else {
+                swipeRefreshLayout.isRefreshing = true
+                viewModel.changeParam(--shuffle)
+                fab.setImageResource(R.drawable.ic_shuffle_black)
+
+            }
+        }
+
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                when (newState) {
+                    RecyclerView.SCROLL_STATE_DRAGGING -> {
+                        Log.i("190401", "onScrollStateChanged: DRAGGING")
+                        if (!isDetached) {
+                            handler.removeCallbacksAndMessages(null)
+                            fab.animate()
+                                .setDuration(200)
+                                .scaleX(0f)
+                                .scaleY(0f)
+                                .alpha(0f)
+                                .withEndAction {
+                                    fab.isVisible = false
+                                }
+                        }
+                    }
+                    RecyclerView.SCROLL_STATE_IDLE -> {
+                        Log.i("190401", "onScrollStateChanged: IDLE")
+                        if (!isDetached) {
+                            handler.postDelayed({
+                                fab.isVisible = true
+                                fab.alpha = 1f
+                                fab.animate()
+                                    .setDuration(200)
+                                    .scaleX(1f)
+                                    .scaleY(1f)
+                            }, 3000)
+                        }
+                    }
+                    RecyclerView.SCROLL_STATE_SETTLING -> {
+                        Log.i("190401", "onScrollStateChanged: SETTLING")
+                    }
+                }
+                super.onScrollStateChanged(recyclerView, newState)
+            }
+        })
+
         swipeRefreshLayout.startRefreshing()
 
         toolbar.inflateMenu(R.menu.menu_main)
@@ -138,7 +198,7 @@ class VideoUpdateFragment : BaseFragment(), BaseRecyclerViewFragment {
 
     override fun onPause() {
         super.onPause()
-
+        Log.i("190401", "onPause: !!!!")
         val layoutManager = recyclerView.layoutManager
         if (layoutManager != null) {
             val position =
@@ -149,6 +209,8 @@ class VideoUpdateFragment : BaseFragment(), BaseRecyclerViewFragment {
                 .putInt("UPDATE_SCROLL", position)
                 .apply()
         }
+
+        handler.removeCallbacksAndMessages(null)
     }
 
     private fun refresh() {
@@ -156,7 +218,7 @@ class VideoUpdateFragment : BaseFragment(), BaseRecyclerViewFragment {
     }
 
     companion object {
-        fun newInstance(): Fragment = VideoUpdateFragment()
+        fun newInstance(fab: FloatingActionButton): Fragment = VideoUpdateFragment(fab)
     }
 
     private fun observeGetAllVideoResult() {
@@ -263,5 +325,9 @@ class VideoUpdateFragment : BaseFragment(), BaseRecyclerViewFragment {
 
     override fun scrollToTop() {
         recyclerView.scrollToPosition(0)
+    }
+
+    override fun floatingButtonClicked(fab: FloatingActionButton) {
+        Log.i("190401", "floatingButtonClicked: Floating button clicked!!")
     }
 }

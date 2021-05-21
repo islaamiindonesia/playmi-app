@@ -35,4 +35,17 @@
         app:tabGravity="fill"
         app:tabIndicatorHeight="0dp"
         app:tabMode="fixed" />
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        app:layout_constraintBottom_toTopOf="@id/tabLayoutMain"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_margin="11dp"
+        app:backgroundTint="@color/layout_background_color"
+        android:src="@drawable/ic_shuffle_black"
+        android:foregroundTint="@color/text_color"
+        app:tint="@color/text_color"
+        app:maxImageSize="36dp"
+        app:fabCustomSize="42dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

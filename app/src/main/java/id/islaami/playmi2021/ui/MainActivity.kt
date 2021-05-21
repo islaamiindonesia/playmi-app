@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
@@ -15,6 +16,7 @@ import com.google.android.material.tabs.TabLayout
 import com.google.firebase.messaging.FirebaseMessaging
 import id.islaami.playmi2021.R
 import id.islaami.playmi2021.ui.base.BaseActivity
+import id.islaami.playmi2021.ui.base.BaseHasFloatingButtonFragment
 import id.islaami.playmi2021.ui.base.BaseRecyclerViewFragment
 import id.islaami.playmi2021.ui.channel_following.OrganizeChannelFragment
 import id.islaami.playmi2021.ui.home.HomeFragment
@@ -98,6 +100,16 @@ class MainActivity : BaseActivity() {
             }
 
             override fun onTabSelected(tab: TabLayout.Tab?) {
+                val fragment = viewPagerAdapter?.getFragment(tab?.position ?: 0)
+                if (fragment is BaseHasFloatingButtonFragment) {
+                    fab.isVisible = true
+                    fab.scaleX = 1f
+                    fab.scaleY = 1f
+                    fab.alpha = 1f
+                } else {
+                    fab.isVisible = false
+                }
+
                 tab?.run {
                     val tabItem: ImageView = customView as ImageView
                     tabItem.loadImage(tabIconListSelected[position])
@@ -124,7 +136,7 @@ class MainActivity : BaseActivity() {
 
         override fun getItem(position: Int): Fragment {
             return when (position) {
-                0 -> VideoUpdateFragment.newInstance()
+                0 -> VideoUpdateFragment.newInstance(fab)
                 1 -> HomeFragment.newInstance()
                 2 -> PlaylistFragment.newInstance()
                 3 -> OrganizeChannelFragment.newInstance()

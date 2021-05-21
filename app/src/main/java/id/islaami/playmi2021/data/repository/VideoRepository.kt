@@ -32,8 +32,8 @@ class VideoRepository(
     fun getAllVideoBySeries(seriesId: Int, page: Int) =
         video.getAllVideoBySeries(seriesId, page).map { it.data }
 
-    fun getAllVideoByFollowing(page: Int) =
-        video.getAllVideoByFollowing(page).map { it.data }
+    fun getAllVideoByFollowing(page: Int, shuffle: Int) =
+        video.getAllVideoByFollowing(page, shuffle).map { it.data }
 
     fun getVideo(id: Int) = video.getVideo(id).map { it.data }
 

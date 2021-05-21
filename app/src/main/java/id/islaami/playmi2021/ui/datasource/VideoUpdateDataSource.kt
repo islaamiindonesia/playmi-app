@@ -11,6 +11,7 @@ import io.reactivex.disposables.CompositeDisposable
 class VideoUpdateDataSource(
     private val disposable: CompositeDisposable,
     private val repository: VideoRepository,
+    private val shuffle: Int,
     val networkStatus: MutableLiveData<Resource<Unit>> = MutableLiveData()
 ) : PageKeyedDataSource<Int, Video>() {
     override fun loadInitial(
@@ -20,7 +21,7 @@ class VideoUpdateDataSource(
         networkStatus.setLoading()
 
         disposable.add(
-            repository.getAllVideoByFollowing(1)
+            repository.getAllVideoByFollowing(1, shuffle)
                 .subscribe(
                     { result ->
                         if (!result.isNullOrEmpty()) {
@@ -44,7 +45,7 @@ class VideoUpdateDataSource(
         networkStatus.setLoading()
 
         disposable.add(
-            repository.getAllVideoByFollowing(params.key)
+            repository.getAllVideoByFollowing(params.key, shuffle)
                 .subscribe(
                     { result ->
                         if (!result.isNullOrEmpty()) {

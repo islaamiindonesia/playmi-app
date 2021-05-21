@@ -19,6 +19,7 @@ class VideoUpdateViewModel(
     lateinit var videoUpdatePagedListResultLd: LiveData<PagedList<Video>>
     lateinit var videoUpdateDataFactory: VideoUpdateDataFactory
 
+    // shuffle 1 of 0
     fun getAllVideo() {
         videoUpdateDataFactory = VideoUpdateDataFactory(disposable, repository)
 
@@ -32,6 +33,10 @@ class VideoUpdateViewModel(
 
         videoUpdatePagedListResultLd =
             LivePagedListBuilder(videoUpdateDataFactory, pageListConfig).build()
+    }
+
+    fun changeParam(shuffle: Int) {
+        videoUpdateDataFactory.setShuffle(shuffle)
     }
 
     fun refreshAllVideo() {
