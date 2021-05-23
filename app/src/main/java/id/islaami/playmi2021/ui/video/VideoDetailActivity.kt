@@ -10,12 +10,9 @@ import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.util.Log
 import android.util.TypedValue
-import android.view.View
-import android.view.Window
 import android.view.WindowInsets
 import android.view.WindowManager
 import android.view.WindowManager.LayoutParams.FLAG_SECURE
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
@@ -33,9 +30,7 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.Abs
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerFullScreenListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.utils.loadOrCueVideo
 import id.islaami.playmi2021.R
-import id.islaami.playmi2021.data.model.kotpref.Mode
 import id.islaami.playmi2021.data.model.video.Video
-import id.islaami.playmi2021.ui.MainActivity
 import id.islaami.playmi2021.ui.adapter.PlaylistSelectAdapter
 import id.islaami.playmi2021.ui.base.BaseVideoActivity
 import id.islaami.playmi2021.ui.channel.ChannelDetailActivity
@@ -53,8 +48,6 @@ class VideoDetailActivity(
     var channelId: Int = 0
 ) : BaseVideoActivity() {
     private val viewModel: VideoViewModel by viewModel()
-
-    private val fullScreenHelper = FullScreenHelper(this)
 
     lateinit var playlistSelectAdapter: PlaylistSelectAdapter
 
@@ -310,7 +303,7 @@ class VideoDetailActivity(
                     window.insetsController?.show(WindowInsets.Type.statusBars())
                 } else {
                     window.clearFlags(
-                        WindowManager.LayoutParams.FLAG_FULLSCREEN-
+                        WindowManager.LayoutParams.FLAG_FULLSCREEN
                     )
                 }
             }
@@ -322,21 +315,6 @@ class VideoDetailActivity(
         }
     }
 
-//    private fun enterFullScreen() {
-//        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
-//        fullScreenHelper.enterFullScreen()
-//    }
-//
-//    private fun exitFullScreen() {
-//        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-//        fullScreenHelper.exitFullScreen()
-//
-//        if (Mode.appMode == AppCompatDelegate.MODE_NIGHT_NO) {
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//                window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-//            }
-//        }
-//    }
 
     private fun createDynamicLink(body: String, video: Video) {
         var shortLink: Uri?
@@ -384,7 +362,7 @@ class VideoDetailActivity(
     }
 
     private fun observeVideoDetail() {
-        viewModel.getVideoResultLd.observe(this, Observer { result ->
+        viewModel.getVideoResultLd.observe(this, { result ->
             when (result?.status) {
                 LOADING -> {
                 }
@@ -420,7 +398,7 @@ class VideoDetailActivity(
     }
 
     private fun observePlaylist() {
-        viewModel.getPlaylistsResultLd.observe(this, Observer { result ->
+        viewModel.getPlaylistsResultLd.observe(this, { result ->
             when (result?.status) {
                 LOADING -> {
                 }
@@ -459,7 +437,7 @@ class VideoDetailActivity(
     }
 
     private fun observeCreatePlaylistResult() {
-        viewModel.createPlaylistResultLd.observe(this, Observer { result ->
+        viewModel.createPlaylistResultLd.observe(this, { result ->
             when (result?.status) {
                 LOADING -> {
                 }
@@ -476,7 +454,7 @@ class VideoDetailActivity(
     }
 
     private fun observeAddToPlaylistResult() {
-        viewModel.addToPlaylistResultLd.observe(this, Observer { result ->
+        viewModel.addToPlaylistResultLd.observe(this, { result ->
             when (result?.status) {
                 LOADING -> {
                 }
@@ -493,7 +471,7 @@ class VideoDetailActivity(
     }
 
     private fun observeWatchLaterResult() {
-        viewModel.watchLaterResultLd.observe(this, Observer { result ->
+        viewModel.watchLaterResultLd.observe(this, { result ->
             when (result?.status) {
                 LOADING -> {
                 }
@@ -510,7 +488,7 @@ class VideoDetailActivity(
     }
 
     private fun observeFollowResult() {
-        viewModel.followResultLd.observe(this, Observer { result ->
+        viewModel.followResultLd.observe(this, { result ->
             when (result?.status) {
                 LOADING -> {
                 }
@@ -528,7 +506,7 @@ class VideoDetailActivity(
     }
 
     private fun observeUnfollowResult() {
-        viewModel.unfollowResultLd.observe(this, Observer { result ->
+        viewModel.unfollowResultLd.observe(this, { result ->
             when (result?.status) {
                 LOADING -> {
                 }
