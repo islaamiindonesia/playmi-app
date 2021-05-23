@@ -4,7 +4,7 @@ const val RELEASE_URL = "https://islaami.id/api/"
 const val STORAGE_URL = "https://islaami.id/storage/"
 
 /* DEFAULT VALUES */
-const val DEFAULT_SIZE = 100
+const val DEFAULT_SIZE = 10
 
 const val HEADER_TOKEN_KEY = "Authorization"
 
