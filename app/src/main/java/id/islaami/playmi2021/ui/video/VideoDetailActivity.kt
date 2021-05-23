@@ -11,6 +11,9 @@ import android.text.method.LinkMovementMethod
 import android.util.Log
 import android.util.TypedValue
 import android.view.View
+import android.view.Window
+import android.view.WindowInsets
+import android.view.WindowManager
 import android.view.WindowManager.LayoutParams.FLAG_SECURE
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.PopupMenu
@@ -89,25 +92,14 @@ class VideoDetailActivity(
 
         swipeRefreshLayout.startRefreshing()
 
-        videoPlayer.addFullScreenListener(object : YouTubePlayerFullScreenListener {
-            override fun onYouTubePlayerEnterFullScreen() {
-                enterFullScreen()
-            }
-
-            override fun onYouTubePlayerExitFullScreen() {
-                exitFullScreen()
-            }
-        })
     }
 
     override fun onBackPressed() {
-        if (videoId == 0) handleBackPressed()
-        else finish()
-    }
-
-    private fun handleBackPressed() {
-        MainActivity.startActivityClearTask(this)
-        finish()
+        if (videoPlayer.isFullScreen()) {
+            videoPlayer.exitFullScreen()
+        } else {
+            finish()
+        }
     }
 
     private fun refresh() {
@@ -197,7 +189,11 @@ class VideoDetailActivity(
         serial.isVisible = seriesId != null
         serial_name.text = seriesName
         serial_name.setOnClickListener {
-            VideoSeriesActivity.startActivity(this@VideoDetailActivity, seriesId.value(), seriesName.toString())
+            VideoSeriesActivity.startActivity(
+                this@VideoDetailActivity,
+                seriesId.value(),
+                seriesName.toString()
+            )
         }
 
         btnChannel.setOnClickListener {
@@ -275,7 +271,7 @@ class VideoDetailActivity(
 
     override fun onConfigurationChanged(newConfiguration: Configuration) {
         if (newConfiguration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            enterFullScreen()
+            videoPlayer.enterFullScreen()
         }
         super.onConfigurationChanged(newConfiguration)
     }
@@ -295,27 +291,52 @@ class VideoDetailActivity(
                 showSnackbar("Terjadi kesalahan pada sistem. Silahkan coba lagi.")
             }
         })
+        videoPlayer.addFullScreenListener(object : YouTubePlayerFullScreenListener {
+            override fun onYouTubePlayerEnterFullScreen() {
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    window.insetsController?.hide(WindowInsets.Type.statusBars())
+                } else {
+                    window.setFlags(
+                        WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                        WindowManager.LayoutParams.FLAG_FULLSCREEN
+                    )
+                }
+            }
+
+            override fun onYouTubePlayerExitFullScreen() {
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    window.insetsController?.show(WindowInsets.Type.statusBars())
+                } else {
+                    window.clearFlags(
+                        WindowManager.LayoutParams.FLAG_FULLSCREEN-
+                    )
+                }
+            }
+
+        })
 
         if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            enterFullScreen()
+            videoPlayer.enterFullScreen()
         }
     }
 
-    private fun enterFullScreen() {
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
-        fullScreenHelper.enterFullScreen()
-    }
-
-    private fun exitFullScreen() {
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-        fullScreenHelper.exitFullScreen()
-
-        if (Mode.appMode == AppCompatDelegate.MODE_NIGHT_NO) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-            }
-        }
-    }
+//    private fun enterFullScreen() {
+//        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+//        fullScreenHelper.enterFullScreen()
+//    }
+//
+//    private fun exitFullScreen() {
+//        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+//        fullScreenHelper.exitFullScreen()
+//
+//        if (Mode.appMode == AppCompatDelegate.MODE_NIGHT_NO) {
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+//            }
+//        }
+//    }
 
     private fun createDynamicLink(body: String, video: Video) {
         var shortLink: Uri?
