@@ -85,6 +85,7 @@ class VideoDetailActivity(
 
         swipeRefreshLayout.startRefreshing()
 
+        lifecycle.addObserver(videoPlayer)
     }
 
     override fun onBackPressed() {
