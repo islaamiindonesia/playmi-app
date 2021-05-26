@@ -4,6 +4,7 @@ import id.islaami.playmi2021.data.api.*
 import id.islaami.playmi2021.data.cache.UserCache
 import id.islaami.playmi2021.data.model.profile.Profile
 import id.islaami.playmi2021.data.repository.*
+import id.islaami.playmi2021.ui.MainViewModel
 import id.islaami.playmi2021.ui.auth.UserAuthViewModel
 import id.islaami.playmi2021.ui.channel.ChannelViewModel
 import id.islaami.playmi2021.ui.channel_following.OrganizeChannelViewModel
@@ -57,6 +58,7 @@ val viewModelModule: Module = module {
     viewModel { PlaylistViewModel(repository = get()) }
     viewModel { SettingViewModel(repository = get(), userRepository = get()) }
     viewModel { ProfileViewModel(userRepository = get()) }
+    viewModel { MainViewModel(userRepository = get()) }
 }
 
 val apiModule: Module = module {

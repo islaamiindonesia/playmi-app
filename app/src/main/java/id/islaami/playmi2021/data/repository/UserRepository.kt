@@ -78,4 +78,6 @@ class UserRepository(private val userCache: UserCache, private val userApi: User
     fun resendEmail(email: String, name: String) = userApi.resendCode(email, name).map { it.data }
 
     fun verify(email: String) = userApi.verify(email)
+
+    fun notifyOnline() = userApi.notifyOnline()
 }

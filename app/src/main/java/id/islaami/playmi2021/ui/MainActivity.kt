@@ -25,10 +25,12 @@ import id.islaami.playmi2021.ui.playlist.PlaylistFragment
 import id.islaami.playmi2021.ui.video_update.VideoUpdateFragment
 import id.islaami.playmi2021.util.ui.loadImage
 import kotlinx.android.synthetic.main.main_activity.*
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 
 class MainActivity : BaseActivity() {
 
+    private val viewModel: MainViewModel by viewModel()
     private var viewPagerAdapter : ViewPagerAdapter? = null
     lateinit var floatingActionButton: FloatingActionButton
 
@@ -41,6 +43,11 @@ class MainActivity : BaseActivity() {
 
         setupTabLayout()
         floatingActionButton = fab
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.notifyOnline()
     }
 
     private fun setupTabLayout() {

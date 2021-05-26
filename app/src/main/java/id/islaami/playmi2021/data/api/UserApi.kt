@@ -38,4 +38,7 @@ interface UserApi {
 
     @PUT("user/profile/update")
     fun updateProfile(@Body updateProfileBody: UpdateProfileBody): Single<ApiResponse<Any>>
+
+    @GET("user/online")
+    fun notifyOnline(): Single<ApiResponse<Any>>
 }
