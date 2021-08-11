@@ -3,17 +3,29 @@ package id.islaami.playmi2021.ui.video
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
+import android.widget.ImageView
+import android.widget.RelativeLayout
 import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.Observer
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import id.islaami.playmi2021.R
+import id.islaami.playmi2021.ui.adapter.PlaybackViewHolder
 import id.islaami.playmi2021.ui.adapter.VideoPagedAdapter
 import id.islaami.playmi2021.ui.base.BaseActivity
 import id.islaami.playmi2021.util.*
 import id.islaami.playmi2021.util.ResourceStatus.*
 import id.islaami.playmi2021.util.ui.*
 import kotlinx.android.synthetic.main.activity_video_series.*
+import kotlinx.android.synthetic.main.activity_video_series.recyclerView
+import kotlinx.android.synthetic.main.activity_video_series.swipeRefreshLayout
+import kotlinx.android.synthetic.main.activity_video_series.toolbar
+import kotlinx.android.synthetic.main.playlist_detail_activity.*
+import kotlinx.android.synthetic.main.video_update_fragment.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class VideoSeriesActivity(
@@ -46,7 +58,30 @@ class VideoSeriesActivity(
 
                 show()
             }
-        })
+        },
+        onPlaybackEnded = {
+            var nextPosition = it
+            val videoCount = recyclerView.adapter?.itemCount ?: 0
+            while (nextPosition < videoCount) {
+                if (recyclerView.findViewHolderForAdapterPosition(++nextPosition) is PlaybackViewHolder) {
+                    val videoPlayedItem = recyclerView.layoutManager?.findViewByPosition(nextPosition)
+                    val videoPlayedLoc = IntArray(2)
+                    val videoView = videoPlayedItem?.findViewById<RelativeLayout>(R.id.channelLayout)
+                    videoView?.getLocationInWindow(videoPlayedLoc)
+                    recyclerView.smoothScrollBy(0, videoPlayedLoc[1] - toolbar.height - 80)
+                    break
+                }
+            }
+        },
+        onVideoWatched10Seconds = { videoID ->
+            Log.i("190401", "onVideoWatched10Seconds videoID: $videoID")
+            viewModel.getVideoDetail(videoID)
+        },
+        lifecycle = lifecycle,
+        autoPlayOnLoad = true
+    )
+
+    private val autoPlayScrollListener = AutoPlayScrollListener { videoPagedAdapter.currentPlayedView }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,6 +92,14 @@ class VideoSeriesActivity(
         seriesId = intent.getIntExtra(SERIES_ID, 0)
 
         viewModel.initVideoSeriesActivity(seriesId)
+        viewModel.initVideoDetailActivity(0)
+
+        recyclerView.layoutManager =
+            CustomLinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        recyclerView.adapter = videoPagedAdapter
+
+        recyclerView.addOnScrollListener(autoPlayScrollListener)
+
 
         swipeRefreshLayout.apply {
             setColorSchemeResources(R.color.accent)
@@ -76,6 +119,8 @@ class VideoSeriesActivity(
         val position =
             PreferenceManager.getDefaultSharedPreferences(this).getInt("SERIES_SCROLL", 0)
         recyclerView.scrollToPosition(position)
+
+        videoPagedAdapter.currentPlayedView?.playVideo()
     }
     
     override fun onPause() {
@@ -91,6 +136,8 @@ class VideoSeriesActivity(
                 .putInt("SERIES_SCROLL", position)
                 .apply()
         }
+
+        videoPagedAdapter.currentPlayedView?.pauseVideo()
     }
 
     private fun refresh() {
@@ -115,9 +162,7 @@ class VideoSeriesActivity(
     
     private fun observeGetAllVideoResult() {
         viewModel.videoPagedListResultLd.observe(this, Observer { result ->
-            recyclerView.adapter = videoPagedAdapter.apply { addVideoList(result) }
-            recyclerView.layoutManager =
-                LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+            videoPagedAdapter.apply { addVideoList(result) }
         })
 
         viewModel.networkStatusLd.observe(this, Observer { result ->

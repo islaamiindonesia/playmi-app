@@ -3,7 +3,9 @@ package id.islaami.playmi2021.util.ui
 import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
+import android.content.res.Resources
 import android.graphics.Bitmap
+import android.graphics.Rect
 import android.os.Build
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -222,4 +224,17 @@ fun Context.showAlertDialog(
 
     dialog.getButton(AlertDialog.BUTTON_POSITIVE)
         .setTextColor(ContextCompat.getColor(this, R.color.accent))
+}
+
+fun View?.isVisible(): Boolean {
+    if (this == null) {
+        return false
+    }
+    if (!this.isShown) {
+        return false
+    }
+    val actualPosition = Rect()
+    this.getGlobalVisibleRect(actualPosition)
+    val screen = Rect(0, 0, Resources.getSystem().displayMetrics.widthPixels, Resources.getSystem().displayMetrics.heightPixels)
+    return actualPosition.intersect(screen)
 }

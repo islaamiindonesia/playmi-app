@@ -4,19 +4,32 @@ import android.app.SearchManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
+import android.widget.ImageView
+import android.widget.RelativeLayout
 import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import id.islaami.playmi2021.R
+import id.islaami.playmi2021.ui.adapter.PlaybackViewHolder
 import id.islaami.playmi2021.ui.adapter.VideoPagedAdapter
 import id.islaami.playmi2021.ui.base.BaseActivity
 import id.islaami.playmi2021.ui.video.VideoViewModel
+import id.islaami.playmi2021.util.AutoPlayScrollListener
 import id.islaami.playmi2021.util.ERROR_EMPTY_LIST
 import id.islaami.playmi2021.util.ResourceStatus.*
 import id.islaami.playmi2021.util.handleApiError
 import id.islaami.playmi2021.util.ui.*
 import id.islaami.playmi2021.util.value
+import kotlinx.android.synthetic.main.playlist_detail_activity.*
 import kotlinx.android.synthetic.main.video_search_activity.*
+import kotlinx.android.synthetic.main.video_search_activity.recyclerView
+import kotlinx.android.synthetic.main.video_search_activity.swipeRefreshLayout
+import kotlinx.android.synthetic.main.video_search_activity.toolbar
+import kotlinx.android.synthetic.main.video_update_fragment.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class VideoSearchActivity(var searchQuery: String = "") : BaseActivity() {
@@ -78,7 +91,30 @@ class VideoSearchActivity(var searchQuery: String = "") : BaseActivity() {
 
                 show()
             }
-        })
+        },
+        onPlaybackEnded = {
+            var nextPosition = it
+            val videoCount = recyclerView.adapter?.itemCount ?: 0
+            while (nextPosition < videoCount) {
+                if (recyclerView.findViewHolderForAdapterPosition(++nextPosition) is PlaybackViewHolder) {
+                    val videoPlayedItem = recyclerView.layoutManager?.findViewByPosition(nextPosition)
+                    val videoPlayedLoc = IntArray(2)
+                    val videoView = videoPlayedItem?.findViewById<RelativeLayout>(R.id.channelLayout)
+                    videoView?.getLocationInWindow(videoPlayedLoc)
+                    recyclerView.smoothScrollBy(0, videoPlayedLoc[1] - toolbar.height - 80)
+                    break
+                }
+            }
+        },
+        onVideoWatched10Seconds = { videoID ->
+            Log.i("190401", "onVideoWatched10Seconds videoID: $videoID")
+            viewModel.getVideoDetail(videoID)
+        },
+        lifecycle = lifecycle,
+        autoPlayOnLoad = true
+    )
+
+    private val autoPlayScrollListener = AutoPlayScrollListener { videoPagedAdapter.currentPlayedView }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -86,11 +122,18 @@ class VideoSearchActivity(var searchQuery: String = "") : BaseActivity() {
 
         setupToolbar(toolbar)
 
+        viewModel.initVideoDetailActivity(0)
         viewModel.initVideoSearchActivity()
         observeWatchLaterResult()
         observeFollowResult()
         observeUnfollowResult()
         observeHideResult()
+
+        recyclerView.layoutManager =
+            CustomLinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        recyclerView.adapter = videoPagedAdapter
+
+        recyclerView.addOnScrollListener(autoPlayScrollListener)
 
         handleIntent()
 
@@ -121,6 +164,14 @@ class VideoSearchActivity(var searchQuery: String = "") : BaseActivity() {
         super.onResume()
 
         observeGetAllVideoResult()
+
+        videoPagedAdapter.currentPlayedView?.playVideo()
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        videoPagedAdapter.currentPlayedView?.pauseVideo()
     }
 
     private fun handleIntent() {
@@ -148,9 +199,7 @@ class VideoSearchActivity(var searchQuery: String = "") : BaseActivity() {
     /* OBSERVER */
     private fun observeGetAllVideoResult() {
         viewModel.videoPagedListResultLd.observe(this, Observer { result ->
-            recyclerView.adapter = videoPagedAdapter.apply { addVideoList(result) }
-            recyclerView.layoutManager =
-                LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+            videoPagedAdapter.apply { addVideoList(result) }
         })
 
         viewModel.networkStatusLd.observe(

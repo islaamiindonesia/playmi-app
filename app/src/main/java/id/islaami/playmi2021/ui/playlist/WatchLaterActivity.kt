@@ -5,8 +5,10 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.util.TypedValue
 import android.view.Menu
+import android.widget.RelativeLayout
 import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
@@ -15,46 +17,76 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import id.islaami.playmi2021.R
+import id.islaami.playmi2021.ui.adapter.PlaybackViewHolder
 import id.islaami.playmi2021.ui.adapter.PlaylistSelectAdapter
 import id.islaami.playmi2021.ui.adapter.VideoAdapter
 import id.islaami.playmi2021.ui.base.BaseActivity
-import id.islaami.playmi2021.util.ERROR_CONNECTION
-import id.islaami.playmi2021.util.ERROR_CONNECTION_TIMEOUT
+import id.islaami.playmi2021.ui.video.VideoViewModel
+import id.islaami.playmi2021.util.*
 import id.islaami.playmi2021.util.ResourceStatus.*
-import id.islaami.playmi2021.util.handleApiError
 import id.islaami.playmi2021.util.ui.*
-import id.islaami.playmi2021.util.value
 import kotlinx.android.synthetic.main.add_new_playlist_dialog.view.*
 import kotlinx.android.synthetic.main.playlist_bottom_sheet.view.*
+import kotlinx.android.synthetic.main.playlist_detail_activity.*
+import kotlinx.android.synthetic.main.video_update_fragment.*
 import kotlinx.android.synthetic.main.watch_later_activity.*
+import kotlinx.android.synthetic.main.watch_later_activity.recyclerView
+import kotlinx.android.synthetic.main.watch_later_activity.swipeRefreshLayout
+import kotlinx.android.synthetic.main.watch_later_activity.toolbar
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class WatchLaterActivity : BaseActivity() {
     private val viewModel: PlaylistViewModel by viewModel()
+    private val videoViewModel: VideoViewModel by viewModel()
 
     private lateinit var playlistSelectAdapter: PlaylistSelectAdapter
 
-    private var videoAdapter: VideoAdapter = VideoAdapter { context, menuView, video ->
-        PopupMenu(context, menuView).apply {
-            inflate(R.menu.menu_popup_later_video)
+    private var videoAdapter: VideoAdapter = VideoAdapter(
+        popMenu = { context, menuView, video ->
+            PopupMenu(context, menuView).apply {
+                inflate(R.menu.menu_popup_later_video)
 
-            setOnMenuItemClickListener { item ->
-                when (item.itemId) {
-                    R.id.popSavePlaylist -> {
-                        showBottomSheet(video.ID.value())
-                        true
+                setOnMenuItemClickListener { item ->
+                    when (item.itemId) {
+                        R.id.popSavePlaylist -> {
+                            showBottomSheet(video.ID.value())
+                            true
+                        }
+                        R.id.popDeleteList -> {
+                            viewModel.deleteFromLater(video.ID.value())
+                            true
+                        }
+                        else -> false
                     }
-                    R.id.popDeleteList -> {
-                        viewModel.deleteFromLater(video.ID.value())
-                        true
-                    }
-                    else -> false
+                }
+
+                show()
+            }
+        },
+        onPlaybackEnded = {
+            var nextPosition = it
+            val videoCount = recyclerView.adapter?.itemCount ?: 0
+            while (nextPosition < videoCount) {
+                if (recyclerView.findViewHolderForAdapterPosition(++nextPosition) is PlaybackViewHolder) {
+                    val videoPlayedItem = recyclerView.layoutManager?.findViewByPosition(nextPosition)
+                    val videoPlayedLoc = IntArray(2)
+                    val videoView = videoPlayedItem?.findViewById<RelativeLayout>(R.id.channelLayout)
+                    videoView?.getLocationInWindow(videoPlayedLoc)
+                    recyclerView.smoothScrollBy(0, videoPlayedLoc[1] - toolbar.height - 80)
+                    break
                 }
             }
+        },
+        onVideoWatched10Seconds = { videoID ->
+            Log.i("190401", "onVideoWatched10Seconds videoID: $videoID")
+            videoViewModel.getVideoDetail(videoID)
+        },
+        lifecycle = lifecycle,
+        autoPlayOnLoad = true
+    )
 
-            show()
-        }
-    }
+    private val autoPlayScrollListener = AutoPlayScrollListener { videoAdapter.currentPlayedView }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,6 +94,13 @@ class WatchLaterActivity : BaseActivity() {
 
         setupToolbar(toolbar)
 
+        recyclerView.layoutManager =
+            CustomLinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        recyclerView.adapter = videoAdapter
+
+        recyclerView.addOnScrollListener(autoPlayScrollListener)
+
+        videoViewModel.initVideoDetailActivity(0)
         viewModel.initWatchLaterActivity()
         observeWatchLater()
 
@@ -77,6 +116,20 @@ class WatchLaterActivity : BaseActivity() {
             setOnRefreshListener { refresh() }
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+
+        videoAdapter.currentPlayedView?.playVideo()
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        videoAdapter.currentPlayedView?.pauseVideo()
+    }
+
+
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         // Inflate the options menu from XML
@@ -164,8 +217,7 @@ class WatchLaterActivity : BaseActivity() {
                 SUCCESS -> {
                     val list = result.data ?: emptyList()
 
-                    recyclerView.adapter = videoAdapter.apply { add(list) }
-                    recyclerView.layoutManager = LinearLayoutManager(this)
+                    videoAdapter.apply { add(list) }
 
                     observePlaylist()
                 }
@@ -205,7 +257,7 @@ class WatchLaterActivity : BaseActivity() {
                 }
                 SUCCESS -> {
                     swipeRefreshLayout.stopRefreshing()
-                    successLayout.setVisibilityToVisible()
+                    recyclerView.setVisibilityToVisible()
 
                     playlistSelectAdapter = PlaylistSelectAdapter(result.data)
                 }

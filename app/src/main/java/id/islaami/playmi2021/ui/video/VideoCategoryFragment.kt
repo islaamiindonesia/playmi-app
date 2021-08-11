@@ -1,16 +1,23 @@
 package id.islaami.playmi2021.ui.video
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.RelativeLayout
 import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.Observer
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import id.islaami.playmi2021.R
 import id.islaami.playmi2021.data.model.video.Video
+import id.islaami.playmi2021.ui.adapter.PlaybackViewHolder
 import id.islaami.playmi2021.ui.adapter.VideoPagedAdapter
 import id.islaami.playmi2021.ui.base.BaseFragment
 import id.islaami.playmi2021.ui.base.BaseRecyclerViewFragment
@@ -18,14 +25,20 @@ import id.islaami.playmi2021.ui.home.HomeViewModel
 import id.islaami.playmi2021.util.*
 import id.islaami.playmi2021.util.ResourceStatus.*
 import id.islaami.playmi2021.util.ui.*
+import kotlinx.android.synthetic.main.playlist_detail_activity.*
 import kotlinx.android.synthetic.main.video_category_fragment.*
+import kotlinx.android.synthetic.main.video_category_fragment.recyclerView
+import kotlinx.android.synthetic.main.video_category_fragment.swipeRefreshLayout
+import kotlinx.android.synthetic.main.video_update_fragment.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class VideoCategoryFragment(var categoryID: Int = 0) : BaseFragment(), BaseRecyclerViewFragment {
     private val viewModel: HomeViewModel by viewModel()
+    private val videoViewModel: VideoViewModel by viewModel()
     private var scrollPosition = 0
 
-    private var adapter = VideoPagedAdapter(context,
+    private var adapter = VideoPagedAdapter(
+        context,
         popMenu = { context, menuView, video ->
             PopupMenu(context, menuView, Gravity.END).apply {
                 inflate(R.menu.menu_popup_home)
@@ -81,7 +94,28 @@ class VideoCategoryFragment(var categoryID: Int = 0) : BaseFragment(), BaseRecyc
 
                 show()
             }
-        })
+        },
+        onPlaybackEnded = {
+            var nextPosition = it
+            val videoCount = recyclerView.adapter?.itemCount ?: 0
+            while (nextPosition < videoCount) {
+                if (recyclerView.findViewHolderForAdapterPosition(++nextPosition) is PlaybackViewHolder) {
+                    val videoPlayedItem = recyclerView.layoutManager?.findViewByPosition(nextPosition)
+                    val videoPlayedLoc = IntArray(2)
+                    val videoView = videoPlayedItem?.findViewById<RelativeLayout>(R.id.channelLayout)
+                    videoView?.getLocationInWindow(videoPlayedLoc)
+                    recyclerView.smoothScrollBy(0, videoPlayedLoc[1] - 201)
+                    break
+                }
+            }
+        },
+        onVideoWatched10Seconds = { videoID ->
+            videoViewModel.getVideoDetail(videoID)
+        },
+        lifecycle = lifecycle
+    )
+
+    private val autoPlayScrollListener = AutoPlayScrollListener { adapter.currentPlayedView }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -100,6 +134,13 @@ class VideoCategoryFragment(var categoryID: Int = 0) : BaseFragment(), BaseRecyc
             categoryID = bundle.getInt(EXTRA_CATEGORY, 0)
         }
 
+        recyclerView.layoutManager =
+            CustomLinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        recyclerView.adapter = adapter
+
+        recyclerView.addOnScrollListener(autoPlayScrollListener)
+
+        videoViewModel.initVideoDetailActivity(0)
         viewModel.initVideoCategoryFragment(categoryID)
         observeWatchLaterResult()
         observeFollowResult()
@@ -113,6 +154,8 @@ class VideoCategoryFragment(var categoryID: Int = 0) : BaseFragment(), BaseRecyc
         super.onResume()
 
         recyclerView.scrollToPosition(scrollPosition)
+
+        adapter.currentPlayedView?.playVideo()
     }
 
     override fun onPause() {
@@ -125,6 +168,8 @@ class VideoCategoryFragment(var categoryID: Int = 0) : BaseFragment(), BaseRecyc
 
             scrollPosition = position
         }
+
+        adapter.currentPlayedView?.pauseVideo()
     }
 
     private fun refresh() {
@@ -136,9 +181,7 @@ class VideoCategoryFragment(var categoryID: Int = 0) : BaseFragment(), BaseRecyc
     }
 
     private fun setupRecyclerView(result: PagedList<Video>?) {
-        recyclerView.adapter = adapter.apply { addVideoList(result) }
-        recyclerView.layoutManager =
-            LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        adapter.apply { addVideoList(result) }
     }
 
     companion object {
@@ -162,7 +205,6 @@ class VideoCategoryFragment(var categoryID: Int = 0) : BaseFragment(), BaseRecyc
             } else {
                 recyclerView.setVisibilityToVisible()
                 emptyText.setVisibilityToGone()
-
                 setupRecyclerView(result)
             }
         })
@@ -184,16 +226,16 @@ class VideoCategoryFragment(var categoryID: Int = 0) : BaseFragment(), BaseRecyc
                         )
                         ERROR_CONNECTION -> {
                             context?.showMaterialAlertDialog(
-                                    message = getString(R.string.error_connection),
-                                    positive = "Coba Lagi",
-                                    positiveCallback = { refresh() },
+                                message = getString(R.string.error_connection),
+                                positive = "Coba Lagi",
+                                positiveCallback = { refresh() },
                             )
                         }
                         ERROR_CONNECTION_TIMEOUT -> {
                             context?.showMaterialAlertDialog(
-                                    message = getString(R.string.error_connection_timeout),
-                                    positive = "Coba Lagi",
-                                    positiveCallback = { refresh() },
+                                message = getString(R.string.error_connection_timeout),
+                                positive = "Coba Lagi",
+                                positiveCallback = { refresh() },
                             )
                         }
                         else -> {

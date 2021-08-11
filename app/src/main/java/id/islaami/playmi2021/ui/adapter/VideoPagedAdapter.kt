@@ -3,6 +3,8 @@ package id.islaami.playmi2021.ui.adapter
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,10 +14,10 @@ import android.widget.RatingBar
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
+import androidx.lifecycle.Lifecycle
 import androidx.paging.PagedList
 import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.marlonlom.utilities.timeago.TimeAgo
 import com.github.marlonlom.utilities.timeago.TimeAgoMessages
@@ -25,6 +27,9 @@ import com.google.android.gms.ads.formats.MediaView
 import com.google.android.gms.ads.formats.NativeAdOptions
 import com.google.android.gms.ads.formats.UnifiedNativeAd
 import com.google.android.gms.ads.formats.UnifiedNativeAdView
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerCallback
 import id.islaami.playmi2021.R
 import id.islaami.playmi2021.data.model.video.Video
 import id.islaami.playmi2021.ui.channel.ChannelDetailActivity
@@ -35,14 +40,23 @@ import id.islaami.playmi2021.util.fromDbFormatDateTimeToCustomFormat
 import id.islaami.playmi2021.util.ui.*
 import id.islaami.playmi2021.util.value
 import kotlinx.android.synthetic.main.video_item.view.*
+import kotlinx.android.synthetic.main.video_update_fragment.*
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 class VideoPagedAdapter(
     var context: Context? = null,
     var popMenu: (Context, View, Video) -> Unit,
     var showSeries: Boolean = true,
+    val onPlaybackEnded: ((playedPosition: Int) -> Unit)? = null,
+    val onVideoWatched10Seconds: ((Int) -> Unit)? = null,
+    val lifecycle: Lifecycle,
+    var autoPlayOnLoad: Boolean = false
 ) : PagedListAdapter<Video, VideoPagedAdapter.ViewHolder>(DIFF_CALLBACK) {
+
+    private val handler = Handler(Looper.getMainLooper())
+    var currentPlayedView: PlaybackViewHolder? = null
 
     companion object {
         const val VIDEO_ITEM_VIEW_TYPE = 0
@@ -74,7 +88,15 @@ class VideoPagedAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         /*if (holder is AdViewHolder)
             Log.i("Cek ", "Ad at position: $position")*/
-        holder.bindView(getItem(position))
+        holder.bindView(getItem(position), position)
+    }
+
+    override fun onViewDetachedFromWindow(holder: ViewHolder) {
+        super.onViewDetachedFromWindow(holder)
+        if (holder is PlaybackViewHolder) {
+            holder.pauseVideo()
+            handler.removeCallbacksAndMessages(null)
+        }
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -84,18 +106,73 @@ class VideoPagedAdapter(
 
     fun addVideoList(list: PagedList<Video>?) {
         submitList(list)
+        notifyDataSetChanged()
     }
 
     abstract class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        abstract fun bindView(data: Video?)
+        abstract fun bindView(data: Video?, position: Int)
     }
 
-    inner class VideoViewHolder(itemView: View) : ViewHolder(itemView) {
+    inner class VideoViewHolder(itemView: View) : ViewHolder(itemView), PlaybackViewHolder {
+        private var duration = 0
+        private var onWatched = false // to lock the function invoke, prevent multiple call
+        private var onAutoPlayNextCalled =
+            false // to lock the function invoke, prevent multiple call
+        private var _currentPosition = 0
+        private var isVideoPlaying = false
 
-        override fun bindView(video: Video?) = with(itemView) {
+        private val youtubePlayerListener = object : AbstractYouTubePlayerListener() {
+            override fun onVideoDuration(youTubePlayer: YouTubePlayer, duration: Float) {
+                super.onVideoDuration(youTubePlayer, duration)
+                this@VideoViewHolder.duration = duration.toInt()
+            }
+
+            override fun onCurrentSecond(youTubePlayer: YouTubePlayer, second: Float) {
+                super.onCurrentSecond(youTubePlayer, second)
+
+                if (second != 0f && duration != 0) {
+                    if (second.toInt() == duration && !onAutoPlayNextCalled) {
+                        onPlaybackEnded?.invoke(currentPlayedView?.currentPosition ?: 0)
+                        onAutoPlayNextCalled = true
+                    }
+                    if (second > 10 && !onWatched) {
+                        val video = getItem(currentPlayedView?.currentPosition ?: 0)
+                        onVideoWatched10Seconds?.invoke(video?.ID ?: 0)
+                        onWatched = true
+                    }
+                }
+            }
+        }
+
+        override fun bindView(video: Video?, position: Int) = with(itemView) {
             if (video != null) {
+                _currentPosition = position
+                if (position == 0) {
+                    currentPlayedView = this@VideoViewHolder
+                }
+                duration = 0
+                onWatched = false
                 videoTitle.text = video.title
                 videoThumbnail.loadYoutubeThumbnail(video.videoID ?: "")
+                videoThumbnail.visibility = View.VISIBLE
+                lifecycle.addObserver(videoPlayer)
+                videoPlayer.visibility = View.INVISIBLE
+                videoPlayer.enableBackgroundPlayback(false)
+                videoPlayer.getPlayerUiController()
+                    .showVideoTitle(false)
+                    .showMenuButton(false)
+                    .showPlayPauseButton(false)
+                videoPlayer.getYouTubePlayerWhenReady(object : YouTubePlayerCallback {
+                    override fun onYouTubePlayer(youTubePlayer: YouTubePlayer) {
+                        youTubePlayer.cueVideo(video.videoID.toString(), 0f)
+                        if (isVideoPlaying) playVideo()
+                    }
+                })
+                if (position == 0 && autoPlayOnLoad) {
+                    isVideoPlaying = true
+                    playVideo()
+                }
+
                 channelName.text = video.channel?.name
                 channelIcon.loadImage(video.channel?.thumbnail)
                 views.text = "${video.views ?: 0}x"
@@ -103,7 +180,11 @@ class VideoPagedAdapter(
                 serial.isVisible = video.seriesId != null && showSeries
                 serial_name.text = video.seriesName
                 serial_name.setOnClickListener {
-                    VideoSeriesActivity.startActivity(context, video.seriesId.value(), video.seriesName.toString())
+                    VideoSeriesActivity.startActivity(
+                        context,
+                        video.seriesId.value(),
+                        video.seriesName.toString()
+                    )
                 }
 
                 subcategoryName.apply {
@@ -134,6 +215,12 @@ class VideoPagedAdapter(
                 videoThumbnail.setOnClickListener {
                     VideoDetailActivity.startActivity(context, video.ID.value())
                 }
+                videoPlayerTopLayer.setOnClickListener {
+                    VideoDetailActivity.startActivity(context, video.ID.value())
+                }
+                videoTitle.setOnClickListener {
+                    videoThumbnail.callOnClick()
+                }
 
                 menu.setOnClickListener { view ->
                     popMenu(context, view, video)
@@ -146,6 +233,45 @@ class VideoPagedAdapter(
                         channelID = video.channel?.ID.value()
                     )
                 }
+            }
+        }
+
+        override val currentPosition: Int
+            get() = _currentPosition
+        override val isVisible: Boolean
+            get() = itemView.videoPlayerTopLayer.isVisible()
+
+        override fun playVideo() {
+            this@VideoPagedAdapter.handler.postDelayed({
+                with(itemView) {
+                    videoPlayer.addYouTubePlayerListener(youtubePlayerListener)
+                    videoThumbnail.visibility = View.INVISIBLE
+                    videoPlayer.visibility = View.VISIBLE
+                    onAutoPlayNextCalled = false
+                    videoPlayer.getYouTubePlayerWhenReady(object : YouTubePlayerCallback {
+                        override fun onYouTubePlayer(youTubePlayer: YouTubePlayer) {
+                            youTubePlayer.seekTo(0f)
+                            youTubePlayer.play()
+                        }
+                    })
+                    currentPlayedView = this@VideoViewHolder
+                    isVideoPlaying = true
+                }
+            }, 2300)
+        }
+
+        override fun pauseVideo() {
+            with(itemView) {
+                videoPlayer.removeYouTubePlayerListener(youtubePlayerListener)
+                videoThumbnail.visibility = View.VISIBLE
+                videoPlayer.visibility = View.INVISIBLE
+                this@VideoPagedAdapter.handler.removeCallbacksAndMessages(null)
+                videoPlayer.getYouTubePlayerWhenReady(object : YouTubePlayerCallback {
+                    override fun onYouTubePlayer(youTubePlayer: YouTubePlayer) {
+                        youTubePlayer.pause()
+                    }
+                })
+                isVideoPlaying = false
             }
         }
     }
@@ -183,7 +309,7 @@ class VideoPagedAdapter(
         }
 
         @SuppressLint("MissingPermission")
-        override fun bindView(data: Video?) {
+        override fun bindView(data: Video?, position: Int) {
             hideAdViews()
             currentNativeAd?.destroy()
 
@@ -207,7 +333,7 @@ class VideoPagedAdapter(
             ad_card?.isVisible = true
             ad_headline?.text = unifiedNativeAd.headline
             ad_media?.setMediaContent(unifiedNativeAd.mediaContent)
-            if(!unifiedNativeAd.mediaContent.hasVideoContent()) ad_media?.isVisible = false
+            if (!unifiedNativeAd.mediaContent.hasVideoContent()) ad_media?.isVisible = false
 
             unifiedNativeAd.body?.let {
                 ad_body?.visibility = View.VISIBLE
@@ -274,7 +400,7 @@ class VideoPagedAdapter(
     }
 
     inner class EmptyDataPlaceHolder(itemView: View) : ViewHolder(itemView) {
-        override fun bindView(data: Video?) {
+        override fun bindView(data: Video?, position: Int) {
             TODO("Not yet implemented")
         }
     }

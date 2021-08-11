@@ -10,6 +10,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RelativeLayout
 import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
@@ -20,20 +21,27 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import id.islaami.playmi2021.R
 import id.islaami.playmi2021.ui.MainActivity
+import id.islaami.playmi2021.ui.adapter.PlaybackViewHolder
 import id.islaami.playmi2021.ui.adapter.VideoPagedAdapter
 import id.islaami.playmi2021.ui.base.BaseFragment
 import id.islaami.playmi2021.ui.base.BaseHasFloatingButtonFragment
 import id.islaami.playmi2021.ui.base.BaseRecyclerViewFragment
 import id.islaami.playmi2021.ui.setting.SettingActivity
+import id.islaami.playmi2021.ui.video.VideoViewModel
 import id.islaami.playmi2021.util.*
 import id.islaami.playmi2021.util.ResourceStatus.*
 import id.islaami.playmi2021.util.ui.*
+import kotlinx.android.synthetic.main.playlist_detail_activity.*
 import kotlinx.android.synthetic.main.video_update_fragment.*
+import kotlinx.android.synthetic.main.video_update_fragment.recyclerView
+import kotlinx.android.synthetic.main.video_update_fragment.swipeRefreshLayout
+import kotlinx.android.synthetic.main.video_update_fragment.toolbar
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class VideoUpdateFragment() : BaseFragment(), BaseRecyclerViewFragment,
     BaseHasFloatingButtonFragment {
     private val viewModel: VideoUpdateViewModel by viewModel()
+    private val videoViewModel: VideoViewModel by viewModel()
     private var shuffle: Int = 0
     private val handler = Handler(Looper.getMainLooper())
 
@@ -82,7 +90,29 @@ class VideoUpdateFragment() : BaseFragment(), BaseRecyclerViewFragment,
 
                 show()
             }
-        })
+        },
+        onPlaybackEnded = {
+            var nextPosition = it
+            val videoCount = recyclerView.adapter?.itemCount ?: 0
+            while (nextPosition < videoCount) {
+                if (recyclerView.findViewHolderForAdapterPosition(++nextPosition) is PlaybackViewHolder) {
+                    val videoPlayedItem = recyclerView.layoutManager?.findViewByPosition(nextPosition)
+                    val videoPlayedLoc = IntArray(2)
+                    val videoView = videoPlayedItem?.findViewById<RelativeLayout>(R.id.channelLayout)
+                    videoView?.getLocationInWindow(videoPlayedLoc)
+                    recyclerView.smoothScrollBy(0, videoPlayedLoc[1] - toolbar.height - 80)
+                    break
+                }
+            }
+        },
+        onVideoWatched10Seconds = { videoID ->
+            videoViewModel.getVideoDetail(videoID)
+        },
+        lifecycle = lifecycle,
+        autoPlayOnLoad = true
+    )
+
+    private val autoPlayScrollListener = AutoPlayScrollListener { videoPagedAdapter.currentPlayedView }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -122,11 +152,16 @@ class VideoUpdateFragment() : BaseFragment(), BaseRecyclerViewFragment,
             }
         }
 
+        recyclerView.layoutManager =
+            CustomLinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        recyclerView.adapter = videoPagedAdapter
+
+        recyclerView.addOnScrollListener(autoPlayScrollListener)
+
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 when (newState) {
                     RecyclerView.SCROLL_STATE_DRAGGING -> {
-                        Log.i("190401", "onScrollStateChanged: DRAGGING")
                         if (!isDetached) {
                             handler.removeCallbacksAndMessages(null)
                             (activity as? MainActivity)?.floatingActionButton?.let {
@@ -143,7 +178,6 @@ class VideoUpdateFragment() : BaseFragment(), BaseRecyclerViewFragment,
                         }
                     }
                     RecyclerView.SCROLL_STATE_IDLE -> {
-                        Log.i("190401", "onScrollStateChanged: IDLE")
                         if (!isDetached) {
                             handler.postDelayed({
                                 (activity as? MainActivity)?.floatingActionButton?.let {
@@ -156,9 +190,6 @@ class VideoUpdateFragment() : BaseFragment(), BaseRecyclerViewFragment,
                                 }
                             }, 3000)
                         }
-                    }
-                    RecyclerView.SCROLL_STATE_SETTLING -> {
-                        Log.i("190401", "onScrollStateChanged: SETTLING")
                     }
                 }
                 super.onScrollStateChanged(recyclerView, newState)
@@ -191,6 +222,7 @@ class VideoUpdateFragment() : BaseFragment(), BaseRecyclerViewFragment,
         }
 
         viewModel.initVideoUpdateFragment()
+        videoViewModel.initVideoDetailActivity(0)
         observeFollowResult()
         observeUnfollowResult()
         observeWatchLaterResult()
@@ -203,6 +235,8 @@ class VideoUpdateFragment() : BaseFragment(), BaseRecyclerViewFragment,
         val position =
             PreferenceManager.getDefaultSharedPreferences(context).getInt("UPDATE_SCROLL", 0)
         recyclerView.scrollToPosition(position)
+
+        videoPagedAdapter.currentPlayedView?.playVideo()
     }
 
     override fun onPause() {
@@ -219,7 +253,7 @@ class VideoUpdateFragment() : BaseFragment(), BaseRecyclerViewFragment,
                 .apply()
         }
 
-        handler.removeCallbacksAndMessages(null)
+        videoPagedAdapter.currentPlayedView?.pauseVideo()
     }
 
     private fun refresh() {
@@ -232,9 +266,7 @@ class VideoUpdateFragment() : BaseFragment(), BaseRecyclerViewFragment,
 
     private fun observeGetAllVideoResult() {
         viewModel.videoUpdatePagedListResultLd.observe(viewLifecycleOwner, Observer { result ->
-            recyclerView.adapter = videoPagedAdapter.apply { addVideoList(result) }
-            recyclerView.layoutManager =
-                LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+            videoPagedAdapter.apply { addVideoList(result) }
         })
 
         viewModel.networkStatusLd.observe(viewLifecycleOwner, Observer { result ->

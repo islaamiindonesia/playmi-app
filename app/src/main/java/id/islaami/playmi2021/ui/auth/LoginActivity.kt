@@ -77,6 +77,7 @@ class LoginActivity(
         super.onActivityResult(requestCode, resultCode, data)
 
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
+        Log.e("190401", "onActivityResult: ", GoogleSignIn.getSignedInAccountFromIntent(data).exception)
         if (requestCode == GOOGLE_CODE) {
             if (resultCode == RESULT_OK) {
                 val task = GoogleSignIn.getSignedInAccountFromIntent(data)

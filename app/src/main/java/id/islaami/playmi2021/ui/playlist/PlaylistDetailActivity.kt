@@ -5,67 +5,104 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import android.util.TypedValue
 import android.view.Menu
+import android.widget.ImageView
+import android.widget.RelativeLayout
 import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.ConcatAdapter
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import id.islaami.playmi2021.R
+import id.islaami.playmi2021.ui.adapter.PlaybackViewHolder
+import id.islaami.playmi2021.ui.adapter.PlaylistDetailHeaderAdapter
 import id.islaami.playmi2021.ui.adapter.PlaylistSelectAdapter
 import id.islaami.playmi2021.ui.adapter.VideoAdapter
 import id.islaami.playmi2021.ui.base.BaseActivity
-import id.islaami.playmi2021.util.ERROR_CONNECTION
-import id.islaami.playmi2021.util.ERROR_CONNECTION_TIMEOUT
+import id.islaami.playmi2021.ui.video.VideoViewModel
+import id.islaami.playmi2021.util.*
 import id.islaami.playmi2021.util.ResourceStatus.*
-import id.islaami.playmi2021.util.handleApiError
 import id.islaami.playmi2021.util.ui.*
-import id.islaami.playmi2021.util.value
 import kotlinx.android.synthetic.main.add_new_playlist_dialog.view.*
 import kotlinx.android.synthetic.main.home_fragment.*
 import kotlinx.android.synthetic.main.playlist_bottom_sheet.view.*
 import kotlinx.android.synthetic.main.playlist_detail_activity.*
+import kotlinx.android.synthetic.main.playlist_detail_activity.recyclerView
+import kotlinx.android.synthetic.main.playlist_detail_activity.swipeRefreshLayout
 import kotlinx.android.synthetic.main.playlist_detail_activity.toolbar
+import kotlinx.android.synthetic.main.video_category_fragment.*
+import kotlinx.android.synthetic.main.video_update_fragment.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlaylistDetailActivity(var playlistId: Int = 0) : BaseActivity() {
     private val viewModel: PlaylistViewModel by viewModel()
+    private val videoViewModel: VideoViewModel by viewModel()
 
     lateinit var playlistSelectAdapter: PlaylistSelectAdapter
 
-    private var videoAdapter = VideoAdapter { context, menuView, video ->
-        PopupMenu(context, menuView).apply {
-            inflate(R.menu.menu_popup_playlist_video)
+    private var headerAdapter = PlaylistDetailHeaderAdapter()
+    private var videoAdapter = VideoAdapter(
+        popMenu = { context, menuView, video ->
+            PopupMenu(context, menuView).apply {
+                inflate(R.menu.menu_popup_playlist_video)
 
-            menu.getItem(2).title = "Hapus dari ${intent.getStringExtra(EXTRA_NAME) ?: ""}"
+                menu.getItem(2).title = "Hapus dari ${intent.getStringExtra(EXTRA_NAME) ?: ""}"
 
-            setOnMenuItemClickListener { item ->
-                when (item.itemId) {
-                    R.id.popSaveLater -> {
-                        viewModel.addWatchLater(video.ID.value())
-                        true
+                setOnMenuItemClickListener { item ->
+                    when (item.itemId) {
+                        R.id.popSaveLater -> {
+                            viewModel.addWatchLater(video.ID.value())
+                            true
+                        }
+                        R.id.popSavePlaylist -> {
+                            showBottomSheet(video.ID.value())
+                            true
+                        }
+                        R.id.popDeleteList -> {
+                            viewModel.removeFromPlaylist(
+                                video.ID.value(),
+                                playlistId
+                            )
+                            true
+                        }
+                        else -> false
                     }
-                    R.id.popSavePlaylist -> {
-                        showBottomSheet(video.ID.value())
-                        true
-                    }
-                    R.id.popDeleteList -> {
-                        viewModel.removeFromPlaylist(
-                            video.ID.value(),
-                            playlistId
-                        )
-                        true
-                    }
-                    else -> false
+                }
+
+                show()
+            }
+        },
+        onPlaybackEnded = {
+            var nextPosition = it
+            val videoCount = recyclerView.adapter?.itemCount ?: 0
+            while (nextPosition < videoCount) {
+                if (recyclerView.findViewHolderForAdapterPosition(++nextPosition) is PlaybackViewHolder) {
+                    val videoPlayedItem = recyclerView.layoutManager?.findViewByPosition(nextPosition)
+                    val videoPlayedLoc = IntArray(2)
+                    val videoView = videoPlayedItem?.findViewById<RelativeLayout>(R.id.channelLayout)
+                    videoView?.getLocationInWindow(videoPlayedLoc)
+                    recyclerView.smoothScrollBy(0, videoPlayedLoc[1] - toolbar.height - 80)
+                    break
                 }
             }
+        },
+        onVideoWatched10Seconds = { videoID ->
+            Log.i("190401", "onVideoWatched10Seconds videoID: $videoID")
+            videoViewModel.getVideoDetail(videoID)
+        },
+        lifecycle = lifecycle,
+        autoPlayOnLoad = true
+    )
 
-            show()
-        }
-    }
+    private val autoPlayScrollListener = AutoPlayScrollListener { videoAdapter.currentPlayedView }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,8 +115,15 @@ class PlaylistDetailActivity(var playlistId: Int = 0) : BaseActivity() {
             setOnRefreshListener { refresh() }
         }
 
+        recyclerView.layoutManager = CustomLinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        recyclerView.adapter = ConcatAdapter(headerAdapter, videoAdapter)
+
+        recyclerView.addOnScrollListener(autoPlayScrollListener)
+
+
         playlistId = intent.getIntExtra(EXTRA_ID, 0)
 
+        videoViewModel.initVideoDetailActivity(0)
         viewModel.initPlaylistDetailActivity(playlistId)
         observeWatchLaterResult()
         observeCreatePlaylistResult()
@@ -90,23 +134,26 @@ class PlaylistDetailActivity(var playlistId: Int = 0) : BaseActivity() {
         observeFollowResult()
         observeUnfollowResult()
 
-        btnEdit.setOnClickListener {
-            editPlaylistDialog(
-                playlistId,
-                playlistName.text.toString()
-            )
-        }
+        headerAdapter.setOnClickListener(object : PlaylistDetailHeaderAdapter.PlaylistDetailClickListener {
+            override fun onEditPlaylistNameClicked(playlistName: String) {
+                editPlaylistDialog(
+                    playlistId,
+                    playlistName
+                )
+            }
 
-        btnDelete.setOnClickListener {
-            PlaymiDialogFragment.show(
-                supportFragmentManager,
-                text = getString(
-                    R.string.playlist_remove,
-                    intent.getStringExtra(EXTRA_NAME) ?: ""
-                ),
-                okCallback = { viewModel.deletePlaylist(playlistId) }
-            )
-        }
+            override fun onDeletePlaylistClicked() {
+                PlaymiDialogFragment.show(
+                    supportFragmentManager,
+                    text = getString(
+                        R.string.playlist_remove,
+                        intent.getStringExtra(EXTRA_NAME) ?: ""
+                    ),
+                    okCallback = { viewModel.deletePlaylist(playlistId) }
+                )
+            }
+
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -131,6 +178,13 @@ class PlaylistDetailActivity(var playlistId: Int = 0) : BaseActivity() {
 
         observeDetail()
         observeAllPlaylist()
+
+        videoAdapter.currentPlayedView?.playVideo()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        videoAdapter.currentPlayedView?.pauseVideo()
     }
 
     private fun refresh() {
@@ -232,13 +286,11 @@ class PlaylistDetailActivity(var playlistId: Int = 0) : BaseActivity() {
                     swipeRefreshLayout.startRefreshing()
                 }
                 SUCCESS -> {
-                    playlistName.text = result.data?.name
-                    videoAmount.text = "${result.data?.videoCount} video"
+                    headerAdapter.setData(result.data?.name, result.data?.videoCount)
 
                     val list = result.data?.videos ?: emptyList()
 
-                    recyclerView.adapter = videoAdapter.apply { add(list) }
-                    recyclerView.layoutManager = LinearLayoutManager(this)
+                    videoAdapter.apply { add(list) }
 
                     viewModel.allPlaylists()
                 }
@@ -276,7 +328,7 @@ class PlaylistDetailActivity(var playlistId: Int = 0) : BaseActivity() {
                 }
                 SUCCESS -> {
                     swipeRefreshLayout.stopRefreshing()
-                    successLayout.setVisibilityToVisible()
+                    recyclerView.setVisibilityToVisible()
 
                     playlistSelectAdapter = PlaylistSelectAdapter(result.data)
                 }

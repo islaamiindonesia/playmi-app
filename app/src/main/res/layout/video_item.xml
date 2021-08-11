@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:theme="@style/VideoTheme"
     android:id="@+id/itemLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -76,25 +77,63 @@
         app:layout_constraintTop_toTopOf="@id/channelLayout"
         app:srcCompat="@drawable/ic_more" />
 
+    <View
+        android:id="@+id/videoPlayerTopLayer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/channelLayout"
+        app:layout_constraintBottom_toBottomOf="@id/videoPlayer"
+        android:background="@android:color/transparent"
+        android:elevation="2dp"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"/>
+
     <ImageView
         android:id="@+id/videoThumbnail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="200dp"
         android:adjustViewBounds="true"
+        android:elevation="1dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/channelLayout"
         tools:srcCompat="@tools:sample/backgrounds/scenic[7]" />
 
+
+    <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
+        android:id="@+id/videoPlayer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="200dp"
+        android:elevation="0dp"
+        android:visibility="invisible"
+        app:autoPlay="false"
+        app:showFullScreenButton="false"
+        app:showSeekBar="false"
+        app:showVideoCurrentTime="false"
+        app:showVideoDuration="false"
+        app:showYouTubeButton="false"
+        app:handleNetworkEvents="true"
+        app:enableAutomaticInitialization="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/channelLayout"/>
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/youtubeBarrier"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="videoThumbnail, videoPlayer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
     <RelativeLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:paddingHorizontal="12dp"
-        app:layout_constraintEnd_toEndOf="@id/videoThumbnail"
-        app:layout_constraintStart_toStartOf="@+id/videoThumbnail"
-        app:layout_constraintTop_toBottomOf="@+id/videoThumbnail">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/youtubeBarrier">
         <LinearLayout
             android:id="@+id/serial"
             android:layout_alignParentStart="true"

@@ -36,93 +36,15 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
-
             <FrameLayout
                 android:id="@+id/errorLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:visibility="gone" />
-
-            <androidx.core.widget.NestedScrollView
-                android:id="@+id/successLayout"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="invisible">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="16dp">
-
-                        <androidx.appcompat.widget.AppCompatTextView
-                            android:id="@+id/playlistName"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="sans-serif-medium"
-                            android:textColor="@color/text_color"
-                            android:textSize="16sp"
-                            tools:text="Nama Playlist" />
-
-                        <androidx.constraintlayout.widget.ConstraintLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-
-                            <androidx.appcompat.widget.AppCompatTextView
-                                android:id="@+id/videoAmount"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:textColor="@color/text_color"
-                                android:textSize="14sp"
-                                app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toStartOf="@id/btnEdit"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent"
-                                tools:text="20 Video" />
-
-                            <androidx.appcompat.widget.AppCompatImageView
-                                android:id="@+id/btnEdit"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginEnd="16dp"
-                                android:background="?attr/selectableItemBackground"
-                                android:clickable="true"
-                                android:focusable="true"
-                                app:layout_constraintBottom_toBottomOf="@id/videoAmount"
-                                app:layout_constraintEnd_toStartOf="@id/btnDelete"
-                                app:layout_constraintTop_toTopOf="@id/videoAmount"
-                                app:srcCompat="@drawable/ic_edit" />
-
-                            <androidx.appcompat.widget.AppCompatImageView
-                                android:id="@+id/btnDelete"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:background="?attr/selectableItemBackground"
-                                android:clickable="true"
-                                android:focusable="true"
-                                app:layout_constraintBottom_toBottomOf="@id/videoAmount"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:layout_constraintTop_toTopOf="@id/videoAmount"
-                                app:srcCompat="@drawable/ic_delete" />
-                        </androidx.constraintlayout.widget.ConstraintLayout>
-                    </LinearLayout>
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="@color/border_color" />
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recyclerView"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
-            </androidx.core.widget.NestedScrollView>
+                android:layout_height="wrap_content" />
         </LinearLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </LinearLayout>
