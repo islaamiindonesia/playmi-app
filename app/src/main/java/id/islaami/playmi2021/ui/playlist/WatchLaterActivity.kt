@@ -68,11 +68,7 @@ class WatchLaterActivity : BaseActivity() {
             val videoCount = recyclerView.adapter?.itemCount ?: 0
             while (nextPosition < videoCount) {
                 if (recyclerView.findViewHolderForAdapterPosition(++nextPosition) is PlaybackViewHolder) {
-                    val videoPlayedItem = recyclerView.layoutManager?.findViewByPosition(nextPosition)
-                    val videoPlayedLoc = IntArray(2)
-                    val videoView = videoPlayedItem?.findViewById<RelativeLayout>(R.id.channelLayout)
-                    videoView?.getLocationInWindow(videoPlayedLoc)
-                    recyclerView.smoothScrollBy(0, videoPlayedLoc[1] - toolbar.height - 80)
+                    recyclerView.customSmoothScrollToPosition(nextPosition)
                     break
                 }
             }

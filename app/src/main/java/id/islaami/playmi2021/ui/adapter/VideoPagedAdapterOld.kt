@@ -187,6 +187,7 @@ class VideoPagedAdapterOld(
 
 
         override fun playVideo() {
+            currentPlayedView?.pauseVideo()
             this@VideoPagedAdapterOld.handler.postDelayed({
                 with(itemView) {
                     videoPlayer.addYouTubePlayerListener(youTubePlayerListener)

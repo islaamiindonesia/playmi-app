@@ -19,10 +19,7 @@ import id.islaami.playmi2021.util.AutoPlayScrollListener
 import id.islaami.playmi2021.util.ERROR_EMPTY_LIST
 import id.islaami.playmi2021.util.ResourceStatus.*
 import id.islaami.playmi2021.util.handleApiError
-import id.islaami.playmi2021.util.ui.CustomLinearLayoutManager
-import id.islaami.playmi2021.util.ui.PlaymiDialogFragment
-import id.islaami.playmi2021.util.ui.showLongToast
-import id.islaami.playmi2021.util.ui.showSnackbar
+import id.islaami.playmi2021.util.ui.*
 import id.islaami.playmi2021.util.value
 import kotlinx.android.synthetic.main.channel_video_fragment.recyclerView
 import kotlinx.android.synthetic.main.video_update_fragment.*
@@ -62,11 +59,7 @@ class ChannelVideoFragment(var channelID: Int) : BaseFragment(), BaseRecyclerVie
             val videoCount = recyclerView.adapter?.itemCount ?: 0
             while (nextPosition < videoCount) {
                 if (recyclerView.findViewHolderForAdapterPosition(++nextPosition) is PlaybackViewHolder) {
-                    val videoPlayedItem = recyclerView.layoutManager?.findViewByPosition(nextPosition)
-                    val videoPlayedLoc = IntArray(2)
-                    val videoView = videoPlayedItem?.findViewById<RelativeLayout>(R.id.channelLayout)
-                    videoView?.getLocationInWindow(videoPlayedLoc)
-                    recyclerView.smoothScrollBy(0, videoPlayedLoc[1] - toolbar.height - 80)
+                    recyclerView.customSmoothScrollToPosition(nextPosition)
                     break
                 }
             }

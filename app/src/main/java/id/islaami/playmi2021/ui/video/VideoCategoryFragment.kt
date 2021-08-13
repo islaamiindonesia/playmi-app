@@ -1,20 +1,17 @@
 package id.islaami.playmi2021.ui.video
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.RelativeLayout
 import androidx.appcompat.widget.PopupMenu
 import androidx.lifecycle.Observer
 import androidx.paging.PagedList
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.LinearSmoothScroller
+import androidx.recyclerview.widget.RecyclerView.SmoothScroller
 import id.islaami.playmi2021.R
 import id.islaami.playmi2021.data.model.video.Video
 import id.islaami.playmi2021.ui.adapter.PlaybackViewHolder
@@ -25,12 +22,9 @@ import id.islaami.playmi2021.ui.home.HomeViewModel
 import id.islaami.playmi2021.util.*
 import id.islaami.playmi2021.util.ResourceStatus.*
 import id.islaami.playmi2021.util.ui.*
-import kotlinx.android.synthetic.main.playlist_detail_activity.*
 import kotlinx.android.synthetic.main.video_category_fragment.*
-import kotlinx.android.synthetic.main.video_category_fragment.recyclerView
-import kotlinx.android.synthetic.main.video_category_fragment.swipeRefreshLayout
-import kotlinx.android.synthetic.main.video_update_fragment.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
+
 
 class VideoCategoryFragment(var categoryID: Int = 0) : BaseFragment(), BaseRecyclerViewFragment {
     private val viewModel: HomeViewModel by viewModel()
@@ -100,11 +94,7 @@ class VideoCategoryFragment(var categoryID: Int = 0) : BaseFragment(), BaseRecyc
             val videoCount = recyclerView.adapter?.itemCount ?: 0
             while (nextPosition < videoCount) {
                 if (recyclerView.findViewHolderForAdapterPosition(++nextPosition) is PlaybackViewHolder) {
-                    val videoPlayedItem = recyclerView.layoutManager?.findViewByPosition(nextPosition)
-                    val videoPlayedLoc = IntArray(2)
-                    val videoView = videoPlayedItem?.findViewById<RelativeLayout>(R.id.channelLayout)
-                    videoView?.getLocationInWindow(videoPlayedLoc)
-                    recyclerView.smoothScrollBy(0, videoPlayedLoc[1] - 201)
+                    recyclerView.customSmoothScrollToPosition(nextPosition)
                     break
                 }
             }

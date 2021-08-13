@@ -1,5 +1,6 @@
 package id.islaami.playmi2021.util
 
+import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import id.islaami.playmi2021.ui.adapter.PlaybackViewHolder
@@ -28,6 +29,7 @@ class AutoPlayScrollListener(
                 lastVisibleItemPos - 1
             }
         }
+        if (getCurrentPlayedViewHolder()?.currentPosition == nextPlayedIndex) return
         val viewHolder = recyclerView.findViewHolderForAdapterPosition(nextPlayedIndex)
         if (viewHolder is PlaybackViewHolder) {
             viewHolder.playVideo()
@@ -45,8 +47,9 @@ class AutoPlayScrollListener(
 
     override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
         when (newState) {
-            RecyclerView.SCROLL_STATE_IDLE -> playNextOrPrevious(recyclerView)
-            else -> getCurrentPlayedViewHolder()?.pauseVideo()
+            RecyclerView.SCROLL_STATE_IDLE, RecyclerView.SCROLL_STATE_DRAGGING -> {
+                playNextOrPrevious(recyclerView)
+            }
         }
     }
 }

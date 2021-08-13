@@ -242,6 +242,7 @@ class VideoPagedAdapter(
             get() = itemView.videoPlayerTopLayer.isVisible()
 
         override fun playVideo() {
+            currentPlayedView?.pauseVideo()
             this@VideoPagedAdapter.handler.postDelayed({
                 with(itemView) {
                     videoPlayer.addYouTubePlayerListener(youtubePlayerListener)

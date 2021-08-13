@@ -186,6 +186,7 @@ class VideoAdapter(
             get() = itemView.videoPlayerTopLayer.isVisible()
 
         override fun playVideo() {
+            currentPlayedView?.pauseVideo()
             this@VideoAdapter.handler.postDelayed({
                 with(itemView) {
                     videoPlayer.addYouTubePlayerListener(youTubePlayerListener)

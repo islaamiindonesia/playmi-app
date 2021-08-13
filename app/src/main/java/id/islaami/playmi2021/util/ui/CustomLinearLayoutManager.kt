@@ -15,10 +15,6 @@ class CustomLinearLayoutManager : LinearLayoutManager {
         reverseLayout
     )
 
-    override fun scrollToPosition(position: Int) {
-        super.scrollToPosition(position)
-    }
-
     override fun smoothScrollToPosition(
         recyclerView: RecyclerView,
         state: RecyclerView.State,
@@ -36,6 +32,6 @@ class CustomLinearLayoutManager : LinearLayoutManager {
     }
 
     companion object {
-        private const val MILLISECONDS_PER_INCH = 100f //default is 25f (bigger = slower)
+        private const val MILLISECONDS_PER_INCH = 300f //default is 25f (bigger = slower)
     }
 }
