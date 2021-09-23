@@ -15,6 +15,8 @@ import com.github.marlonlom.utilities.timeago.TimeAgoMessages
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerCallback
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.utils.loadOrCueVideo
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 import id.islaami.playmi2021.R
 import id.islaami.playmi2021.data.model.video.Video
 import id.islaami.playmi2021.ui.channel.ChannelDetailActivity
@@ -22,7 +24,6 @@ import id.islaami.playmi2021.ui.video.VideoDetailActivity
 import id.islaami.playmi2021.ui.video.VideoSeriesActivity
 import id.islaami.playmi2021.ui.video.VideoSubcategoryActivity
 import id.islaami.playmi2021.util.fromDbFormatDateTimeToCustomFormat
-import id.islaami.playmi2021.util.ui.isVisible
 import id.islaami.playmi2021.util.ui.loadImage
 import id.islaami.playmi2021.util.ui.loadYoutubeThumbnail
 import id.islaami.playmi2021.util.value
@@ -31,16 +32,30 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class VideoAdapter(
+    val context: Context,
     private var list: List<Video> = emptyList(),
     var popMenu: (Context, View, Video) -> Unit,
     val onPlaybackEnded: ((playedPosition: Int) -> Unit)? = null,
     val onVideoWatched10Seconds: ((Int) -> Unit)? = null,
-    val lifecycle: Lifecycle,
-    val autoPlayOnLoad: Boolean = false
+    val lifecycle: Lifecycle
 ) : RecyclerView.Adapter<VideoAdapter.ViewHolder>() {
 
     private val handler = Handler(Looper.getMainLooper())
     var currentPlayedView: PlaybackViewHolder? = null
+    private val videoPlayer = YouTubePlayerView(context).apply {
+        lifecycle.addObserver(this)
+        this.enableBackgroundPlayback(false)
+        this.getPlayerUiController()
+            .showSeekBar(false)
+            .showFullscreenButton(false)
+            .showCurrentTime(false)
+            .showDuration(false)
+            .showYouTubeButton(false)
+            .showVideoTitle(false)
+            .showMenuButton(false)
+            .showPlayPauseButton(false)
+    }
+
     override fun getItemCount(): Int = list.size.value()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -51,12 +66,6 @@ class VideoAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(list[position], position)
-    }
-
-    override fun onViewDetachedFromWindow(holder: ViewHolder) {
-        super.onViewDetachedFromWindow(holder)
-        handler.removeCallbacksAndMessages(null)
-        holder.pauseVideo()
     }
 
     fun add(list: List<Video>) {
@@ -104,20 +113,7 @@ class VideoAdapter(
             videoTitle.text = video.title
             videoThumbnail.loadYoutubeThumbnail(video.videoID ?: "")
             videoThumbnail.visibility = View.VISIBLE
-            videoPlayer.visibility = View.INVISIBLE
-            videoPlayer.enableBackgroundPlayback(false)
-            videoPlayer.getPlayerUiController()
-                .showVideoTitle(false)
-                .showMenuButton(false)
-                .showPlayPauseButton(false)
-            lifecycle.addObserver(videoPlayer)
-            videoPlayer.getYouTubePlayerWhenReady(object : YouTubePlayerCallback {
-                override fun onYouTubePlayer(youTubePlayer: YouTubePlayer) {
-                    youTubePlayer.cueVideo(video.videoID.toString(), 0f)
-                    if (isVideoPlaying) playVideo()
-                }
-            })
-            if (position == 0 && autoPlayOnLoad) {
+            if (position == 0) {
                 isVideoPlaying = true
                 playVideo()
             }
@@ -182,8 +178,11 @@ class VideoAdapter(
 
         override val currentPosition: Int
             get() = _currentPosition
-        override val isVisible: Boolean
-            get() = itemView.videoPlayerTopLayer.isVisible()
+        override val playerView: View
+            get() = itemView.videoPlayerTopLayer
+
+        override val isPlaying: Boolean
+            get() = isVideoPlaying
 
         override fun playVideo() {
             currentPlayedView?.pauseVideo()
@@ -191,12 +190,14 @@ class VideoAdapter(
                 with(itemView) {
                     videoPlayer.addYouTubePlayerListener(youTubePlayerListener)
                     videoThumbnail.visibility = View.INVISIBLE
-                    videoPlayer.visibility = View.VISIBLE
+                    videoPlayerContainer.visibility = View.VISIBLE
+                    if (videoPlayer.parent == null) {
+                        videoPlayerContainer.addView(videoPlayer)
+                    }
                     onAutoPlayNextCalled = false
                     videoPlayer.getYouTubePlayerWhenReady(object : YouTubePlayerCallback {
                         override fun onYouTubePlayer(youTubePlayer: YouTubePlayer) {
-                            youTubePlayer.seekTo(0f)
-                            youTubePlayer.play()
+                            youTubePlayer.loadOrCueVideo(lifecycle, list[_currentPosition].videoID.toString(), 0f)
                         }
                     })
                     currentPlayedView = this@ViewHolder
@@ -205,10 +206,13 @@ class VideoAdapter(
             }, 2300)
         }
         override fun pauseVideo() {
+            if (videoPlayer.parent != null) {
+                (videoPlayer.parent as ViewGroup).removeView(videoPlayer)
+            }
             with(itemView) {
                 videoPlayer.removeYouTubePlayerListener(youTubePlayerListener)
                 videoThumbnail.visibility = View.VISIBLE
-                videoPlayer.visibility = View.INVISIBLE
+                videoPlayerContainer.visibility = View.INVISIBLE
                 this@VideoAdapter.handler.removeCallbacksAndMessages(null)
                 videoPlayer.getYouTubePlayerWhenReady(object : YouTubePlayerCallback {
                     override fun onYouTubePlayer(youTubePlayer: YouTubePlayer) {

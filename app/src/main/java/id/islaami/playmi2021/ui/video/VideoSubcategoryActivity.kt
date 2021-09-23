@@ -35,82 +35,88 @@ class VideoSubcategoryActivity(
 ) : BaseActivity() {
     private val viewModel: VideoViewModel by viewModel()
 
-    private var videoPagedAdapter = VideoPagedAdapter(this,
-        popMenu = { context, menuView, video ->
-            PopupMenu(context, menuView, Gravity.END).apply {
-                inflate(R.menu.menu_popup_home)
+    private val videoPagedAdapter: VideoPagedAdapter by lazy {
+        VideoPagedAdapter(
+            this,
+            popMenu = { context, menuView, video ->
+                PopupMenu(context, menuView, Gravity.END).apply {
+                    inflate(R.menu.menu_popup_home)
 
-                if (video.channel?.isFollowed != true) menu.getItem(1).title = "Mulai Mengikuti"
-                else menu.getItem(1).title = "Berhenti Mengikuti"
+                    if (video.channel?.isFollowed != true) menu.getItem(1).title = "Mulai Mengikuti"
+                    else menu.getItem(1).title = "Berhenti Mengikuti"
 
-                menu.getItem(0).title = "Simpan ke Tonton Nanti"
+                    menu.getItem(0).title = "Simpan ke Tonton Nanti"
 
-                setOnMenuItemClickListener { item ->
-                    when (item.itemId) {
-                        R.id.popWatchLater -> {
-                            PlaymiDialogFragment.show(
-                                fragmentManager = supportFragmentManager,
-                                text = "Simpan ke daftar Tonton Nanti?",
-                                okCallback = { viewModel.watchLater(video.ID.value()) }
-                            )
-
-                            true
-                        }
-                        R.id.popFollow -> {
-                            if (video.channel?.isFollowed != true) {
+                    setOnMenuItemClickListener { item ->
+                        when (item.itemId) {
+                            R.id.popWatchLater -> {
                                 PlaymiDialogFragment.show(
                                     fragmentManager = supportFragmentManager,
-                                    text = getString(R.string.channel_follow, video.channel?.name),
-                                    okCallback = { viewModel.followChannel(video.channel?.ID.value()) }
+                                    text = "Simpan ke daftar Tonton Nanti?",
+                                    okCallback = { viewModel.watchLater(video.ID.value()) }
                                 )
-                            } else {
-                                PlaymiDialogFragment.show(
-                                    fragmentManager = supportFragmentManager,
-                                    text = getString(
-                                        R.string.channel_unfollow,
-                                        video.channel?.name
-                                    ),
-                                    okCallback = { viewModel.unfollowChannel(video.channel?.ID.value()) }
-                                )
+
+                                true
                             }
+                            R.id.popFollow -> {
+                                if (video.channel?.isFollowed != true) {
+                                    PlaymiDialogFragment.show(
+                                        fragmentManager = supportFragmentManager,
+                                        text = getString(
+                                            R.string.channel_follow,
+                                            video.channel?.name
+                                        ),
+                                        okCallback = { viewModel.followChannel(video.channel?.ID.value()) }
+                                    )
+                                } else {
+                                    PlaymiDialogFragment.show(
+                                        fragmentManager = supportFragmentManager,
+                                        text = getString(
+                                            R.string.channel_unfollow,
+                                            video.channel?.name
+                                        ),
+                                        okCallback = { viewModel.unfollowChannel(video.channel?.ID.value()) }
+                                    )
+                                }
 
-                            true
-                        }
-                        R.id.popHide -> {
-                            PlaymiDialogFragment.show(
-                                fragmentManager = supportFragmentManager,
-                                text = getString(R.string.channel_hide, video.channel?.name),
-                                okCallback = { viewModel.hideChannel(video.channel?.ID.value()) }
-                            )
+                                true
+                            }
+                            R.id.popHide -> {
+                                PlaymiDialogFragment.show(
+                                    fragmentManager = supportFragmentManager,
+                                    text = getString(R.string.channel_hide, video.channel?.name),
+                                    okCallback = { viewModel.hideChannel(video.channel?.ID.value()) }
+                                )
 
-                            true
+                                true
+                            }
+                            else -> false
                         }
-                        else -> false
+                    }
+
+                    show()
+                }
+            },
+            onPlaybackEnded = {
+                var nextPosition = it
+                val videoCount = recyclerView.adapter?.itemCount ?: 0
+                while (nextPosition < videoCount) {
+                    if (recyclerView.findViewHolderForAdapterPosition(++nextPosition) is PlaybackViewHolder) {
+                        recyclerView.customSmoothScrollToPosition(nextPosition)
+                        break
                     }
                 }
+            },
+            onVideoWatched10Seconds = { videoID ->
+                Log.i("190401", "onVideoWatched10Seconds videoID: $videoID")
+                viewModel.getVideoDetail(videoID)
+            },
+            lifecycle = lifecycle
+        )
+    }
 
-                show()
-            }
-        },
-        onPlaybackEnded = {
-            var nextPosition = it
-            val videoCount = recyclerView.adapter?.itemCount ?: 0
-            while (nextPosition < videoCount) {
-                if (recyclerView.findViewHolderForAdapterPosition(++nextPosition) is PlaybackViewHolder) {
-                    recyclerView.customSmoothScrollToPosition(nextPosition)
-                    break
-                }
-            }
-        },
-        onVideoWatched10Seconds = { videoID ->
-            Log.i("190401", "onVideoWatched10Seconds videoID: $videoID")
-            viewModel.getVideoDetail(videoID)
-        },
-        lifecycle = lifecycle,
-        autoPlayOnLoad = true
-    )
-
-    private val autoPlayScrollListener = AutoPlayScrollListener { videoPagedAdapter.currentPlayedView }
+    private val autoPlayScrollListener =
+        AutoPlayScrollListener { videoPagedAdapter.currentPlayedView }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -178,6 +184,7 @@ class VideoSubcategoryActivity(
     }
 
     private fun refresh() {
+        videoPagedAdapter.currentPlayedView?.pauseVideo()
         viewModel.refreshAllVideoBySub()
     }
 
@@ -208,7 +215,8 @@ class VideoSubcategoryActivity(
 
         viewModel.networkStatusLd.observe(this, Observer { result ->
             when (result.status) {
-                LOADING -> {}
+                LOADING -> {
+                }
                 SUCCESS -> {
                     swipeRefreshLayout.stopRefreshing()
                     recyclerView.setVisibilityToVisible()

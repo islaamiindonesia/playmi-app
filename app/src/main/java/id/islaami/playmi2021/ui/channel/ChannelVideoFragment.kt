@@ -29,47 +29,49 @@ class ChannelVideoFragment(var channelID: Int) : BaseFragment(), BaseRecyclerVie
     val viewModel: ChannelViewModel by viewModel()
     private val videoViewModel: VideoViewModel by viewModel()
 
-    private var videoPagedAdapter = VideoPagedAdapterOld(context,
-        popMenu = { context, menuView, video ->
-            PopupMenu(context, menuView).apply {
-                inflate(R.menu.menu_popup_channel_detail)
+    private val videoPagedAdapter: VideoPagedAdapterOld by lazy {
+        VideoPagedAdapterOld(
+            requireContext(),
+            popMenu = { context, menuView, video ->
+                PopupMenu(context, menuView).apply {
+                    inflate(R.menu.menu_popup_channel_detail)
 
-                menu.getItem(0).title = "Simpan ke Tonton Nanti"
+                    menu.getItem(0).title = "Simpan ke Tonton Nanti"
 
-                setOnMenuItemClickListener { item ->
-                    when (item.itemId) {
-                        R.id.popSaveLater -> {
-                            PlaymiDialogFragment.show(
-                                fragmentManager = childFragmentManager,
-                                text = "Simpan ke daftar Tonton Nanti?",
-                                okCallback = { viewModel.watchLater(video.ID.value()) }
-                            )
+                    setOnMenuItemClickListener { item ->
+                        when (item.itemId) {
+                            R.id.popSaveLater -> {
+                                PlaymiDialogFragment.show(
+                                    fragmentManager = childFragmentManager,
+                                    text = "Simpan ke daftar Tonton Nanti?",
+                                    okCallback = { viewModel.watchLater(video.ID.value()) }
+                                )
 
-                            true
+                                true
+                            }
+                            else -> false
                         }
-                        else -> false
+                    }
+
+                    show()
+                }
+            },
+            onPlaybackEnded = {
+                var nextPosition = it
+                val videoCount = recyclerView.adapter?.itemCount ?: 0
+                while (nextPosition < videoCount) {
+                    if (recyclerView.findViewHolderForAdapterPosition(++nextPosition) is PlaybackViewHolder) {
+                        recyclerView.customSmoothScrollToPosition(nextPosition)
+                        break
                     }
                 }
-
-                show()
-            }
-        },
-        onPlaybackEnded = {
-            var nextPosition = it
-            val videoCount = recyclerView.adapter?.itemCount ?: 0
-            while (nextPosition < videoCount) {
-                if (recyclerView.findViewHolderForAdapterPosition(++nextPosition) is PlaybackViewHolder) {
-                    recyclerView.customSmoothScrollToPosition(nextPosition)
-                    break
-                }
-            }
-        },
-        onVideoWatched10Seconds = { videoID ->
-            videoViewModel.getVideoDetail(videoID)
-        },
-        lifecycle = lifecycle,
-        autoPlayOnLoad = true
-    )
+            },
+            onVideoWatched10Seconds = { videoID ->
+                videoViewModel.getVideoDetail(videoID)
+            },
+            lifecycle = lifecycle
+        )
+    }
 
     private val autoPlayScrollListener = AutoPlayScrollListener { videoPagedAdapter.currentPlayedView }
 
@@ -109,6 +111,7 @@ class ChannelVideoFragment(var channelID: Int) : BaseFragment(), BaseRecyclerVie
     }
 
     fun refresh() {
+        videoPagedAdapter.currentPlayedView?.pauseVideo()
         viewModel.refreshAllVideo()
     }
 

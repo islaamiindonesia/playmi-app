@@ -49,55 +49,57 @@ class PlaylistDetailActivity(var playlistId: Int = 0) : BaseActivity() {
     lateinit var playlistSelectAdapter: PlaylistSelectAdapter
 
     private var headerAdapter = PlaylistDetailHeaderAdapter()
-    private var videoAdapter = VideoAdapter(
-        popMenu = { context, menuView, video ->
-            PopupMenu(context, menuView).apply {
-                inflate(R.menu.menu_popup_playlist_video)
+    private val videoAdapter: VideoAdapter by lazy {
+        VideoAdapter(
+            this,
+            popMenu = { context, menuView, video ->
+                PopupMenu(context, menuView).apply {
+                    inflate(R.menu.menu_popup_playlist_video)
 
-                menu.getItem(2).title = "Hapus dari ${intent.getStringExtra(EXTRA_NAME) ?: ""}"
+                    menu.getItem(2).title = "Hapus dari ${intent.getStringExtra(EXTRA_NAME) ?: ""}"
 
-                setOnMenuItemClickListener { item ->
-                    when (item.itemId) {
-                        R.id.popSaveLater -> {
-                            viewModel.addWatchLater(video.ID.value())
-                            true
+                    setOnMenuItemClickListener { item ->
+                        when (item.itemId) {
+                            R.id.popSaveLater -> {
+                                viewModel.addWatchLater(video.ID.value())
+                                true
+                            }
+                            R.id.popSavePlaylist -> {
+                                showBottomSheet(video.ID.value())
+                                true
+                            }
+                            R.id.popDeleteList -> {
+                                viewModel.removeFromPlaylist(
+                                    video.ID.value(),
+                                    playlistId
+                                )
+                                true
+                            }
+                            else -> false
                         }
-                        R.id.popSavePlaylist -> {
-                            showBottomSheet(video.ID.value())
-                            true
-                        }
-                        R.id.popDeleteList -> {
-                            viewModel.removeFromPlaylist(
-                                video.ID.value(),
-                                playlistId
-                            )
-                            true
-                        }
-                        else -> false
+                    }
+
+                    show()
+                }
+            },
+            onPlaybackEnded = {
+                var nextPosition = it + 1 // header is calculated
+                Log.i("190401", "nextPosition $nextPosition")
+                val videoCount = recyclerView.adapter?.itemCount ?: 0
+                while (nextPosition < videoCount) {
+                    if (recyclerView.findViewHolderForAdapterPosition(++nextPosition) is PlaybackViewHolder) {
+                        recyclerView.customSmoothScrollToPosition(nextPosition)
+                        break
                     }
                 }
-
-                show()
-            }
-        },
-        onPlaybackEnded = {
-            var nextPosition = it + 1 // header is calculated
-            Log.i("190401", "nextPosition $nextPosition")
-            val videoCount = recyclerView.adapter?.itemCount ?: 0
-            while (nextPosition < videoCount) {
-                if (recyclerView.findViewHolderForAdapterPosition(++nextPosition) is PlaybackViewHolder) {
-                    recyclerView.customSmoothScrollToPosition(nextPosition)
-                    break
-                }
-            }
-        },
-        onVideoWatched10Seconds = { videoID ->
-            Log.i("190401", "onVideoWatched10Seconds videoID: $videoID")
-            videoViewModel.getVideoDetail(videoID)
-        },
-        lifecycle = lifecycle,
-        autoPlayOnLoad = true
-    )
+            },
+            onVideoWatched10Seconds = { videoID ->
+                Log.i("190401", "onVideoWatched10Seconds videoID: $videoID")
+                videoViewModel.getVideoDetail(videoID)
+            },
+            lifecycle = lifecycle
+        )
+    }
 
     private val autoPlayScrollListener = AutoPlayScrollListener { videoAdapter.currentPlayedView }
 
@@ -185,6 +187,7 @@ class PlaylistDetailActivity(var playlistId: Int = 0) : BaseActivity() {
     }
 
     private fun refresh() {
+        videoAdapter.currentPlayedView?.pauseVideo()
         viewModel.getPlaylistDetail(playlistId)
     }
 
