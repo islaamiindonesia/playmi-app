@@ -170,7 +170,7 @@ class VideoAdapter(
             channelLayout.setOnClickListener {
                 ChannelDetailActivity.startActivity(
                     context,
-                    video.channel.toString(),
+                    video.channel?.name.toString(),
                     video.channel?.ID.value()
                 )
             }
