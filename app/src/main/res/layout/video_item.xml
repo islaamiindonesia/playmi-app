@@ -82,7 +82,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/channelLayout"
-        app:layout_constraintBottom_toBottomOf="@id/videoPlayer"
+        app:layout_constraintBottom_toBottomOf="@id/videoPlayerContainer"
         android:background="@android:color/transparent"
         android:elevation="2dp"
         android:layout_width="match_parent"
@@ -100,22 +100,14 @@
         app:layout_constraintTop_toBottomOf="@+id/channelLayout"
         tools:srcCompat="@tools:sample/backgrounds/scenic[7]" />
 
-
-    <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
-        android:id="@+id/videoPlayer"
+    <LinearLayout
+        android:id="@+id/videoPlayerContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:minHeight="200dp"
         android:elevation="0dp"
         android:visibility="invisible"
-        app:autoPlay="false"
-        app:showFullScreenButton="false"
-        app:showSeekBar="false"
-        app:showVideoCurrentTime="false"
-        app:showVideoDuration="false"
-        app:showYouTubeButton="false"
-        app:handleNetworkEvents="true"
-        app:enableAutomaticInitialization="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/channelLayout"/>
@@ -123,7 +115,7 @@
     <androidx.constraintlayout.widget.Barrier
         android:id="@+id/youtubeBarrier"
         app:barrierDirection="bottom"
-        app:constraint_referenced_ids="videoThumbnail, videoPlayer"
+        app:constraint_referenced_ids="videoThumbnail, videoPlayerContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
     <RelativeLayout

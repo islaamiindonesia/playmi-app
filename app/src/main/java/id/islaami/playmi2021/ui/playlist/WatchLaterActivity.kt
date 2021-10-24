@@ -41,45 +41,47 @@ class WatchLaterActivity : BaseActivity() {
 
     private lateinit var playlistSelectAdapter: PlaylistSelectAdapter
 
-    private var videoAdapter: VideoAdapter = VideoAdapter(
-        popMenu = { context, menuView, video ->
-            PopupMenu(context, menuView).apply {
-                inflate(R.menu.menu_popup_later_video)
+    private val videoAdapter: VideoAdapter by lazy {
+        VideoAdapter(
+            this,
+            popMenu = { context, menuView, video ->
+                PopupMenu(context, menuView).apply {
+                    inflate(R.menu.menu_popup_later_video)
 
-                setOnMenuItemClickListener { item ->
-                    when (item.itemId) {
-                        R.id.popSavePlaylist -> {
-                            showBottomSheet(video.ID.value())
-                            true
+                    setOnMenuItemClickListener { item ->
+                        when (item.itemId) {
+                            R.id.popSavePlaylist -> {
+                                showBottomSheet(video.ID.value())
+                                true
+                            }
+                            R.id.popDeleteList -> {
+                                viewModel.deleteFromLater(video.ID.value())
+                                true
+                            }
+                            else -> false
                         }
-                        R.id.popDeleteList -> {
-                            viewModel.deleteFromLater(video.ID.value())
-                            true
-                        }
-                        else -> false
+                    }
+
+                    show()
+                }
+            },
+            onPlaybackEnded = {
+                var nextPosition = it
+                val videoCount = recyclerView.adapter?.itemCount ?: 0
+                while (nextPosition < videoCount) {
+                    if (recyclerView.findViewHolderForAdapterPosition(++nextPosition) is PlaybackViewHolder) {
+                        recyclerView.customSmoothScrollToPosition(nextPosition)
+                        break
                     }
                 }
-
-                show()
-            }
-        },
-        onPlaybackEnded = {
-            var nextPosition = it
-            val videoCount = recyclerView.adapter?.itemCount ?: 0
-            while (nextPosition < videoCount) {
-                if (recyclerView.findViewHolderForAdapterPosition(++nextPosition) is PlaybackViewHolder) {
-                    recyclerView.customSmoothScrollToPosition(nextPosition)
-                    break
-                }
-            }
-        },
-        onVideoWatched10Seconds = { videoID ->
-            Log.i("190401", "onVideoWatched10Seconds videoID: $videoID")
-            videoViewModel.getVideoDetail(videoID)
-        },
-        lifecycle = lifecycle,
-        autoPlayOnLoad = true
-    )
+            },
+            onVideoWatched10Seconds = { videoID ->
+                Log.i("190401", "onVideoWatched10Seconds videoID: $videoID")
+                videoViewModel.getVideoDetail(videoID)
+            },
+            lifecycle = lifecycle
+        )
+    }
 
     private val autoPlayScrollListener = AutoPlayScrollListener { videoAdapter.currentPlayedView }
 
@@ -145,6 +147,7 @@ class WatchLaterActivity : BaseActivity() {
     }
 
     private fun refresh() {
+        videoAdapter.currentPlayedView?.pauseVideo()
         viewModel.getWatchLater()
         viewModel.allPlaylists()
     }

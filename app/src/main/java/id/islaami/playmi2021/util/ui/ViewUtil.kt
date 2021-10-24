@@ -7,6 +7,7 @@ import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Rect
 import android.os.Build
+import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -237,4 +238,34 @@ fun View?.isVisible(): Boolean {
     this.getGlobalVisibleRect(actualPosition)
     val screen = Rect(0, 0, Resources.getSystem().displayMetrics.widthPixels, Resources.getSystem().displayMetrics.heightPixels)
     return actualPosition.intersect(screen)
+}
+
+fun View?.isHalfTopVisibleOn(view: View): Boolean {
+    if (this == null) {
+        return false
+    }
+    if (!this.isShown) {
+        return false
+    }
+    val actualPosition = Rect()
+    this.getGlobalVisibleRect(actualPosition)
+    val otherViewPosition = Rect()
+    view.getGlobalVisibleRect(otherViewPosition)
+    actualPosition.bottom -= this.height/2
+    return actualPosition.intersect(otherViewPosition)
+}
+
+fun View?.isHalfBottomVisibleOn(view: View): Boolean {
+    if (this == null) {
+        return false
+    }
+    if (!this.isShown) {
+        return false
+    }
+    val actualPosition = Rect()
+    this.getGlobalVisibleRect(actualPosition)
+    val otherViewPosition = Rect()
+    view.getGlobalVisibleRect(otherViewPosition)
+    actualPosition.top += this.height/2
+    return actualPosition.intersect(otherViewPosition)
 }

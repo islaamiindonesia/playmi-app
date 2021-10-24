@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +19,8 @@ import com.github.marlonlom.utilities.timeago.TimeAgoMessages
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerCallback
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.utils.loadOrCueVideo
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 import id.islaami.playmi2021.R
 import id.islaami.playmi2021.data.model.video.Video
 import id.islaami.playmi2021.ui.channel.ChannelDetailActivity
@@ -32,16 +35,28 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class VideoPagedAdapterOld(
-    var context: Context? = null,
+    var context: Context,
     var popMenu: (Context, View, Video) -> Unit,
     val onPlaybackEnded: ((playedPosition: Int) -> Unit)? = null,
     val onVideoWatched10Seconds: ((Int) -> Unit)? = null,
-    val lifecycle: Lifecycle,
-    val autoPlayOnLoad: Boolean = false
+    val lifecycle: Lifecycle
 ) : PagedListAdapter<Video, VideoPagedAdapterOld.ViewHolder>(DIFF_CALLBACK) {
 
     private val handler = Handler(Looper.getMainLooper())
     var currentPlayedView: PlaybackViewHolder? = null
+    private val videoPlayer = YouTubePlayerView(context).apply {
+        lifecycle.addObserver(this)
+        this.enableBackgroundPlayback(false)
+        this.getPlayerUiController()
+            .showSeekBar(false)
+            .showFullscreenButton(false)
+            .showCurrentTime(false)
+            .showDuration(false)
+            .showYouTubeButton(false)
+            .showVideoTitle(false)
+            .showMenuButton(false)
+            .showPlayPauseButton(false)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val itemView = LayoutInflater.from(parent.context)
@@ -53,11 +68,6 @@ class VideoPagedAdapterOld(
         getItem(position)?.let { holder.bind(it, position) }
     }
 
-    override fun onViewDetachedFromWindow(holder: ViewHolder) {
-        super.onViewDetachedFromWindow(holder)
-        handler.removeCallbacksAndMessages(null)
-        holder.pauseVideo()
-    }
     fun addVideoList(list: PagedList<Video>?) {
         submitList(list)
         notifyDataSetChanged()
@@ -103,20 +113,7 @@ class VideoPagedAdapterOld(
                 videoTitle.text = video.title
                 videoThumbnail.loadYoutubeThumbnail(video.videoID ?: "")
                 videoThumbnail.visibility = View.VISIBLE
-                videoPlayer.visibility = View.INVISIBLE
-                lifecycle.addObserver(videoPlayer)
-                videoPlayer.enableBackgroundPlayback(false)
-                videoPlayer.getPlayerUiController()
-                    .showVideoTitle(false)
-                    .showMenuButton(false)
-                    .showPlayPauseButton(false)
-                videoPlayer.getYouTubePlayerWhenReady(object : YouTubePlayerCallback {
-                    override fun onYouTubePlayer(youTubePlayer: YouTubePlayer) {
-                        youTubePlayer.cueVideo(video.videoID.toString(), 0f)
-                        if (isVideoPlaying) playVideo()
-                    }
-                })
-                if (position == 0 && autoPlayOnLoad) {
+                if (position == 0) {
                     playVideo()
                     isVideoPlaying = true
                 }
@@ -182,9 +179,11 @@ class VideoPagedAdapterOld(
 
         override val currentPosition: Int
             get() = _currentPosition
-        override val isVisible: Boolean
-            get() = itemView.videoPlayerTopLayer.isVisible()
+        override val playerView: View
+            get() = itemView.videoPlayerTopLayer
 
+        override val isPlaying: Boolean
+            get() = isVideoPlaying
 
         override fun playVideo() {
             currentPlayedView?.pauseVideo()
@@ -192,12 +191,14 @@ class VideoPagedAdapterOld(
                 with(itemView) {
                     videoPlayer.addYouTubePlayerListener(youTubePlayerListener)
                     videoThumbnail.visibility = View.INVISIBLE
-                    videoPlayer.visibility = View.VISIBLE
+                    videoPlayerContainer.visibility = View.VISIBLE
+                    if (videoPlayer.parent == null) {
+                        videoPlayerContainer.addView(videoPlayer)
+                    }
                     onAutoPlayNextCalled = false
                     videoPlayer.getYouTubePlayerWhenReady(object : YouTubePlayerCallback {
                         override fun onYouTubePlayer(youTubePlayer: YouTubePlayer) {
-                            youTubePlayer.seekTo(0f)
-                            youTubePlayer.play()
+                            youTubePlayer.loadOrCueVideo(lifecycle, getItem(_currentPosition)?.videoID.toString(), 0f)
                         }
                     })
                     currentPlayedView = this@ViewHolder
@@ -206,10 +207,13 @@ class VideoPagedAdapterOld(
             }, 2300)
         }
         override fun pauseVideo() {
+            if (videoPlayer.parent != null) {
+                (videoPlayer.parent as ViewGroup).removeView(videoPlayer)
+            }
             with(itemView) {
                 videoPlayer.removeYouTubePlayerListener(youTubePlayerListener)
                 videoThumbnail.visibility = View.VISIBLE
-                videoPlayer.visibility = View.INVISIBLE
+                videoPlayerContainer.visibility = View.INVISIBLE
                 this@VideoPagedAdapterOld.handler.removeCallbacksAndMessages(null)
                 videoPlayer.getYouTubePlayerWhenReady(object : YouTubePlayerCallback {
                     override fun onYouTubePlayer(youTubePlayer: YouTubePlayer) {
